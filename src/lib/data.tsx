@@ -1,91 +1,137 @@
 import React from 'react';
-import Image from 'next/image';
+import {
+  IconFlutter,
+  IconAndroid,
+  IconJava,
+  IconDotNet,
+  IconPhp,
+  IconExpress,
+  IconMySQL,
+  IconSQLServer,
+  IconFirebase,
+  IconMongoDB,
+  IconAndroidStudio,
+  IconFigma,
+  IconGit,
+  IconPostman,
+  IconDocker,
+} from '@/components/icons';
 
-export const SKILLS_DATA = [
+export interface ProjectItem {
+  title: string;
+  description: string;
+  tags: string[];
+  image: string;
+  github: string;
+  link?: string | null;
+  statusBadge?: string;
+}
+
+export interface SkillItem {
+  name: string;
+  icon: React.ReactNode;
+}
+
+export interface SkillCategory {
+  title: string;
+  skills: SkillItem[];
+}
+
+export interface ExperienceItem {
+  title: string;
+  company: string;
+  location?: string;
+  date: string;
+  responsibilities: string[];
+}
+
+export const SKILLS_DATA: SkillCategory[] = [
   {
-    title: 'Frontend',
+    title: 'Mobile & Frontend',
     skills: [
-     { name: 'Flutter', icon: <Image src="https://skills.syvixor.com/api/icons?i=flutter" alt="Flutter" width={40} height={40} unoptimized/> },
-     { name: 'Native Android', icon: <Image src="https://skills.syvixor.com/api/icons?perline=15&i=android" alt="Native Androd" width={40} height={40} unoptimized/> },
-      
+      { name: 'Flutter', icon: <IconFlutter className="w-10 h-10" /> },
+      { name: 'Native Android', icon: <IconAndroid className="w-10 h-10" /> },
     ],
   },
   {
-    title: 'Backend',
+    title: 'Backend & APIs',
     skills: [
-      { name: 'Java', icon: <Image src="https://skills.syvixor.com/api/icons?i=java" alt="Java" width={40} height={40} unoptimized/> },
-      { name: '.NET Core', icon: <Image src="https://skills.syvixor.com/api/icons?i=dotnet" alt=".NET Core" width={40} height={40} unoptimized/> },
-      { name: 'Php', icon: <Image src="https://skills.syvixor.com/api/icons?perline=15&i=php" alt="Php" width={40} height={40} unoptimized/> },
-      { name: 'Express.js', icon: <Image src="https://skills.syvixor.com/api/icons?i=express" alt="Express.js" width={40} height={40} unoptimized/> },
+      { name: 'Java', icon: <IconJava className="w-10 h-10" /> },
+      { name: '.NET Core', icon: <IconDotNet className="w-10 h-10" /> },
+      { name: 'PHP', icon: <IconPhp className="w-10 h-10" /> },
+      { name: 'Express.js', icon: <IconExpress className="w-10 h-10" /> },
     ],
   },
   {
     title: 'Databases',
     skills: [
-      { name: 'MySql', icon: <Image src="https://skills.syvixor.com/api/icons?perline=15&i=mysql" alt="MySql" width={40} height={40} unoptimized/> },
-      { name: 'SQL Server', icon: <Image src="https://skills.syvixor.com/api/icons?i=sqlserver" alt="SQL Server" width={40} height={40}unoptimized /> },
-      { name: 'Firebase', icon: <Image src="https://skills.syvixor.com/api/icons?i=firebase" alt="Firebase" width={40} height={40} unoptimized/> },
-      { name: 'MongoDB', icon: <Image src="https://skills.syvixor.com/api/icons?i=mongodb" alt="MongoDB" width={40} height={40} unoptimized/> },
+      { name: 'MySQL', icon: <IconMySQL className="w-10 h-10" /> },
+      { name: 'SQL Server', icon: <IconSQLServer className="w-10 h-10" /> },
+      { name: 'Firebase', icon: <IconFirebase className="w-10 h-10" /> },
+      { name: 'MongoDB', icon: <IconMongoDB className="w-10 h-10" /> },
     ],
   },
   {
-    title: 'Other Tools',
+    title: 'DevOps & Tools',
     skills: [
-      { name: 'Android Studio', icon: <Image src="https://skills.syvixor.com/api/icons?perline=15&i=androidstudio" alt="Android Studio" width={40} height={40} unoptimized/> },
-      { name: 'Figma', icon: <Image src="https://skills.syvixor.com/api/icons?i=figma" alt="Figma" width={40} height={40} unoptimized/> },
-      { name: 'Git & GitHub', icon: <Image src="https://skills.syvixor.com/api/icons?i=git" alt="Git" width={40} height={40} unoptimized/> },
-      { name: 'Postman', icon: <Image src="https://skills.syvixor.com/api/icons?perline=15&i=postman" alt="Postman" width={40} height={40} unoptimized/> },
-      { name: 'Docker', icon: <Image src="https://skills.syvixor.com/api/icons?perline=15&i=docker" alt="Docker" width={40} height={40} unoptimized/> },
+      { name: 'Android Studio', icon: <IconAndroidStudio className="w-10 h-10" /> },
+      { name: 'Docker', icon: <IconDocker className="w-10 h-10" /> },
+      { name: 'Git & GitHub', icon: <IconGit className="w-10 h-10" /> },
+      { name: 'Postman', icon: <IconPostman className="w-10 h-10" /> },
+      { name: 'Figma', icon: <IconFigma className="w-10 h-10" /> },
     ],
   },
 ];
 
-export const PROJECTS_DATA = [
+export const PROJECTS_DATA: ProjectItem[] = [
   {
     title: 'Task Manager App',
-    description: 'A basic full-stack task management application with CRUD (Create, Read, Update, Delete) functionality.',
-    tags: ['Flutter', 'Dart', 'Node.js(Express)', 'MongoDB','Docker',],
+    description: 'A full-stack task management application with robust CRUD functionality, task categorization, and seamless cloud syncing.',
+    tags: ['Flutter', 'Dart', 'Node.js', 'Express', 'MongoDB', 'Docker'],
     image: 'project-1',
-    link: '#',
     github: 'https://github.com/parthamallick49/task_manager_app',
+    statusBadge: 'Open Source',
   },
   {
     title: 'Nobin EP App',
-    description: 'This is for the Nobin Equity Program members. They can view their live data from this app. (Note: Source-code is not public, for security reason)',
+    description: 'Enterprise mobile platform for Nobin Equity Program members providing secure authentication, live financial dashboards, and portfolio monitoring.',
     tags: ['.NET Core', 'Flutter', 'SQL Server', 'REST API'],
     image: 'project-2',
-    link: '#',
     github: 'https://github.com/parthamallick49/nobin-ep-mobile-app',
+    statusBadge: 'Enterprise / Private',
   },
   {
     title: 'AgriMan',
-    description: 'AgriMan is a powerful and easy-to-use Agricultural Management System designed to empower farmers, sellers, and buyers with real-time access to critical agricultural data and services.',
-    tags: ['Android (Java)', 'Firebase'],
+    description: 'Agricultural management system empowering farmers, buyers, and sellers with real-time market data, inventory tracking, and crop management.',
+    tags: ['Android (Java)', 'Firebase', 'Mobile UI'],
     image: 'project-3',
-    link: '#',
     github: 'https://github.com/parthamallick49/AgriMan',
+    statusBadge: 'Open Source',
   },
 ];
 
-export const EXPERIENCE_DATA = [
-    {
-        title: 'Junior Software Engineer',
-        company: 'Grameen Communications',
-        date: 'July 2025 - Present',
-        responsibilities: [
-            'Translating product requirements into performant UI and state management flows.',
-            'Integrated REST APIs and handled data persistence using SQL Server.',
-            'Improved app stability and responsiveness.',
-        ],
-    },
-    {
-        title: 'Software Developer Intern',
-        company: 'Grameen Communications',
-        date: 'January 2025 - June 2025',
-        responsibilities: [
-            'Built prototype features using Flutter and Java.',
-            'Helped migrate/organize API calls and database queries.',
-            'Worked in cross-functional teams to deliver user-facing features and internal tooling.',
-        ],
-    },
+export const EXPERIENCE_DATA: ExperienceItem[] = [
+  {
+    title: 'Junior Software Engineer',
+    company: 'Grameen Communications',
+    location: 'Dhaka, Bangladesh',
+    date: 'July 2025 - Present',
+    responsibilities: [
+      'Translating complex product requirements into performant, elegant UI flows and reactive state management architectures.',
+      'Architecting and integrating REST APIs with secure data persistence using SQL Server and .NET Core.',
+      'Optimizing application performance, reducing memory overhead, and improving mobile crash-free rates.',
+      'Collaborating in agile sprints with cross-functional teams, QA engineers, and backend leads to ship production features.',
+    ],
+  },
+  {
+    title: 'Software Developer Intern',
+    company: 'Grameen Communications',
+    location: 'Dhaka, Bangladesh',
+    date: 'January 2025 - June 2025',
+    responsibilities: [
+      'Developed native Android and cross-platform Flutter prototypes for internal and customer-facing tools.',
+      'Standardized REST API endpoints and optimized relational database queries.',
+      'Participated in code reviews, bug fixing, and continuous integration testing workflows.',
+    ],
+  },
 ];

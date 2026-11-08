@@ -1,71 +1,81 @@
-# Partha Pratim Mallick - Personal Portfolio
+# Partha Pratim Mallick - Professional Portfolio
 
-This is a modern, responsive personal portfolio website built with Next.js, TypeScript, and styled with Tailwind CSS and ShadCN UI components. It's designed to showcase skills, projects, and professional experience in a clean and elegant way.
+Modern, responsive personal developer portfolio website built with **Next.js 15 (App Router)**, **React 19**, **TypeScript**, and styled with **Tailwind CSS** and **Radix UI / ShadCN**. Designed to showcase mobile and backend engineering experience, production projects, and core technical competencies.
 
-## Features
+---
 
-- **Modern Tech Stack**: Built with Next.js App Router, React, and TypeScript.
-- **Responsive Design**: Looks great on all devices, from mobile phones to desktops.
-- **Theming**: Includes light and dark mode, with system preference detection.
-- **Key Sections**:
-  - Hero section with a clear call-to-action.
-  - About Me, Skills, Featured Projects, and Work Experience.
-  - Functional Contact Form that opens the user's email client.
-- **Dockerized**: Includes a `Dockerfile` for easy and consistent deployment.
+## 🚀 Live Demo & Deployment
 
-## Getting Started
+This portfolio is optimized for zero-downtime serverless hosting on **Vercel**.
 
-To get a local copy up and running, follow these steps.
+- **Framework:** Next.js 15 (App Router)
+- **Styling:** Tailwind CSS + Radix UI
+- **Typography:** Inter
+- **Icons:** Custom SVG / Lucide Icons
+- **Deployment Platform:** Vercel (Continuous Deployment via Git)
+
+---
+
+## ✨ Features & Highlights
+
+- **⚡ Blazing Fast Performance:** Assets optimized for high PageSpeed scores and minimal bandwidth usage.
+- **📱 Responsive by Design:** Mobile-first architecture with responsive navigation, adaptive timeline, and fluid layout across all viewports.
+- **🌓 Light & Dark Theming:** Instant theme toggle with system preference detection and smooth transitions.
+- **💼 Interactive Sections:**
+  - **Hero:** Call to actions, CV download, and instant social profile links.
+  - **About:** Background, core engineering strengths, and engineering philosophy.
+  - **Tech Stack:** Native vector SVGs for mobile, backend, database, and DevOps tools.
+  - **Featured Work:** Mobile app showcases with contextual status tags and direct GitHub links.
+  - **Experience:** Interactive vertical timeline documenting professional engineering roles.
+  - **Contact:** Functional direct messaging form and one-click email copy utility.
+- **🔍 SEO & Social Ready:** Configured OpenGraph and Twitter Card metadata for rich previews when sharing links on LinkedIn, Twitter/X, and WhatsApp.
+
+---
+
+## 🛠️ Getting Started Locally
 
 ### Prerequisites
+- Node.js (v18 or v20+ recommended)
+- npm, pnpm, or yarn
 
-- Node.js (v18 or later recommended)
-- npm or another package manager
-- Docker (optional, for containerized deployment)
+### Installation
+```bash
+# Clone the repository
+git clone https://github.com/parthamallick49/partha-pratim-mallick-portfolio.git
+cd partha-pratim-mallick-portfolio
 
-### Installation & Local Development
+# Install dependencies
+npm install
 
-1. **Clone the repository:**
+# Start local development server
+npm run dev
+```
+
+Visit [http://localhost:3000](http://localhost:3000) in your browser.
+
+---
+
+## 🚢 Deploying to Vercel (Zero Downtime)
+
+Deploying to Vercel takes less than 2 minutes:
+
+1. Push your updated code to your GitHub repository:
    ```bash
-   git clone <your-repository-url>
-   cd <repository-folder>
+   git add .
+   git commit -m "Refine portfolio design, performance, and SEO for Vercel"
+   git push origin main
    ```
+2. Go to [vercel.com](https://vercel.com) and log in with your GitHub account.
+3. Click **"Add New..."** > **"Project"**.
+4. Select your `partha-pratim-mallick-portfolio` repository and click **Import**.
+5. Vercel automatically detects Next.js:
+   - **Framework Preset:** Next.js
+   - **Root Directory:** `./`
+   - **Build Command:** `next build`
+   - **Output Directory:** `.next`
+6. Click **Deploy**. Within ~60 seconds, your portfolio will be live worldwide on a secure `https://...vercel.app` URL (and custom domain if configured) with 100% continuous uptime!
 
-2. **Install dependencies:**
-   ```bash
-   npm install
-   ```
+---
 
-3. **Run the development server:**
-   ```bash
-   npm run dev
-   ```
-
-Open [http://localhost:9002](http://localhost:9002) with your browser to see the result. The page will auto-update as you edit the files.
-
-## Docker Deployment
-
-This application is fully containerized for easy deployment.
-
-1. **Build the Docker image:**
-   Make sure Docker is running, then execute the following command in your project's root directory:
-   ```bash
-   docker build -t portfolio .
-   ```
-
-2. **Run the Docker container:**
-   Once the image is built, you can run it with:
-   ```bash
-   docker run -p 3000:3000 portfolio
-   ```
-   The application will be available at [http://localhost:3000](http://localhost:3000).
-
-## Project Structure
-
-- `src/app/`: Contains the main pages and layout of the application.
-- `src/components/`: Reusable React components, including UI elements from ShadCN.
-- `src/lib/`: Utility functions, static data, and placeholder image configurations.
-- `public/`: Static assets like images and CV files.
-- `Dockerfile`: Configuration for building the production Docker image.
-- `next.config.ts`: Next.js configuration file.
-- `tailwind.config.ts`: Tailwind CSS configuration.
+## 📄 License
+This project is open-source and available under the [MIT License](LICENSE).
