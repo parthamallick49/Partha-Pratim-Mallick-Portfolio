@@ -37,6 +37,26 @@ export interface SkillCategory {
   skills: SkillItem[];
 }
 
+export interface RoleItem {
+  title: string;
+  employmentType: string;
+  date: string;
+  duration?: string;
+  location: string;
+  locationType?: string;
+  responsibilities: string[];
+  skills?: string[];
+}
+
+export interface CompanyExperience {
+  company: string;
+  companyLogoText?: string;
+  website?: string;
+  totalDuration?: string;
+  location: string;
+  roles: RoleItem[];
+}
+
 export interface ExperienceItem {
   title: string;
   company: string;
@@ -110,28 +130,51 @@ export const PROJECTS_DATA: ProjectItem[] = [
   },
 ];
 
-export const EXPERIENCE_DATA: ExperienceItem[] = [
+export const COMPANY_EXPERIENCE_DATA: CompanyExperience[] = [
   {
-    title: 'Junior Software Engineer',
     company: 'Grameen Communications',
+    companyLogoText: 'GC',
+    website: 'https://grameencommunication.org',
+    totalDuration: 'Jan 2025 - Present · 1 yr+',
     location: 'Dhaka, Bangladesh',
-    date: 'July 2025 - Present',
-    responsibilities: [
-      'Translating complex product requirements into performant, elegant UI flows and reactive state management architectures.',
-      'Architecting and integrating REST APIs with secure data persistence using SQL Server and .NET Core.',
-      'Optimizing application performance, reducing memory overhead, and improving mobile crash-free rates.',
-      'Collaborating in agile sprints with cross-functional teams, QA engineers, and backend leads to ship production features.',
-    ],
-  },
-  {
-    title: 'Software Developer Intern',
-    company: 'Grameen Communications',
-    location: 'Dhaka, Bangladesh',
-    date: 'January 2025 - June 2025',
-    responsibilities: [
-      'Developed native Android and cross-platform Flutter prototypes for internal and customer-facing tools.',
-      'Standardized REST API endpoints and optimized relational database queries.',
-      'Participated in code reviews, bug fixing, and continuous integration testing workflows.',
+    roles: [
+      {
+        title: 'Junior Software Engineer',
+        employmentType: 'Full-time',
+        date: 'Jul 2025 - Present',
+        duration: 'Present',
+        location: 'Dhaka, Bangladesh',
+        locationType: 'On-site',
+        responsibilities: [
+          'Translating complex product requirements into performant, elegant UI flows and reactive state management architectures.',
+          'Architecting and integrating REST APIs with secure data persistence using SQL Server and .NET Core.',
+          'Optimizing application performance, reducing memory overhead, and improving mobile crash-free rates.',
+          'Collaborating in agile sprints with cross-functional teams, QA engineers, and backend leads to ship production features.',
+        ],
+        skills: ['Flutter', 'Dart', '.NET Core', 'SQL Server', 'REST APIs', 'State Management', 'Mobile App Development'],
+      },
+      {
+        title: 'Software Developer Intern',
+        employmentType: 'Internship',
+        date: 'Jan 2025 - Jun 2025',
+        duration: '6 mos',
+        location: 'Dhaka, Bangladesh',
+        locationType: 'On-site',
+        responsibilities: [
+          'Developed native Android and cross-platform Flutter prototypes for internal and customer-facing tools.',
+          'Standardized REST API endpoints and optimized relational database queries.',
+          'Participated in code reviews, bug fixing, and continuous integration testing workflows.',
+        ],
+        skills: ['Android (Java)', 'Flutter', 'Relational Databases', 'API Integration', 'Git'],
+      },
     ],
   },
 ];
+
+export const EXPERIENCE_DATA: ExperienceItem[] = COMPANY_EXPERIENCE_DATA[0].roles.map((r) => ({
+  title: r.title,
+  company: 'Grameen Communications',
+  location: r.location,
+  date: r.date,
+  responsibilities: r.responsibilities,
+}));
