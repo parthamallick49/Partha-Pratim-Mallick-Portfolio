@@ -14,11 +14,11 @@ interface NavbarProps {
 export function FastTravelNavbar({ activeStationIndex, onSelectStation, className = '' }: NavbarProps) {
   const stationLabels = [
     { num: '01', label: 'About', id: 'station-1' },
-    { num: '02', label: 'Tech Yard', id: 'station-2' },
-    { num: '03', label: 'Projects Bridge', id: 'station-3' },
-    { num: '04', label: 'Experience Pass', id: 'station-4' },
+    { num: '02', label: 'Skills', id: 'station-2' },
+    { num: '03', label: 'Projects', id: 'station-3' },
+    { num: '04', label: 'Experience', id: 'station-4' },
     { num: '05', label: 'Education', id: 'station-5' },
-    { num: '06', label: 'Contact Pier', id: 'station-6' },
+    { num: '06', label: 'Contact', id: 'station-6' },
   ];
 
   const handleClick = (index: number) => {

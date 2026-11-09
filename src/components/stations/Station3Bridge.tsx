@@ -35,25 +35,25 @@ export function Station3Bridge({ isNight = false }: StationProps) {
       id="station-3"
       className="relative w-full max-w-3xl xl:max-w-4xl bg-rail-midnight/90 backdrop-blur-md border border-rail-teal/40 rounded-2xl p-4 sm:p-5 lg:p-6 shadow-2xl space-y-3.5 text-rail-vanilla"
     >
-      {/* Station Plaque Header */}
+      {/* Professional Projects Header */}
       <div className="border-b border-rail-teal/30 pb-2 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1">
         <div>
           <div className="flex items-center gap-2 text-xs font-mono mb-0.5">
             <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-rail-orange/15 border border-rail-orange/40 text-rail-orange font-bold text-[11px]">
-              STATION 03 • MP 32.4
+              PORTFOLIO PROJECTS
             </span>
-            <span className="text-rail-gold/80 font-mono text-[10px]">CANYON VIADUCT</span>
+            <span className="text-rail-gold/80 font-mono text-[10px]">PRODUCTION & OPEN-SOURCE</span>
           </div>
           <h2 className="font-editorial text-2xl sm:text-3xl font-bold tracking-tight text-rail-vanilla leading-tight">
-            Innovation Valley Bridge
+            Featured Engineering Projects
           </h2>
         </div>
-        <p className="font-mono text-[11px] text-rail-gold sm:text-right">
-          4 BRIDGE PAVILIONS • 1-CLICK GIT CLONE
+        <p className="font-mono text-xs text-rail-gold sm:text-right font-medium">
+          Mobile Architectures • Case Studies • Git Repositories
         </p>
       </div>
 
-      {/* Project Span Selector Tabs */}
+      {/* Project Selector Tabs */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5">
         {PROJECTS.map((p, idx) => {
           const isSelected = selectedProjectIndex === idx;
@@ -71,7 +71,7 @@ export function Station3Bridge({ isNight = false }: StationProps) {
                   : 'bg-rail-teal/20 text-rail-vanilla/70 hover:text-rail-vanilla hover:bg-rail-teal/30'
               }`}
             >
-              <span className="block text-[8.5px] opacity-75">Span 0{idx + 1}</span>
+              <span className="block text-[8.5px] opacity-75">Project 0{idx + 1}</span>
               <span className="truncate block font-semibold">{p.title.split(' ')[0]}</span>
             </button>
           );

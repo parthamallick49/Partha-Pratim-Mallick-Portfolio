@@ -148,17 +148,18 @@ export function RailwayTrack({ progress = 0, isNight = false }: RailwayTrackProp
           filter={isNight ? 'url(#railGlow)' : undefined}
         />
 
-        {/* Station Signal Lights */}
+        {/* Station Signal Lights & Trackside Station Nameboards */}
         {[
-          { cx: 240, cy: 400, name: 'STA 01', greenAt: 0.05, side: 'left' },
-          { cx: 960, cy: 1400, name: 'STA 02', greenAt: 0.22, side: 'right' },
-          { cx: 240, cy: 2400, name: 'STA 03', greenAt: 0.42, side: 'left' },
-          { cx: 960, cy: 3400, name: 'STA 04', greenAt: 0.62, side: 'right' },
-          { cx: 240, cy: 4400, name: 'STA 05', greenAt: 0.82, side: 'left' },
-          { cx: 960, cy: 5400, name: 'STA 06', greenAt: 0.98, side: 'right' },
+          { cx: 240, cy: 400, code: 'STATION 01', title: 'Grand Central Terminal', mp: 'MP 00.0', greenAt: 0.05, side: 'left' },
+          { cx: 960, cy: 1400, code: 'STATION 02', title: 'The Switchyard & Foundry', mp: 'MP 22.4', greenAt: 0.22, side: 'right' },
+          { cx: 240, cy: 2400, code: 'STATION 03', title: 'Innovation Valley Bridge', mp: 'MP 45.2', greenAt: 0.42, side: 'left' },
+          { cx: 960, cy: 3400, code: 'STATION 04', title: 'The Mountain Pass Trestle', mp: 'MP 68.0', greenAt: 0.62, side: 'right' },
+          { cx: 240, cy: 4400, code: 'STATION 05', title: 'The Summit Observatory', mp: 'MP 85.5', greenAt: 0.82, side: 'left' },
+          { cx: 960, cy: 5400, code: 'STATION 06', title: 'Dhaka Coastal Pier', mp: 'MP 99.9', greenAt: 0.98, side: 'right' },
         ].map((sig, idx) => {
           const isPassed = progress >= sig.greenAt;
           const xOffset = sig.side === 'left' ? -38 : 38;
+          const boardX = sig.side === 'left' ? -185 : 20;
           return (
             <g key={idx} transform={`translate(${sig.cx + xOffset}, ${sig.cy})`}>
               {/* Signal Mast */}
@@ -181,6 +182,64 @@ export function RailwayTrack({ progress = 0, isNight = false }: RailwayTrackProp
                 fill={isPassed ? '#10B981' : '#0B3326'}
                 filter={isPassed ? 'url(#railGlow)' : undefined}
               />
+
+              {/* Station Plaque beside Signal Light */}
+              <g transform={`translate(${boardX}, -20)`}>
+                {/* Board Connection Arm */}
+                <line
+                  x1={sig.side === 'left' ? 165 : 0}
+                  y1="20"
+                  x2={sig.side === 'left' ? 185 : -20}
+                  y2="20"
+                  stroke="#122524"
+                  strokeWidth="2.5"
+                />
+                {/* Station Sign Board Plate */}
+                <rect
+                  x="0"
+                  y="0"
+                  width="165"
+                  height="40"
+                  rx="6"
+                  fill="#0A1817"
+                  stroke="#E3B23C"
+                  strokeWidth="1.2"
+                  opacity="0.95"
+                />
+                <rect
+                  x="3"
+                  y="3"
+                  width="159"
+                  height="34"
+                  rx="4"
+                  fill="none"
+                  stroke="#2F6F6D"
+                  strokeWidth="0.8"
+                />
+                {/* Station Code & MP */}
+                <text
+                  x="10"
+                  y="15"
+                  fill="#E3B23C"
+                  fontSize="9.5"
+                  fontFamily="monospace"
+                  fontWeight="bold"
+                  letterSpacing="0.5"
+                >
+                  {sig.code} • {sig.mp}
+                </text>
+                {/* Station Name */}
+                <text
+                  x="10"
+                  y="29"
+                  fill="#FAF6EE"
+                  fontSize="11"
+                  fontFamily="sans-serif"
+                  fontWeight="bold"
+                >
+                  {sig.title}
+                </text>
+              </g>
             </g>
           );
         })}

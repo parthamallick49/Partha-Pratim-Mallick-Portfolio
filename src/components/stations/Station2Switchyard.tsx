@@ -95,21 +95,21 @@ export function Station2Switchyard({ isNight = false }: StationProps) {
       id="station-2"
       className="relative w-full max-w-3xl xl:max-w-4xl bg-rail-midnight/90 backdrop-blur-md border border-rail-teal/40 rounded-2xl p-4 sm:p-5 lg:p-6 shadow-2xl space-y-3.5 text-rail-vanilla"
     >
-      {/* Station Plaque Header */}
+      {/* Professional Skills Header */}
       <div className="border-b border-rail-teal/30 pb-2 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1">
         <div>
           <div className="flex items-center gap-2 text-xs font-mono mb-0.5">
             <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-rail-gold/15 border border-rail-gold/40 text-rail-gold font-bold text-[11px]">
-              STATION 02 • MP 14.8
+              CORE ARSENAL
             </span>
-            <span className="text-rail-vanilla/60 font-mono text-[10px]">SWITCHYARD GANTRY</span>
+            <span className="text-rail-vanilla/60 font-mono text-[10px]">PRODUCTION-PROVEN</span>
           </div>
           <h2 className="font-editorial text-2xl sm:text-3xl font-bold tracking-tight text-rail-vanilla leading-tight">
-            The Foundry & Switchyard
+            Technical Skills & Production Stacks
           </h2>
         </div>
-        <p className="font-mono text-[11px] text-rail-gold sm:text-right">
-          TECHNICAL STACKS • 4 SIGNAL TRACKS
+        <p className="font-mono text-xs text-rail-gold sm:text-right font-medium">
+          Mobile Architectures • Backend APIs • Cloud & Databases
         </p>
       </div>
 

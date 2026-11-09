@@ -53,7 +53,7 @@ export function HudHeader({
                 Partha Pratim Mallick
               </span>
               <span className="text-[10px] font-mono text-rail-gold leading-tight mt-0.5">
-                {mileMarker} • {currentStationName}
+                Full-Stack Mobile & Backend Engineer
               </span>
             </div>
           </div>

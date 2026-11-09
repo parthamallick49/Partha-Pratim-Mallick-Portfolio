@@ -68,32 +68,32 @@ export function Station6Pier({ isNight = false, onReturnToStart }: StationProps)
       id="station-6"
       className="relative w-full max-w-3xl xl:max-w-4xl bg-rail-midnight/90 backdrop-blur-md border border-rail-teal/40 rounded-2xl p-4 sm:p-5 shadow-2xl space-y-3 text-rail-vanilla"
     >
-      {/* Station Plaque Header */}
+      {/* Professional Contact Header */}
       <div className="border-b border-rail-teal/30 pb-2 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1">
         <div>
           <div className="flex items-center gap-2 text-xs font-mono mb-0.5">
-            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-rail-orange/15 border border-rail-orange/40 text-rail-orange font-bold text-[11px]">
-              <Anchor className="w-3.5 h-3.5" />
-              STATION 06 • MP 99.9
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-rail-orange/15 border border-rail-orange/40 text-rail-orange font-bold text-[11px]">
+              <Mail className="w-3.5 h-3.5" />
+              LET&apos;S CONNECT
             </span>
-            <span className="text-rail-gold/80 font-mono text-[10px]">TERMINAL PIER</span>
+            <span className="text-rail-gold/80 font-mono text-[10px]">OPEN FOR COLLABORATION</span>
           </div>
           <h2 className="font-editorial text-2xl sm:text-3xl font-bold tracking-tight text-rail-vanilla leading-tight">
-            Dhaka Coastal Pier & Telegraph
+            Get In Touch & Communication
           </h2>
         </div>
-        <p className="font-mono text-[11px] text-rail-gold sm:text-right">
-          SEASIDE DISPATCH • LIVE TELEMETRY RADAR
+        <p className="font-mono text-xs text-rail-gold sm:text-right font-medium">
+          Direct Email • Telemetry Radar • LinkedIn & GitHub
         </p>
       </div>
 
       {/* Wide 2-Column Console Layout (Ultra-compact, no vertical overflow) */}
       <div className="grid grid-cols-1 md:grid-cols-12 gap-3.5 items-start">
-        {/* Left Column: Dispatch Telegram Form (6 cols) */}
+        {/* Left Column: Direct Message Form (6 cols) */}
         <form onSubmit={handleSendTelegram} className="md:col-span-6 space-y-2 font-mono text-xs">
           <div className="flex items-center gap-1.5 text-rail-orange text-[10px] font-bold uppercase tracking-wider">
             <Send className="w-3 h-3" />
-            <span>Dispatch Telegram</span>
+            <span>Send Direct Message</span>
           </div>
 
           <div className="grid grid-cols-2 gap-2">
@@ -103,7 +103,7 @@ export function Station6Pier({ isNight = false, onReturnToStart }: StationProps)
                 type="text"
                 value={senderName}
                 onChange={e => setSenderName(e.target.value)}
-                placeholder="Engineering Lead"
+                placeholder="Engineering Recruiter"
                 className="w-full px-2.5 py-1.5 rounded-lg bg-rail-midnight/80 border border-rail-teal/40 focus:border-rail-gold text-rail-vanilla placeholder-rail-vanilla/30 outline-none text-xs"
               />
             </div>
@@ -113,7 +113,7 @@ export function Station6Pier({ isNight = false, onReturnToStart }: StationProps)
                 type="email"
                 value={senderEmail}
                 onChange={e => setSenderEmail(e.target.value)}
-                placeholder="lead@company.com"
+                placeholder="recruiter@company.com"
                 className="w-full px-2.5 py-1.5 rounded-lg bg-rail-midnight/80 border border-rail-teal/40 focus:border-rail-gold text-rail-vanilla placeholder-rail-vanilla/30 outline-none text-xs"
               />
             </div>
@@ -125,19 +125,19 @@ export function Station6Pier({ isNight = false, onReturnToStart }: StationProps)
               type="text"
               value={subject}
               onChange={e => setSubject(e.target.value)}
-              placeholder="Mobile Engineering Collaboration"
+              placeholder="Mobile Engineering Opportunity"
               className="w-full px-2.5 py-1.5 rounded-lg bg-rail-midnight/80 border border-rail-teal/40 focus:border-rail-gold text-rail-vanilla placeholder-rail-vanilla/30 outline-none text-xs"
             />
           </div>
 
           <div>
-            <label className="block text-rail-vanilla/70 text-[9px] mb-0.5">TELEGRAPH MESSAGE:</label>
+            <label className="block text-rail-vanilla/70 text-[9px] mb-0.5">YOUR MESSAGE:</label>
             <textarea
               required
               rows={2}
               value={message}
               onChange={e => setMessage(e.target.value)}
-              placeholder="Type your message for Partha..."
+              placeholder="Type your message or project requirements for Partha..."
               className="w-full px-2.5 py-1.5 rounded-lg bg-rail-midnight/80 border border-rail-teal/40 focus:border-rail-gold text-rail-vanilla placeholder-rail-vanilla/30 outline-none text-xs resize-none font-sans"
             />
           </div>
@@ -148,7 +148,7 @@ export function Station6Pier({ isNight = false, onReturnToStart }: StationProps)
             className="w-full flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-rail-orange hover:bg-rail-orange-glow text-rail-vanilla font-mono text-xs font-bold shadow-md shadow-rail-orange/30 transition-all"
           >
             <Send className={`w-3.5 h-3.5 ${isDispatching ? 'animate-spin' : ''}`} />
-            <span>{isDispatching ? 'TRANSMITTING MORSE CODE...' : 'TRANSMIT TELEGRAM'}</span>
+            <span>{isDispatching ? 'SENDING MESSAGE...' : 'SEND MESSAGE'}</span>
           </button>
         </form>
 

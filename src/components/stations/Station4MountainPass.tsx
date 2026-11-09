@@ -18,22 +18,22 @@ export function Station4MountainPass({ isNight = false }: StationProps) {
       id="station-4"
       className="relative w-full max-w-3xl xl:max-w-4xl bg-rail-midnight/90 backdrop-blur-md border border-rail-teal/40 rounded-2xl p-4 sm:p-5 lg:p-6 shadow-2xl space-y-3.5 text-rail-vanilla"
     >
-      {/* Station Plaque Header */}
+      {/* Professional Experience Header */}
       <div className="border-b border-rail-teal/30 pb-2 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1">
         <div>
           <div className="flex items-center gap-2 text-xs font-mono mb-0.5">
             <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-rail-teal-light/20 border border-rail-teal-light/40 text-rail-teal-light font-bold text-[11px]">
-              <Milestone className="w-3.5 h-3.5 text-rail-orange" />
-              STATION 04 • MP 56.1
+              <Briefcase className="w-3.5 h-3.5 text-rail-orange" />
+              CAREER TRACK RECORD
             </span>
-            <span className="text-rail-gold/80 font-mono text-[10px]">ALPINE SWITCHBACK</span>
+            <span className="text-rail-gold/80 font-mono text-[10px]">PRODUCTION HISTORY</span>
           </div>
           <h2 className="font-editorial text-2xl sm:text-3xl font-bold tracking-tight text-rail-vanilla leading-tight">
-            The Mountain Pass
+            Professional Work Experience
           </h2>
         </div>
-        <p className="font-mono text-[11px] text-rail-gold sm:text-right">
-          ENGINEERING MILESTONES • GRAMEEN COMMUNICATIONS
+        <p className="font-mono text-xs text-rail-gold sm:text-right font-medium">
+          Grameen Communications • Systems Optimization • Engineering Impact
         </p>
       </div>
 
@@ -56,7 +56,7 @@ export function Station4MountainPass({ isNight = false }: StationProps) {
               }`}
             >
               <div className="flex items-center justify-between text-[9.5px] mb-0.5">
-                <span className="opacity-80">Stop 0{idx + 1}</span>
+                <span className="opacity-80">Role 0{idx + 1}</span>
                 <span className="font-bold">{exp.timeline.split('–')[0]}</span>
               </div>
               <span className="font-editorial text-sm font-bold block truncate">{exp.role}</span>

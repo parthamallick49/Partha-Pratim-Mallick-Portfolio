@@ -28,22 +28,21 @@ export function Station1Terminal({ isNight = false, onScrollToNext }: StationPro
       id="station-1"
       className="relative w-full max-w-3xl xl:max-w-4xl bg-rail-midnight/90 backdrop-blur-md border border-rail-teal/40 rounded-2xl p-4 sm:p-5 lg:p-6 shadow-2xl text-rail-vanilla space-y-4"
     >
-      {/* Station Plaque Header */}
+      {/* Professional Profile Header */}
       <div className="border-b border-rail-teal/30 pb-2.5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1.5">
         <div>
           <div className="flex items-center gap-2 text-xs font-mono mb-1">
-            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-rail-orange/15 border border-rail-orange/40 text-rail-orange font-bold text-[11px]">
-              <Ticket className="w-3.5 h-3.5" />
-              STATION 01 • MP 00.0
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-rail-orange/15 border border-rail-orange/40 text-rail-orange font-bold text-[11px]">
+              ENGINEERING DOSSIER
             </span>
-            <span className="text-rail-gold/80 font-mono text-[10px]">{BIOGRAPHY.ticketNumber}</span>
+            <span className="text-rail-gold font-mono text-[10px]">{BIOGRAPHY.location}</span>
           </div>
           <h1 className="font-editorial text-2xl sm:text-3xl font-bold tracking-tight text-rail-vanilla leading-tight">
-            Grand Central Terminal
+            {BIOGRAPHY.name}
           </h1>
         </div>
-        <p className="font-mono text-[11px] text-rail-gold sm:text-right">
-          DEPARTURE PLATFORM • PASSENGER DOSSIER
+        <p className="font-mono text-xs text-rail-orange font-semibold sm:text-right">
+          {BIOGRAPHY.headline}
         </p>
       </div>
 
@@ -63,7 +62,7 @@ export function Station1Terminal({ isNight = false, onScrollToNext }: StationPro
           </div>
           <div className="flex flex-col items-start md:items-center text-left md:text-center">
             <span className="text-[10px] font-mono text-rail-gold font-bold uppercase tracking-wider">
-              Station Master
+              Lead Mobile Engineer
             </span>
             <div className="flex items-center gap-1.5 text-[11px] font-mono text-rail-vanilla/80 mt-1">
               <MapPin className="w-3 h-3 text-rail-orange" />
@@ -78,32 +77,23 @@ export function Station1Terminal({ isNight = false, onScrollToNext }: StationPro
 
         {/* Right Column: Bio Details, Architecture Badges & Actions (8 cols) */}
         <div className="md:col-span-8 space-y-3">
-          <div>
-            <h2 className="text-xl sm:text-2xl font-editorial font-bold text-rail-vanilla">
-              {BIOGRAPHY.name}
-            </h2>
-            <p className="text-xs sm:text-sm font-semibold text-rail-orange">
-              {BIOGRAPHY.headline}
-            </p>
-          </div>
-
-          <p className="text-xs text-rail-vanilla/85 leading-relaxed font-sans">
+          <p className="text-xs sm:text-sm text-rail-vanilla/90 leading-relaxed font-sans">
             {BIOGRAPHY.summary}
           </p>
 
           {/* 3 Architecture Metric Pills */}
           <div className="grid grid-cols-3 gap-2 text-center pt-0.5">
             <div className="p-2 rounded-lg bg-rail-teal/20 border border-rail-teal/30">
-              <span className="block text-[9px] font-mono text-rail-vanilla/60 uppercase">Primary</span>
+              <span className="block text-[9px] font-mono text-rail-vanilla/60 uppercase">Primary Focus</span>
               <span className="text-xs font-semibold text-rail-vanilla">Flutter & Android</span>
             </div>
             <div className="p-2 rounded-lg bg-rail-teal/20 border border-rail-teal/30">
-              <span className="block text-[9px] font-mono text-rail-vanilla/60 uppercase">Enterprise</span>
+              <span className="block text-[9px] font-mono text-rail-vanilla/60 uppercase">Backend Core</span>
               <span className="text-xs font-semibold text-rail-vanilla">.NET & SQL</span>
             </div>
             <div className="p-2 rounded-lg bg-rail-teal/20 border border-rail-teal/30">
-              <span className="block text-[9px] font-mono text-rail-vanilla/60 uppercase">Pattern</span>
-              <span className="text-xs font-semibold text-rail-vanilla">Clean Arch</span>
+              <span className="block text-[9px] font-mono text-rail-vanilla/60 uppercase">Methodology</span>
+              <span className="text-xs font-semibold text-rail-vanilla">Clean Architecture</span>
             </div>
           </div>
 
@@ -117,7 +107,7 @@ export function Station1Terminal({ isNight = false, onScrollToNext }: StationPro
               className="w-full sm:flex-1 inline-flex items-center justify-center gap-2 px-3.5 py-2 rounded-xl bg-rail-orange hover:bg-rail-orange-glow text-rail-vanilla font-mono text-xs font-bold shadow-md shadow-rail-orange/20 transition-all text-center"
             >
               <Download className="w-3.5 h-3.5" />
-              <span>Download Resume Ticket</span>
+              <span>Download Official Resume</span>
             </a>
 
             <button
@@ -130,7 +120,7 @@ export function Station1Terminal({ isNight = false, onScrollToNext }: StationPro
                   signalGreen ? 'bg-emerald-400 shadow-sm shadow-emerald-400' : 'bg-rail-orange'
                 }`}
               />
-              <span>{signalGreen ? 'Signal Green: Rolling' : 'Signal: Click to Depart'}</span>
+              <span>{signalGreen ? 'Departing...' : 'Next: Technical Skills'}</span>
               <ArrowDown className="w-3.5 h-3.5 text-rail-vanilla/70 animate-bounce" />
             </button>
           </div>

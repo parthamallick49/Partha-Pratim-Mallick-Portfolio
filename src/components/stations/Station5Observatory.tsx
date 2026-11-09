@@ -14,22 +14,22 @@ export function Station5Observatory({ isNight = false }: StationProps) {
       id="station-5"
       className="relative w-full max-w-3xl xl:max-w-4xl bg-rail-midnight/90 backdrop-blur-md border border-rail-teal/40 rounded-2xl p-4 sm:p-5 lg:p-6 shadow-2xl space-y-3.5 text-rail-vanilla"
     >
-      {/* Station Plaque Header */}
+      {/* Professional Education Header */}
       <div className="border-b border-rail-teal/30 pb-2 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1">
         <div>
           <div className="flex items-center gap-2 text-xs font-mono mb-0.5">
             <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-rail-gold/15 border border-rail-gold/40 text-rail-gold font-bold text-[11px]">
-              <Compass className="w-3.5 h-3.5" />
-              STATION 05 • MP 78.5
+              <GraduationCap className="w-3.5 h-3.5 text-rail-gold" />
+              ACADEMIC CREDENTIALS
             </span>
-            <span className="text-rail-gold/80 font-mono text-[10px]">CREST OBSERVATORY</span>
+            <span className="text-rail-gold/80 font-mono text-[10px]">COMPUTER SCIENCE & ENGINEERING</span>
           </div>
           <h2 className="font-editorial text-2xl sm:text-3xl font-bold tracking-tight text-rail-vanilla leading-tight">
-            The Summit Observatory
+            Education & Academic Degrees
           </h2>
         </div>
-        <p className="font-mono text-[11px] text-rail-gold sm:text-right">
-          ACADEMIC DEGREES • ADVANCED COMPUTER SCIENCE
+        <p className="font-mono text-xs text-rail-gold sm:text-right font-medium">
+          Jahangirnagar University • Daffodil International University
         </p>
       </div>
 
