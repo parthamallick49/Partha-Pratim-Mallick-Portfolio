@@ -29,9 +29,9 @@ export function FastTravelNavbar({ activeStationIndex, onSelectStation, classNam
   return (
     <nav
       aria-label="Railway Ticket Stub Schedule"
-      className={`fixed bottom-4 left-1/2 -translate-x-1/2 z-50 max-w-[95vw] sm:max-w-4xl w-full px-2 pointer-events-auto ${className}`}
+      className={`fixed bottom-2.5 sm:bottom-3.5 left-1/2 -translate-x-1/2 z-50 max-w-[95vw] sm:max-w-3xl w-full px-2 pointer-events-auto ${className}`}
     >
-      <div className="relative rounded-2xl border border-rail-teal/50 bg-rail-midnight/90 backdrop-blur-lg px-2 sm:px-4 py-2 sm:py-2.5 shadow-2xl flex items-center justify-between gap-1 overflow-x-auto scrollbar-none">
+      <div className="relative rounded-xl border border-rail-teal/50 bg-rail-midnight/95 backdrop-blur-lg px-2 sm:px-3 py-1 sm:py-1.5 shadow-2xl flex items-center justify-between gap-1 overflow-x-auto scrollbar-none">
         {/* Ticket Perforation Notch Indicator */}
         <div className="hidden sm:flex items-center gap-1.5 pl-1 pr-2 border-r border-rail-teal/40 text-[11px] font-mono font-bold text-rail-gold shrink-0">
           <Ticket className="w-3.5 h-3.5 text-rail-orange" />
