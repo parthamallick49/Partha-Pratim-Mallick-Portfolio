@@ -16,8 +16,8 @@ export function EnvironmentLayers({ isNight = false }: EnvironmentLayersProps) {
         }`}
       />
 
-      {/* Sun / Moon Celestial Body */}
-      <div className="absolute right-[8%] sm:right-[15%] top-16 sm:top-24 transition-transform duration-1000">
+      {/* Sun / Moon Celestial Body (Placed on Left) */}
+      <div className="absolute left-[6%] sm:left-[10%] top-20 sm:top-24 transition-transform duration-1000">
         {!isNight ? (
           /* Radiant Bloody Orange Sun */
           <div className="relative w-24 h-24 sm:w-32 sm:h-32">
