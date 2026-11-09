@@ -8,29 +8,29 @@ interface RailwayTrackProps {
 }
 
 export function RailwayTrack({ progress = 0, isNight = false }: RailwayTrackProps) {
-  // SVG coordinates for a 6-stage vertical S-curve journey
-  // Width: 1000, Total Height: 6000 (1000 units per station stop)
-  // Station 1: x: 300, y: 350 (Departure)
-  // Station 2: x: 720, y: 1350 (Foundry & Switchyard - curve to right)
-  // Station 3: x: 280, y: 2350 (Suspension Bridge - curve to left)
-  // Station 4: x: 740, y: 3350 (Mountain Pass - curve to right)
-  // Station 5: x: 280, y: 4350 (Summit Observatory - curve to left)
-  // Station 6: x: 500, y: 5450 (Coastal Lighthouse Pier - center ocean terminal)
+  // World Dimensions: 1200 width x 4800 height
+  // 6 Stations evenly spaced at 800px intervals along Y
+  // Station 1: (450, 350) - Grand Central Terminal
+  // Station 2: (750, 1150) - The Foundry & Switchyard
+  // Station 3: (450, 1950) - Innovation Valley Suspension Bridge
+  // Station 4: (750, 2750) - The Mountain Pass
+  // Station 5: (450, 3550) - The Summit Observatory
+  // Station 6: (600, 4350) - Coastal Lighthouse Pier
 
   const trackPathD = `
-    M 300 350
-    C 300 750, 720 950, 720 1350
-    C 720 1750, 280 1950, 280 2350
-    C 280 2750, 740 2950, 740 3350
-    C 740 3750, 280 3950, 280 4350
-    C 280 4800, 500 5000, 500 5450
+    M 450 350
+    C 450 650, 750 850, 750 1150
+    C 750 1450, 450 1650, 450 1950
+    C 450 2250, 750 2450, 750 2750
+    C 750 3050, 450 3250, 450 3550
+    C 450 3850, 600 4050, 600 4350
   `;
 
   return (
-    <div className="absolute inset-0 w-full h-full pointer-events-none z-10 overflow-hidden">
+    <div className="absolute inset-0 w-full h-[4800px] pointer-events-none z-10">
       <svg
-        viewBox="0 0 1000 6000"
-        preserveAspectRatio="xMidYMin slice"
+        viewBox="0 0 1200 4800"
+        preserveAspectRatio="xMidYMin meet"
         className="w-full h-full"
         xmlns="http://www.w3.org/2000/svg"
       >
@@ -69,10 +69,10 @@ export function RailwayTrack({ progress = 0, isNight = false }: RailwayTrackProp
           d={trackPathD}
           fill="none"
           stroke={isNight ? '#122625' : '#D5C5A8'}
-          strokeWidth="38"
+          strokeWidth="42"
           strokeLinecap="round"
           strokeLinejoin="round"
-          opacity="0.8"
+          opacity="0.85"
         />
 
         {/* Wooden Ties / Sleepers (Repeated dashed thick stroke) */}
@@ -80,10 +80,10 @@ export function RailwayTrack({ progress = 0, isNight = false }: RailwayTrackProp
           d={trackPathD}
           fill="none"
           stroke={isNight ? '#1A3331' : '#654C38'}
-          strokeWidth="30"
-          strokeDasharray="6, 14"
+          strokeWidth="34"
+          strokeDasharray="7, 16"
           strokeLinecap="butt"
-          opacity="0.85"
+          opacity="0.9"
         />
 
         {/* Inner Ballast line */}
@@ -91,7 +91,7 @@ export function RailwayTrack({ progress = 0, isNight = false }: RailwayTrackProp
           d={trackPathD}
           fill="none"
           stroke={isNight ? '#0C1C1B' : '#BCA888'}
-          strokeWidth="18"
+          strokeWidth="20"
           opacity="0.75"
         />
 
@@ -100,9 +100,9 @@ export function RailwayTrack({ progress = 0, isNight = false }: RailwayTrackProp
           d={trackPathD}
           fill="none"
           stroke={isNight ? '#447C79' : '#8A7A68'}
-          strokeWidth="4"
-          transform="translate(-7, 0)"
-          opacity="0.9"
+          strokeWidth="4.5"
+          transform="translate(-8, 0)"
+          opacity="0.95"
         />
 
         {/* Outer Steel Rail (Right) */}
@@ -110,12 +110,12 @@ export function RailwayTrack({ progress = 0, isNight = false }: RailwayTrackProp
           d={trackPathD}
           fill="none"
           stroke={isNight ? '#447C79' : '#8A7A68'}
-          strokeWidth="4"
-          transform="translate(7, 0)"
-          opacity="0.9"
+          strokeWidth="4.5"
+          transform="translate(8, 0)"
+          opacity="0.95"
         />
 
-        {/* Center Guide Path (Used by GSAP MotionPath) */}
+        {/* Center Guide Path (Used by getPointAtLength and MotionPath) */}
         <path
           id="train-track-guide"
           d={trackPathD}
@@ -130,40 +130,40 @@ export function RailwayTrack({ progress = 0, isNight = false }: RailwayTrackProp
           fill="none"
           stroke={isNight ? '#FEF08A' : '#C84630'}
           strokeWidth="2.5"
-          strokeDasharray="12, 18"
-          opacity="0.45"
+          strokeDasharray="14, 20"
+          opacity="0.5"
           filter={isNight ? 'url(#railGlow)' : undefined}
         />
 
         {/* Station Milepost Signal Lights */}
         {[
-          { cx: 300, cy: 350, name: 'STA 01', greenAt: 0.05 },
-          { cx: 720, cy: 1350, name: 'STA 02', greenAt: 0.22 },
-          { cx: 280, cy: 2350, name: 'STA 03', greenAt: 0.42 },
-          { cx: 740, cy: 3350, name: 'STA 04', greenAt: 0.62 },
-          { cx: 280, cy: 4350, name: 'STA 05', greenAt: 0.82 },
-          { cx: 500, cy: 5450, name: 'STA 06', greenAt: 0.98 },
+          { cx: 450, cy: 350, name: 'STA 01', greenAt: 0.05 },
+          { cx: 750, cy: 1150, name: 'STA 02', greenAt: 0.22 },
+          { cx: 450, cy: 1950, name: 'STA 03', greenAt: 0.42 },
+          { cx: 750, cy: 2750, name: 'STA 04', greenAt: 0.62 },
+          { cx: 450, cy: 3550, name: 'STA 05', greenAt: 0.82 },
+          { cx: 600, cy: 4350, name: 'STA 06', greenAt: 0.98 },
         ].map((sig, idx) => {
           const isPassed = progress >= sig.greenAt;
           return (
-            <g key={idx} transform={`translate(${sig.cx + (idx % 2 === 0 ? 32 : -32)}, ${sig.cy})`}>
+            <g key={idx} transform={`translate(${sig.cx + (idx % 2 === 0 ? 36 : -36)}, ${sig.cy})`}>
               {/* Signal Mast */}
-              <line x1="0" y1="-25" x2="0" y2="25" stroke="#122524" strokeWidth="3" />
+              <line x1="0" y1="-28" x2="0" y2="28" stroke="#122524" strokeWidth="3" />
               {/* Signal Box */}
-              <rect x="-8" y="-22" width="16" height="28" rx="4" fill="#0A1615" stroke="#2F6F6D" strokeWidth="1" />
+              <rect x="-9" y="-24" width="18" height="30" rx="4" fill="#0A1615" stroke="#2F6F6D" strokeWidth="1" />
               {/* Red Lamp */}
               <circle
                 cx="0"
-                cy="-13"
-                r="4"
+                cy="-14"
+                r="4.5"
                 fill={!isPassed ? '#EF4444' : '#451A1A'}
                 filter={!isPassed ? 'url(#railGlow)' : undefined}
               />
               {/* Green Lamp */}
               <circle
                 cx="0"
-                cy="-1"
-                r="4"
+                cy="-2"
+                r="4.5"
                 fill={isPassed ? '#10B981' : '#0B3326'}
                 filter={isPassed ? 'url(#railGlow)' : undefined}
               />
@@ -173,140 +173,140 @@ export function RailwayTrack({ progress = 0, isNight = false }: RailwayTrackProp
 
         {/* ==============================================================
             THE LOCOMOTIVE (LOCKED DIRECTLY INSIDE SVG COORDINATE SYSTEM)
-            Centered at (0,0), facing +X (Forward). GSAP will animate along #train-track-guide!
+            Centered at (0,0), facing +X (Forward).
             ============================================================== */}
-        <g id="locomotive-group" transform="translate(300, 350)" className="pointer-events-auto">
+        <g id="locomotive-group" transform="translate(450, 350)" className="pointer-events-auto">
           {/* Night Mode Forward Conical Headlight Beam (Shooting Forward in +X Direction) */}
           {isNight && (
-            <g opacity="0.9">
+            <g opacity="0.95">
               <polygon
-                points="40,0 240,-55 240,55"
+                points="42,0 260,-65 260,65"
                 fill="url(#beamGradient)"
                 filter="url(#headlightBlur)"
               />
               <polygon
-                points="40,0 180,-30 180,30"
+                points="42,0 190,-35 190,35"
                 fill="url(#beamGradient)"
-                opacity="0.8"
+                opacity="0.85"
               />
             </g>
           )}
 
           {/* Steam Puffs Drifting Backward (-X Direction) */}
           <g opacity={isNight ? 0.45 : 0.75}>
-            <circle cx="-15" cy="-2" r="5" fill="#FAF6EE" opacity="0.6" />
-            <circle cx="-28" cy="-5" r="7" fill="#FAF6EE" opacity="0.5" />
-            <circle cx="-42" cy="-8" r="9" fill="#FAF6EE" opacity="0.35" />
+            <circle cx="-16" cy="-2" r="6" fill="#FAF6EE" opacity="0.65" />
+            <circle cx="-30" cy="-6" r="8" fill="#FAF6EE" opacity="0.5" />
+            <circle cx="-46" cy="-9" r="10" fill="#FAF6EE" opacity="0.35" />
           </g>
 
           {/* Under-Chassis / Wheels Shadow */}
-          <rect x="-44" y="-14" width="86" height="28" rx="5" fill="#0A1514" opacity="0.6" />
+          <rect x="-46" y="-16" width="92" height="32" rx="6" fill="#0A1514" opacity="0.65" />
 
-          {/* Steel Flanged Wheels (aligned with dual rails at y = -8 and y = +8) */}
-          {[-32, -18, -4, 10, 24].map((wx, wIdx) => (
+          {/* Steel Flanged Wheels (aligned with dual rails at y = -9 and y = +9) */}
+          {[-34, -19, -4, 11, 26].map((wx, wIdx) => (
             <g key={wIdx}>
               {/* Left Rail Wheel */}
-              <rect x={wx - 5} y="-12" width="10" height="4" rx="1.5" fill="#182322" stroke="#E3B23C" strokeWidth="1" />
+              <rect x={wx - 5.5} y="-13" width="11" height="4.5" rx="1.5" fill="#182322" stroke="#E3B23C" strokeWidth="1.2" />
               {/* Right Rail Wheel */}
-              <rect x={wx - 5} y="8" width="10" height="4" rx="1.5" fill="#182322" stroke="#E3B23C" strokeWidth="1" />
+              <rect x={wx - 5.5} y="8.5" width="11" height="4.5" rx="1.5" fill="#182322" stroke="#E3B23C" strokeWidth="1.2" />
             </g>
           ))}
 
           {/* Connecting Drive Rods on Left and Right */}
-          <line x1="-32" y1="-12" x2="24" y2="-12" stroke="#E3B23C" strokeWidth="1.8" strokeLinecap="round" />
-          <line x1="-32" y1="12" x2="24" y2="12" stroke="#E3B23C" strokeWidth="1.8" strokeLinecap="round" />
+          <line x1="-34" y1="-13" x2="26" y2="-13" stroke="#E3B23C" strokeWidth="2" strokeLinecap="round" />
+          <line x1="-34" y1="13" x2="26" y2="13" stroke="#E3B23C" strokeWidth="2" strokeLinecap="round" />
 
           {/* Main Boiler Body (Bloody Orange) */}
           <rect
-            x="-18"
-            y="-9.5"
-            width="52"
-            height="19"
-            rx="5"
+            x="-20"
+            y="-10.5"
+            width="56"
+            height="21"
+            rx="5.5"
             fill="url(#trainBoiler)"
             stroke="#6C1E12"
-            strokeWidth="1.5"
+            strokeWidth="1.6"
           />
 
           {/* Golden Brass Boiler Bands */}
-          <line x1="-8" y1="-9.5" x2="-8" y2="9.5" stroke="#E3B23C" strokeWidth="1.5" />
-          <line x1="6" y1="-9.5" x2="6" y2="9.5" stroke="#E3B23C" strokeWidth="1.5" />
-          <line x1="20" y1="-9.5" x2="20" y2="9.5" stroke="#E3B23C" strokeWidth="1.5" />
+          <line x1="-9" y1="-10.5" x2="-9" y2="10.5" stroke="#E3B23C" strokeWidth="1.6" />
+          <line x1="7" y1="-10.5" x2="7" y2="10.5" stroke="#E3B23C" strokeWidth="1.6" />
+          <line x1="22" y1="-10.5" x2="22" y2="10.5" stroke="#E3B23C" strokeWidth="1.6" />
 
           {/* Front Boiler Cap / Nose Dome */}
-          <path d="M 34 -9.5 Q 40 0 34 9.5 Z" fill="#8F2A1A" stroke="#5E160C" strokeWidth="1.2" />
+          <path d="M 36 -10.5 Q 43 0 36 10.5 Z" fill="#8F2A1A" stroke="#5E160C" strokeWidth="1.4" />
 
           {/* Smokestack / Chimney */}
-          <circle cx="24" cy="0" r="4.5" fill="#202A29" stroke="#0F1615" strokeWidth="1.2" />
-          <circle cx="24" cy="0" r="2.5" fill="#E3B23C" />
+          <circle cx="26" cy="0" r="5" fill="#202A29" stroke="#0F1615" strokeWidth="1.4" />
+          <circle cx="26" cy="0" r="2.8" fill="#E3B23C" />
 
           {/* Steam Dome */}
-          <ellipse cx="6" cy="0" rx="3.5" ry="3" fill="#E3B23C" stroke="#A87F1C" strokeWidth="1" />
+          <ellipse cx="7" cy="0" rx="4" ry="3.5" fill="#E3B23C" stroke="#A87F1C" strokeWidth="1.2" />
 
           {/* Engineer Cabin (Rusted Teal with Overhanging Roof) */}
           <rect
-            x="-42"
-            y="-13"
-            width="25"
-            height="26"
-            rx="3"
+            x="-45"
+            y="-14.5"
+            width="27"
+            height="29"
+            rx="3.5"
             fill="url(#trainCabin)"
             stroke="#143634"
-            strokeWidth="1.5"
+            strokeWidth="1.6"
           />
 
           {/* Cabin Warm Glowing Windows (Left & Right) */}
           <rect
-            x="-36"
-            y="-11"
-            width="14"
-            height="5"
+            x="-39"
+            y="-12.5"
+            width="15"
+            height="5.5"
             rx="1.5"
             fill={isNight ? '#FEF08A' : '#FFFBEB'}
             stroke="#143634"
-            strokeWidth="0.8"
+            strokeWidth="0.9"
           />
           <rect
-            x="-36"
-            y="6"
-            width="14"
-            height="5"
+            x="-39"
+            y="7"
+            width="15"
+            height="5.5"
             rx="1.5"
             fill={isNight ? '#FEF08A' : '#FFFBEB'}
             stroke="#143634"
-            strokeWidth="0.8"
+            strokeWidth="0.9"
           />
 
           {/* Cabin Roof Center Rib */}
-          <line x1="-42" y1="0" x2="-17" y2="0" stroke="#E3B23C" strokeWidth="1.5" />
+          <line x1="-45" y1="0" x2="-18" y2="0" stroke="#E3B23C" strokeWidth="1.6" />
 
           {/* Cowcatcher / Pilot on Front Nose */}
           <polygon
-            points="34,-8 44,0 34,8"
+            points="36,-9 47,0 36,9"
             fill="#2F6F6D"
             stroke="#122E2C"
-            strokeWidth="1.2"
+            strokeWidth="1.4"
           />
-          <line x1="36" y1="-5" x2="41" y2="0" stroke="#FAF5EB" strokeWidth="1" strokeOpacity="0.7" />
-          <line x1="36" y1="5" x2="41" y2="0" stroke="#FAF5EB" strokeWidth="1" strokeOpacity="0.7" />
+          <line x1="38" y1="-5.5" x2="44" y2="0" stroke="#FAF5EB" strokeWidth="1.2" strokeOpacity="0.8" />
+          <line x1="38" y1="5.5" x2="44" y2="0" stroke="#FAF5EB" strokeWidth="1.2" strokeOpacity="0.8" />
 
           {/* High-Intensity Headlight Lamp Housing */}
-          <rect x="36" y="-3.5" width="5" height="7" rx="1.5" fill="#142625" />
+          <rect x="38" y="-4" width="5.5" height="8" rx="1.8" fill="#142625" />
           <circle
-            cx="40"
+            cx="43"
             cy="0"
-            r="3.5"
+            r="4"
             fill={isNight ? '#FEF08A' : '#FDE047'}
             filter={isNight ? 'url(#railGlow)' : undefined}
           />
 
           {/* Locomotive Brass Nameplate */}
-          <rect x="-10" y="-3" width="20" height="6" rx="1" fill="#E3B23C" stroke="#7A5A0A" strokeWidth="0.6" />
+          <rect x="-11" y="-3.5" width="22" height="7" rx="1.2" fill="#E3B23C" stroke="#7A5A0A" strokeWidth="0.7" />
           <text
             x="0"
-            y="1.5"
+            y="1.8"
             fill="#1C2E2D"
-            fontSize="3.8"
+            fontSize="4.2"
             fontWeight="bold"
             fontFamily="monospace"
             textAnchor="middle"

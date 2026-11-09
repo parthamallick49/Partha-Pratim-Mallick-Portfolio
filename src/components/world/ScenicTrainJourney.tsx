@@ -3,7 +3,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { MotionPathPlugin } from 'gsap/MotionPathPlugin';
 import { RailwayTrack } from '@/components/world/RailwayTrack';
 import { EnvironmentLayers } from '@/components/world/EnvironmentLayers';
 import { Station1Terminal } from '@/components/stations/Station1Terminal';
@@ -17,7 +16,7 @@ import { STATIONS } from '@/data/portfolioData';
 import { soundEngine } from '@/lib/audioSynthesizer';
 
 if (typeof window !== 'undefined') {
-  gsap.registerPlugin(ScrollTrigger, MotionPathPlugin);
+  gsap.registerPlugin(ScrollTrigger);
 }
 
 interface ScenicJourneyProps {
@@ -27,60 +26,73 @@ interface ScenicJourneyProps {
 
 export function ScenicTrainJourney({ isNight, onActiveStationChange }: ScenicJourneyProps) {
   const containerRef = useRef<HTMLDivElement>(null);
+  const cameraStageRef = useRef<HTMLDivElement>(null);
   const [activeStationIndex, setActiveStationIndex] = useState(0);
   const [scrollProgress, setScrollProgress] = useState(0);
 
-  // Setup GSAP ScrollTrigger & MotionPath on SVG #locomotive-group
+  // Setup GSAP Camera Follower & Locomotive Controller
   useEffect(() => {
     if (typeof window === 'undefined') return;
 
     const ctx = gsap.context(() => {
+      const trackGuide = document.getElementById('train-track-guide') as unknown as SVGPathElement | null;
       const train = document.getElementById('locomotive-group');
-      const trackGuide = document.getElementById('train-track-guide');
+      const cameraStage = cameraStageRef.current;
 
-      if (train && trackGuide) {
-        // Timeline that scrubs the SVG locomotive along the track
-        gsap.to('#locomotive-group', {
-          scrollTrigger: {
-            trigger: containerRef.current,
-            start: 'top top',
-            end: 'bottom bottom',
-            scrub: 0.8,
-            onUpdate: (self) => {
-              const p = self.progress;
-              setScrollProgress(p);
+      if (!trackGuide || !train || !cameraStage || !containerRef.current) return;
 
-              // Map 0-1 progress to 6 stations
-              const stationIdx = Math.min(Math.floor(p * 6), 5);
-              setActiveStationIndex(stationIdx);
-              if (onActiveStationChange) {
-                onActiveStationChange(stationIdx);
-              }
-            },
-          },
-          motionPath: {
-            path: '#train-track-guide',
-            align: '#train-track-guide',
-            autoRotate: true,
-            alignOrigin: [0.5, 0.5],
-          },
-          ease: 'none',
+      const totalLength = trackGuide.getTotalLength();
+
+      // Initialize train & camera at starting station
+      const startPoint = trackGuide.getPointAtLength(0);
+      const nextPoint = trackGuide.getPointAtLength(4);
+      const startAngle = Math.atan2(nextPoint.y - startPoint.y, nextPoint.x - startPoint.x) * (180 / Math.PI);
+      train.setAttribute('transform', `translate(${startPoint.x}, ${startPoint.y}) rotate(${startAngle})`);
+
+      const initialCameraY = -(startPoint.y - window.innerHeight * 0.42);
+      cameraStage.style.transform = `translate3d(0, ${initialCameraY}px, 0)`;
+
+      // Master ScrollTrigger across 650vh
+      ScrollTrigger.create({
+        trigger: containerRef.current,
+        start: 'top top',
+        end: 'bottom bottom',
+        scrub: 1, // Smooth damping for visible, cinematic train travel
+        onUpdate: (self) => {
+          const p = self.progress;
+          setScrollProgress(p);
+
+          // Map progress to active station (0 to 5)
+          const stationIdx = Math.min(Math.floor(p * 6), 5);
+          setActiveStationIndex(stationIdx);
+          if (onActiveStationChange) {
+            onActiveStationChange(stationIdx);
+          }
+
+          // Exact mathematical point on the SVG track
+          const currentLength = p * totalLength;
+          const pt = trackGuide.getPointAtLength(currentLength);
+          const ahead = trackGuide.getPointAtLength(Math.min(currentLength + 6, totalLength));
+          const angle = Math.atan2(ahead.y - pt.y, ahead.x - pt.x) * (180 / Math.PI);
+
+          // Update train transform directly inside SVG coordinate space
+          train.setAttribute('transform', `translate(${pt.x}, ${pt.y}) rotate(${angle})`);
+
+          // Camera Stage: Keep train locked at 42% from top of viewport
+          const viewportHeight = window.innerHeight;
+          const targetCameraY = -(pt.y - viewportHeight * 0.42);
+          cameraStage.style.transform = `translate3d(0, ${targetCameraY}px, 0)`;
+        },
+      });
+
+      // Play subtle track clack on station transitions
+      STATIONS.forEach((_, idx) => {
+        ScrollTrigger.create({
+          trigger: containerRef.current,
+          start: `${(idx / 6) * 100}% top`,
+          onEnter: () => soundEngine.playTrackClack(),
+          onEnterBack: () => soundEngine.playTrackClack(),
         });
-      }
-
-      // Station milestones clack audio
-      STATIONS.forEach((station) => {
-        const stationEl = document.getElementById(station.id);
-        if (stationEl) {
-          ScrollTrigger.create({
-            trigger: stationEl,
-            start: 'top 30%',
-            end: 'bottom 70%',
-            onEnter: () => {
-              soundEngine.playTrackClack();
-            },
-          });
-        }
       });
     }, containerRef);
 
@@ -89,48 +101,76 @@ export function ScenicTrainJourney({ isNight, onActiveStationChange }: ScenicJou
     };
   }, [onActiveStationChange]);
 
+  // Fast Travel jump
   const scrollToStation = (index: number) => {
-    const station = STATIONS[index];
-    const el = document.getElementById(station.id);
-    if (el) {
-      el.scrollIntoView({ behavior: 'smooth' });
-    }
+    if (!containerRef.current) return;
+    const containerTop = containerRef.current.offsetTop;
+    const totalScrollable = containerRef.current.offsetHeight - window.innerHeight;
+    const targetScroll = containerTop + (index / 5) * totalScrollable;
+    window.scrollTo({ top: targetScroll, behavior: 'smooth' });
   };
 
   return (
-    <div ref={containerRef} className="relative w-full min-h-screen overflow-x-hidden">
-      {/* Living Parallax Scenery (Mountains, Sun, Moon, Birds, Stars) */}
-      <EnvironmentLayers isNight={isNight} />
+    <div ref={containerRef} className="relative w-full h-[650vh]">
+      {/* Pinned / Sticky Viewport Window */}
+      <div className="sticky top-0 w-full h-screen overflow-hidden">
+        {/* Parallax Celestial & Mountain Landscape Background */}
+        <EnvironmentLayers isNight={isNight} />
 
-      {/* SVG Railway Track with center-locked Locomotive */}
-      <RailwayTrack progress={scrollProgress} isNight={isNight} />
+        {/* Dynamic Camera Stage (Smoothly follows the locomotive) */}
+        <div
+          ref={cameraStageRef}
+          className="relative w-full h-[4800px] will-change-transform transition-transform duration-75 ease-out"
+        >
+          {/* SVG Railway Track & Locked Locomotive */}
+          <RailwayTrack progress={scrollProgress} isNight={isNight} />
 
-      {/* 6 Railway Station Platforms (Section-Pinned / Padded) */}
-      <div className="relative z-20 space-y-36 sm:space-y-48 pt-16 pb-40">
-        <Station1Terminal
-          isNight={isNight}
-          onScrollToNext={() => scrollToStation(1)}
-        />
+          {/* 6 Stations Anchored Along the Journey */}
+          <div className="absolute inset-0 w-full pointer-events-auto">
+            {/* Station 1: Grand Central Terminal (Y ≈ 350) */}
+            <div className="absolute top-[80px] left-0 right-0 z-20">
+              <Station1Terminal
+                isNight={isNight}
+                onScrollToNext={() => scrollToStation(1)}
+              />
+            </div>
 
-        <Station2Switchyard isNight={isNight} />
+            {/* Station 2: The Foundry & Switchyard (Y ≈ 1150) */}
+            <div className="absolute top-[880px] left-0 right-0 z-20">
+              <Station2Switchyard isNight={isNight} />
+            </div>
 
-        <Station3Bridge isNight={isNight} />
+            {/* Station 3: Innovation Valley Suspension Bridge (Y ≈ 1950) */}
+            <div className="absolute top-[1680px] left-0 right-0 z-20">
+              <Station3Bridge isNight={isNight} />
+            </div>
 
-        <Station4MountainPass isNight={isNight} />
+            {/* Station 4: The Mountain Pass (Y ≈ 2750) */}
+            <div className="absolute top-[2480px] left-0 right-0 z-20">
+              <Station4MountainPass isNight={isNight} />
+            </div>
 
-        <Station5Observatory isNight={isNight} />
+            {/* Station 5: The Summit Observatory (Y ≈ 3550) */}
+            <div className="absolute top-[3280px] left-0 right-0 z-20">
+              <Station5Observatory isNight={isNight} />
+            </div>
 
-        <Station6Pier
-          isNight={isNight}
-          onReturnToStart={() => scrollToStation(0)}
+            {/* Station 6: Coastal Lighthouse Pier (Y ≈ 4350) */}
+            <div className="absolute top-[4080px] left-0 right-0 z-20">
+              <Station6Pier
+                isNight={isNight}
+                onReturnToStart={() => scrollToStation(0)}
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Fast-Travel Ticket Stub Schedule Navbar (Fixed at viewport bottom) */}
+        <FastTravelNavbar
+          activeStationIndex={activeStationIndex}
+          onSelectStation={scrollToStation}
         />
       </div>
-
-      {/* Fast-Travel Ticket Stub Schedule Navbar */}
-      <FastTravelNavbar
-        activeStationIndex={activeStationIndex}
-        onSelectStation={scrollToStation}
-      />
     </div>
   );
 }
