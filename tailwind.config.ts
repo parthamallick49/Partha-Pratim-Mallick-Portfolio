@@ -10,9 +10,11 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        // Display / headings — Syne (bold, modern geometric)
-        display: ['Syne', 'system-ui', 'sans-serif'],
-        headline: ['Syne', 'system-ui', 'sans-serif'],
+        // Editorial & display
+        editorial: ['Newsreader', 'Georgia', 'serif'],
+        serif: ['Newsreader', 'Georgia', 'serif'],
+        display: ['Newsreader', 'Syne', 'serif'],
+        headline: ['Newsreader', 'Syne', 'serif'],
         // Body — Plus Jakarta Sans (clean, humanist)
         sans: ['Plus Jakarta Sans', 'system-ui', 'sans-serif'],
         body: ['Plus Jakarta Sans', 'system-ui', 'sans-serif'],
@@ -21,6 +23,22 @@ export default {
         code: ['JetBrains Mono', 'monospace'],
       },
       colors: {
+        // Scenic Train Journey Signature Palette
+        rail: {
+          teal: '#2F6F6D',
+          'teal-dark': '#1C4947',
+          'teal-light': '#449694',
+          vanilla: '#F3E9D2',
+          'vanilla-muted': '#D8CEB7',
+          orange: '#C84630',
+          'orange-glow': '#E45B44',
+          midnight: '#0F2322',
+          'midnight-deep': '#091515',
+          'midnight-light': '#183635',
+          gold: '#E3B23C',
+          rust: '#8F3B25',
+          smoke: '#EAE5D9',
+        },
         background: 'hsl(var(--background))',
         foreground: 'hsl(var(--foreground))',
         card: {

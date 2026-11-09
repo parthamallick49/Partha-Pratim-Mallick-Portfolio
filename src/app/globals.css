@@ -218,4 +218,84 @@
     transform: perspective(1000px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg));
     transition: transform 0.1s ease-out;
   }
+
+  /* ============================================================
+     SCENIC TRAIN JOURNEY ENVIRONMENT STYLES
+     ============================================================ */
+  :root {
+    --sky-top-day: #EBDDC3;
+    --sky-bottom-day: #F6EFE0;
+    --sky-top-night: #091515;
+    --sky-bottom-night: #142F2D;
+    --rail-teal: #2F6F6D;
+    --rail-vanilla: #F3E9D2;
+    --rail-orange: #C84630;
+  }
+
+  .journey-sky-day {
+    background: linear-gradient(180deg, #DFCEB0 0%, #EBDDC3 30%, #F5ECDB 70%, #FAF6EE 100%);
+  }
+
+  .journey-sky-night {
+    background: linear-gradient(180deg, #070F0F 0%, #0F2322 35%, #183635 75%, #1C4240 100%);
+  }
+
+  /* Vintage Perforated Ticket Stub Border */
+  .ticket-perforation-left {
+    position: relative;
+  }
+  .ticket-perforation-left::before {
+    content: '';
+    position: absolute;
+    left: -10px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 20px;
+    height: 20px;
+    background: var(--background);
+    border-radius: 50%;
+  }
+
+  /* Train Headlight Conical Beam */
+  .headlight-beam {
+    clip-path: polygon(0% 45%, 100% 0%, 100% 100%, 0% 55%);
+    background: linear-gradient(90deg, rgba(254, 240, 138, 0.9) 0%, rgba(254, 240, 138, 0.45) 45%, rgba(254, 240, 138, 0.0) 100%);
+  }
+
+  /* Steam Puffs */
+  @keyframes puff-steam {
+    0% {
+      opacity: 0.85;
+      transform: translate(0, 0) scale(0.6);
+    }
+    50% {
+      opacity: 0.5;
+    }
+    100% {
+      opacity: 0;
+      transform: translate(-35px, -45px) scale(1.8);
+    }
+  }
+  .steam-puff-1 { animation: puff-steam 2.2s ease-out infinite; }
+  .steam-puff-2 { animation: puff-steam 2.2s ease-out infinite 0.7s; }
+  .steam-puff-3 { animation: puff-steam 2.2s ease-out infinite 1.4s; }
+
+  /* Star Twinkle */
+  @keyframes star-twinkle {
+    0%, 100% { opacity: 0.25; transform: scale(0.85); }
+    50% { opacity: 1; transform: scale(1.2); }
+  }
+  .twinkle-1 { animation: star-twinkle 3s ease-in-out infinite; }
+  .twinkle-2 { animation: star-twinkle 4.5s ease-in-out infinite 1.5s; }
+  .twinkle-3 { animation: star-twinkle 2.5s ease-in-out infinite 0.8s; }
+
+  /* Bird flight */
+  @keyframes bird-fly {
+    0% { transform: translateX(-10vw) translateY(0); }
+    50% { transform: translateX(50vw) translateY(-15px); }
+    100% { transform: translateX(110vw) translateY(5px); }
+  }
+  .flying-birds {
+    animation: bird-fly 28s linear infinite;
+  }
 }
