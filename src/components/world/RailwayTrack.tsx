@@ -47,6 +47,10 @@ export function RailwayTrack({ progress = 0, isNight = false }: RailwayTrackProp
             <feGaussianBlur stdDeviation="6" result="blur" />
           </filter>
 
+          <filter id="toySmokeFilter" x="-40%" y="-40%" width="180%" height="180%">
+            <feDropShadow dx="-1" dy="1.5" stdDeviation="2" floodColor="#0A1615" floodOpacity="0.3" />
+          </filter>
+
           <linearGradient id="trainBoiler" x1="0" y1="0" x2="1" y2="0">
             <stop offset="0%" stopColor="#8F2A1A" />
             <stop offset="35%" stopColor="#C84630" />
@@ -201,17 +205,6 @@ export function RailwayTrack({ progress = 0, isNight = false }: RailwayTrackProp
             </g>
           )}
 
-          {/* Reversing Toy Train Smoke: Active on Backward Scroll */}
-          <g id="rear-smoke-group" transform="translate(-15, 0)" className="smoke-hidden">
-            {[1, 2, 3, 4].map((num) => (
-              <g key={num} className={`toy-smoke-rev-${num}`}>
-                <circle cx="0" cy="0" r="5" fill="#FAF6EE" opacity="0.9" />
-                <circle cx="3" cy="2" r="3.6" fill="#EADFCE" opacity="0.8" />
-                <circle cx="-2.5" cy="1.5" r="4.2" fill="#FFFFFF" opacity="0.85" />
-              </g>
-            ))}
-          </g>
-
           {/* Chassis */}
           <rect x="-30" y="-14" width="56" height="28" rx="4.5" fill="#0A1514" opacity="0.75" />
 
@@ -273,6 +266,18 @@ export function RailwayTrack({ progress = 0, isNight = false }: RailwayTrackProp
 
           {/* Forward Coupling Hitch to Coach 2 */}
           <rect x="25" y="-2" width="6" height="4" rx="1" fill="#182322" stroke="#5E160C" strokeWidth="0.8" />
+
+          {/* Reversing Toy Train Smoke: Placed on TOP of locomotive for full visibility */}
+          <g id="rear-smoke-group" transform="translate(-15, 0)" className="smoke-hidden">
+            {[1, 2, 3, 4, 5].map((num) => (
+              <g key={num} className={`toy-smoke-rev-${num}`} filter="url(#toySmokeFilter)">
+                <circle cx="0" cy="0" r="6" fill="#FFFFFF" stroke="#7A6858" strokeWidth="0.9" />
+                <circle cx="3" cy="2" r="4.5" fill="#FAF5EE" stroke="#7A6858" strokeWidth="0.8" />
+                <circle cx="-3" cy="-1.5" r="4" fill="#F0E8DC" stroke="#7A6858" strokeWidth="0.8" />
+                <circle cx="1" cy="-2" r="1.8" fill="#FFFFFF" opacity="0.95" />
+              </g>
+            ))}
+          </g>
         </g>
 
         {/* ======================================================== */}
@@ -389,17 +394,6 @@ export function RailwayTrack({ progress = 0, isNight = false }: RailwayTrackProp
             </g>
           )}
 
-          {/* Forward Toy Train Smoke: Active on Forward Scroll */}
-          <g id="front-smoke-group" transform="translate(18, 0)" className="smoke-active">
-            {[1, 2, 3, 4].map((num) => (
-              <g key={num} className={`toy-smoke-puff-${num}`}>
-                <circle cx="0" cy="0" r="5" fill="#FAF6EE" opacity="0.9" />
-                <circle cx="-3" cy="2" r="3.6" fill="#EADFCE" opacity="0.8" />
-                <circle cx="2.5" cy="1.5" r="4.2" fill="#FFFFFF" opacity="0.85" />
-              </g>
-            ))}
-          </g>
-
           {/* Chassis */}
           <rect x="-38" y="-15" width="72" height="30" rx="5" fill="#0A1514" opacity="0.75" />
 
@@ -509,6 +503,18 @@ export function RailwayTrack({ progress = 0, isNight = false }: RailwayTrackProp
           >
             EXP-01
           </text>
+
+          {/* Forward Toy Train Smoke: Placed on TOP of locomotive for full visibility */}
+          <g id="front-smoke-group" transform="translate(18, 0)" className="smoke-active">
+            {[1, 2, 3, 4, 5].map((num) => (
+              <g key={num} className={`toy-smoke-puff-${num}`} filter="url(#toySmokeFilter)">
+                <circle cx="0" cy="0" r="6" fill="#FFFFFF" stroke="#7A6858" strokeWidth="0.9" />
+                <circle cx="-3" cy="2" r="4.5" fill="#FAF5EE" stroke="#7A6858" strokeWidth="0.8" />
+                <circle cx="3" cy="-1.5" r="4" fill="#F0E8DC" stroke="#7A6858" strokeWidth="0.8" />
+                <circle cx="-1" cy="-2" r="1.8" fill="#FFFFFF" opacity="0.95" />
+              </g>
+            ))}
+          </g>
         </g>
       </svg>
     </div>
