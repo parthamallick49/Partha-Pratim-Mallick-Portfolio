@@ -66,6 +66,8 @@ export function ScenicTrainJourney({
       const lightRear = document.getElementById('rear-headlight-group');
       const lampFront = document.getElementById('front-headlight-lamp');
       const lampRear = document.getElementById('rear-headlight-lamp');
+      const leadDriveRods = document.getElementById('lead-drive-rods');
+      const rearDriveRods = document.getElementById('rear-drive-rods');
       const dynamicSmokeContainer = document.getElementById('dynamic-smoke-container');
       const cameraStage = cameraStageRef.current;
 
@@ -222,14 +224,20 @@ export function ScenicTrainJourney({
       };
       animFrameId = requestAnimationFrame(updateSmokePhysics);
 
-      // Helper to compute and apply articulated transform along the SVG track path
-      const applyCarTransform = (el: HTMLElement | null, dist: number) => {
+      // Helper to compute and apply articulated transform along the SVG track path with centrifugal sway
+      const applyCarTransform = (el: HTMLElement | null, dist: number, swayFactor: number = 0) => {
         if (!el) return { x: 0, y: 0, angle: 0, angleRad: 0 };
         const clampedDist = Math.max(0, Math.min(dist, totalLength));
         const pt = trackGuide.getPointAtLength(clampedDist);
         const ahead = trackGuide.getPointAtLength(Math.min(clampedDist + 4, totalLength));
         const angleRad = Math.atan2(ahead.y - pt.y, ahead.x - pt.x);
-        const angle = angleRad * (180 / Math.PI);
+        let angle = angleRad * (180 / Math.PI);
+
+        // Add subtle rail banking / micro-sway into turns
+        if (swayFactor !== 0) {
+          angle += swayFactor;
+        }
+
         el.setAttribute('transform', `translate(${pt.x}, ${pt.y}) rotate(${angle})`);
         return { x: pt.x, y: pt.y, angle, angleRad };
       };
@@ -264,12 +272,12 @@ export function ScenicTrainJourney({
       let lastPuffDistance = initLeadDist;
       let currentDirection = 1;
 
-      // Master ScrollTrigger across 750vh
+      // Master ScrollTrigger across 750vh with buttery smooth lerp
       ScrollTrigger.create({
         trigger: containerRef.current,
         start: 'top top',
         end: 'bottom bottom',
-        scrub: 1.2, // Smooth damping for visible, cinematic train travel
+        scrub: 1.0, // Smooth weighted inertia damping
         onUpdate: (self) => {
           const p = self.progress;
           setScrollProgress(p);
@@ -284,10 +292,22 @@ export function ScenicTrainJourney({
 
           // Exact mathematical position for each articulated car along the S-curve track
           const leadDist = startDist + p * journeyLength;
-          currentLeadInfo = applyCarTransform(carLead, leadDist);
-          applyCarTransform(carCoach1, leadDist - 60);
-          applyCarTransform(carCoach2, leadDist - 120);
-          currentRearInfo = applyCarTransform(carRear, leadDist - 180);
+
+          // Subtle centrifugal banking sway on coaches
+          const sway = Math.sin(leadDist * 0.005) * 1.5;
+          currentLeadInfo = applyCarTransform(carLead, leadDist, sway * 0.5);
+          applyCarTransform(carCoach1, leadDist - 60, sway * 0.8);
+          applyCarTransform(carCoach2, leadDist - 120, -sway * 0.8);
+          currentRearInfo = applyCarTransform(carRear, leadDist - 180, -sway * 0.5);
+
+          // Realistic Mechanical Piston / Drive-Rod Pumping
+          const pistonOffset = Math.sin(leadDist * 0.15) * 3.5;
+          if (leadDriveRods) {
+            leadDriveRods.setAttribute('transform', `translate(${pistonOffset.toFixed(2)}, 0)`);
+          }
+          if (rearDriveRods) {
+            rearDriveRods.setAttribute('transform', `translate(${(-pistonOffset).toFixed(2)}, 0)`);
+          }
 
           // Spawn Dynamic Smoke Puff every ~18px of physical movement
           const deltaMove = Math.abs(leadDist - lastPuffDistance);
@@ -344,9 +364,9 @@ export function ScenicTrainJourney({
             }
           }
 
-          // Camera Stage: Smoothly follows train from 0 to -4980px
+          // Camera Stage: Smoothly follows train without CSS transition fighting
           const targetCameraY = -p * 4980;
-          cameraStage.style.transform = `translate3d(0, ${targetCameraY}px, 0)`;
+          cameraStage.style.transform = `translate3d(0, ${targetCameraY.toFixed(1)}px, 0)`;
         },
       });
 
@@ -394,21 +414,27 @@ export function ScenicTrainJourney({
     <div ref={containerRef} className="relative w-full h-[750vh]">
       {/* Pinned / Sticky Viewport Window */}
       <div className="sticky top-0 w-full h-screen overflow-hidden">
-        {/* Parallax Celestial & Mountain Landscape Background */}
-        <EnvironmentLayers isNight={isNight} />
+        {/* Parallax Celestial & Mountain Landscape Background with Real Scroll Depth */}
+        <EnvironmentLayers isNight={isNight} progress={scrollProgress} />
 
-        {/* Dynamic Camera Stage (Smoothly follows the locomotive) */}
+        {/* Dynamic Camera Stage (Zero CSS lag, pure 60/120fps GPU composited) */}
         <div
           ref={cameraStageRef}
-          className="relative w-full h-[6000px] will-change-transform transition-transform duration-75 ease-out"
+          className="relative w-full h-[6000px] will-change-transform"
         >
           {/* SVG Railway Track, Articulated Train & Dynamic Smoke Particles */}
           <RailwayTrack progress={scrollProgress} isNight={isNight} />
 
-          {/* 6 Stations Alternating Along the Journey (Generous 1000px Spacing) */}
+          {/* 6 Stations Alternating Along the Journey with Arrival Focusing Glow */}
           <div className="absolute inset-0 w-full pointer-events-auto">
             {/* Station 1: Grand Central Terminal (Train on LEFT, Details on RIGHT) */}
-            <div className="absolute top-[120px] right-3 sm:right-6 lg:right-10 left-auto w-[90vw] sm:w-[84vw] md:w-[68vw] lg:w-[62vw] xl:w-[58vw] max-w-3xl xl:max-w-4xl max-md:left-14 max-md:right-2 z-20">
+            <div
+              className={`absolute top-[120px] right-3 sm:right-6 lg:right-10 left-auto w-[90vw] sm:w-[84vw] md:w-[68vw] lg:w-[62vw] xl:w-[58vw] max-w-3xl xl:max-w-4xl max-md:left-14 max-md:right-2 z-20 transition-all duration-700 ease-out ${
+                activeStationIndex === 0
+                  ? 'opacity-100 scale-100 pointer-events-auto shadow-2xl shadow-rail-orange/15'
+                  : 'opacity-40 scale-[0.98] pointer-events-none hover:opacity-75'
+              }`}
+            >
               <Station1Terminal
                 isNight={isNight}
                 onScrollToNext={() => scrollToStation(1)}
@@ -416,27 +442,57 @@ export function ScenicTrainJourney({
             </div>
 
             {/* Station 2: The Foundry & Switchyard (Train on RIGHT, Details on LEFT) */}
-            <div className="absolute top-[1120px] left-3 sm:left-6 lg:left-10 right-auto w-[90vw] sm:w-[84vw] md:w-[68vw] lg:w-[62vw] xl:w-[58vw] max-w-3xl xl:max-w-4xl max-md:left-14 max-md:right-2 z-20">
+            <div
+              className={`absolute top-[1120px] left-3 sm:left-6 lg:left-10 right-auto w-[90vw] sm:w-[84vw] md:w-[68vw] lg:w-[62vw] xl:w-[58vw] max-w-3xl xl:max-w-4xl max-md:left-14 max-md:right-2 z-20 transition-all duration-700 ease-out ${
+                activeStationIndex === 1
+                  ? 'opacity-100 scale-100 pointer-events-auto shadow-2xl shadow-rail-gold/15'
+                  : 'opacity-40 scale-[0.98] pointer-events-none hover:opacity-75'
+              }`}
+            >
               <Station2Switchyard isNight={isNight} />
             </div>
 
             {/* Station 3: Innovation Valley Suspension Bridge (Train on LEFT, Details on RIGHT) */}
-            <div className="absolute top-[2120px] right-3 sm:right-6 lg:right-10 left-auto w-[90vw] sm:w-[84vw] md:w-[68vw] lg:w-[62vw] xl:w-[58vw] max-w-3xl xl:max-w-4xl max-md:left-14 max-md:right-2 z-20">
+            <div
+              className={`absolute top-[2120px] right-3 sm:right-6 lg:right-10 left-auto w-[90vw] sm:w-[84vw] md:w-[68vw] lg:w-[62vw] xl:w-[58vw] max-w-3xl xl:max-w-4xl max-md:left-14 max-md:right-2 z-20 transition-all duration-700 ease-out ${
+                activeStationIndex === 2
+                  ? 'opacity-100 scale-100 pointer-events-auto shadow-2xl shadow-rail-orange/15'
+                  : 'opacity-40 scale-[0.98] pointer-events-none hover:opacity-75'
+              }`}
+            >
               <Station3Bridge isNight={isNight} />
             </div>
 
             {/* Station 4: The Mountain Pass (Train on RIGHT, Details on LEFT) */}
-            <div className="absolute top-[3120px] left-3 sm:left-6 lg:left-10 right-auto w-[90vw] sm:w-[84vw] md:w-[68vw] lg:w-[62vw] xl:w-[58vw] max-w-3xl xl:max-w-4xl max-md:left-14 max-md:right-2 z-20">
+            <div
+              className={`absolute top-[3120px] left-3 sm:left-6 lg:left-10 right-auto w-[90vw] sm:w-[84vw] md:w-[68vw] lg:w-[62vw] xl:w-[58vw] max-w-3xl xl:max-w-4xl max-md:left-14 max-md:right-2 z-20 transition-all duration-700 ease-out ${
+                activeStationIndex === 3
+                  ? 'opacity-100 scale-100 pointer-events-auto shadow-2xl shadow-rail-teal/20'
+                  : 'opacity-40 scale-[0.98] pointer-events-none hover:opacity-75'
+              }`}
+            >
               <Station4MountainPass isNight={isNight} />
             </div>
 
             {/* Station 5: The Summit Observatory (Train on LEFT, Details on RIGHT) */}
-            <div className="absolute top-[4120px] right-3 sm:right-6 lg:right-10 left-auto w-[90vw] sm:w-[84vw] md:w-[68vw] lg:w-[62vw] xl:w-[58vw] max-w-3xl xl:max-w-4xl max-md:left-14 max-md:right-2 z-20">
+            <div
+              className={`absolute top-[4120px] right-3 sm:right-6 lg:right-10 left-auto w-[90vw] sm:w-[84vw] md:w-[68vw] lg:w-[62vw] xl:w-[58vw] max-w-3xl xl:max-w-4xl max-md:left-14 max-md:right-2 z-20 transition-all duration-700 ease-out ${
+                activeStationIndex === 4
+                  ? 'opacity-100 scale-100 pointer-events-auto shadow-2xl shadow-rail-gold/15'
+                  : 'opacity-40 scale-[0.98] pointer-events-none hover:opacity-75'
+              }`}
+            >
               <Station5Observatory isNight={isNight} />
             </div>
 
             {/* Station 6: Coastal Pier & Telegraph (Train on RIGHT, Details on LEFT) */}
-            <div className="absolute top-[5050px] left-3 sm:left-6 lg:left-10 right-auto w-[90vw] sm:w-[84vw] md:w-[68vw] lg:w-[62vw] xl:w-[58vw] max-w-3xl xl:max-w-4xl max-md:left-14 max-md:right-2 z-20">
+            <div
+              className={`absolute top-[5050px] left-3 sm:left-6 lg:left-10 right-auto w-[90vw] sm:w-[84vw] md:w-[68vw] lg:w-[62vw] xl:w-[58vw] max-w-3xl xl:max-w-4xl max-md:left-14 max-md:right-2 z-20 transition-all duration-700 ease-out ${
+                activeStationIndex === 5
+                  ? 'opacity-100 scale-100 pointer-events-auto shadow-2xl shadow-rail-orange/15'
+                  : 'opacity-40 scale-[0.98] pointer-events-none hover:opacity-75'
+              }`}
+            >
               <Station6Pier
                 isNight={isNight}
                 onReturnToStart={() => scrollToStation(0)}

@@ -4,9 +4,16 @@ import React from 'react';
 
 interface EnvironmentLayersProps {
   isNight?: boolean;
+  progress?: number;
 }
 
-export function EnvironmentLayers({ isNight = false }: EnvironmentLayersProps) {
+export function EnvironmentLayers({ isNight = false, progress = 0 }: EnvironmentLayersProps) {
+  // Parallax offsets (scaled gently to prevent clipping)
+  const layer1Y = progress * 60;   // Distant peaks: slow drift
+  const layer2Y = progress * 130;  // Midground ridges: medium drift
+  const layer3Y = progress * 210;  // Foreground pines: faster drift
+  const celestialY = progress * 40; // Sun/Moon subtle rise
+
   return (
     <div className="fixed inset-0 w-full h-full pointer-events-none -z-10 overflow-hidden transition-colors duration-1000">
       {/* Sky Gradient Base */}
@@ -16,8 +23,13 @@ export function EnvironmentLayers({ isNight = false }: EnvironmentLayersProps) {
         }`}
       />
 
-      {/* Sun / Moon Celestial Body (Placed on Left) */}
-      <div className="absolute left-[6%] sm:left-[10%] top-20 sm:top-24 transition-transform duration-1000">
+      {/* Sun / Moon Celestial Body (Placed on Left with subtle parallax float) */}
+      <div
+        className="absolute left-[6%] sm:left-[10%] top-20 sm:top-24 transition-transform duration-700 ease-out"
+        style={{
+          transform: `translate3d(0, ${celestialY * 0.4}px, 0)`,
+        }}
+      >
         {!isNight ? (
           /* Radiant Bloody Orange Sun */
           <div className="relative w-24 h-24 sm:w-32 sm:h-32">
@@ -45,7 +57,6 @@ export function EnvironmentLayers({ isNight = false }: EnvironmentLayersProps) {
       {/* Night Sky Twinkling Stars */}
       {isNight && (
         <div className="absolute inset-0 overflow-hidden" aria-hidden="true">
-          {/* Starfield cluster 1 */}
           <div className="absolute top-[8%] left-[12%] w-1.5 h-1.5 rounded-full bg-white twinkle-1" />
           <div className="absolute top-[14%] left-[28%] w-1 h-1 rounded-full bg-amber-200 twinkle-2" />
           <div className="absolute top-[6%] left-[45%] w-2 h-2 rounded-full bg-white twinkle-3" />
@@ -72,8 +83,13 @@ export function EnvironmentLayers({ isNight = false }: EnvironmentLayersProps) {
         </div>
       )}
 
-      {/* Layer 1: Distant Misty Mountain Silhouettes (Backdrop) */}
-      <div className="absolute bottom-0 w-full h-[45vh] min-h-[300px] opacity-70">
+      {/* Layer 1: Distant Misty Mountain Silhouettes (Parallax Depth) */}
+      <div
+        className="absolute bottom-0 w-full h-[52vh] min-h-[340px] opacity-70 will-change-transform"
+        style={{
+          transform: `translate3d(0, ${layer1Y}px, 0)`,
+        }}
+      >
         <svg
           viewBox="0 0 1440 400"
           preserveAspectRatio="none"
@@ -88,8 +104,13 @@ export function EnvironmentLayers({ isNight = false }: EnvironmentLayersProps) {
         </svg>
       </div>
 
-      {/* Layer 2: Midground Alpine Ridge & Forest Hills */}
-      <div className="absolute bottom-0 w-full h-[32vh] min-h-[220px] opacity-85">
+      {/* Layer 2: Midground Alpine Ridge & Forest Hills (Parallax Depth) */}
+      <div
+        className="absolute bottom-0 w-full h-[36vh] min-h-[250px] opacity-85 will-change-transform"
+        style={{
+          transform: `translate3d(0, ${layer2Y}px, 0)`,
+        }}
+      >
         <svg
           viewBox="0 0 1440 300"
           preserveAspectRatio="none"
@@ -104,8 +125,13 @@ export function EnvironmentLayers({ isNight = false }: EnvironmentLayersProps) {
         </svg>
       </div>
 
-      {/* Layer 3: Foreground Pine Silhouettes (Bottom Edge) */}
-      <div className="absolute bottom-0 w-full h-[18vh] min-h-[120px]">
+      {/* Layer 3: Foreground Pine Silhouettes (Parallax Depth) */}
+      <div
+        className="absolute bottom-0 w-full h-[22vh] min-h-[140px] will-change-transform"
+        style={{
+          transform: `translate3d(0, ${layer3Y}px, 0)`,
+        }}
+      >
         <svg
           viewBox="0 0 1440 150"
           preserveAspectRatio="none"

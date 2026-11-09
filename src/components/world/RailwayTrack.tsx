@@ -216,6 +216,12 @@ export function RailwayTrack({ progress = 0, isNight = false }: RailwayTrackProp
             </g>
           ))}
 
+          {/* Drive Rods (Mechanical Pumping Action) */}
+          <g id="rear-drive-rods">
+            <line x1="-20" y1="-12.5" x2="19" y2="-12.5" stroke="#E3B23C" strokeWidth="1.8" strokeLinecap="round" />
+            <line x1="-20" y1="12.5" x2="19" y2="12.5" stroke="#E3B23C" strokeWidth="1.8" strokeLinecap="round" />
+          </g>
+
           {/* Pusher Boiler (facing backward) */}
           <rect
             x="-24"
@@ -393,9 +399,11 @@ export function RailwayTrack({ progress = 0, isNight = false }: RailwayTrackProp
             </g>
           ))}
 
-          {/* Drive Rods */}
-          <line x1="-28" y1="-13" x2="24" y2="-13" stroke="#E3B23C" strokeWidth="2" strokeLinecap="round" />
-          <line x1="-28" y1="13" x2="24" y2="13" stroke="#E3B23C" strokeWidth="2" strokeLinecap="round" />
+          {/* Drive Rods (Mechanical Pumping Action) */}
+          <g id="lead-drive-rods">
+            <line x1="-28" y1="-13" x2="24" y2="-13" stroke="#E3B23C" strokeWidth="2" strokeLinecap="round" />
+            <line x1="-28" y1="13" x2="24" y2="13" stroke="#E3B23C" strokeWidth="2" strokeLinecap="round" />
+          </g>
 
           {/* Boiler */}
           <rect
