@@ -185,9 +185,9 @@ export function RailwayTrack({ progress = 0, isNight = false }: RailwayTrackProp
         {/* CARRIAGE 4: REAR PUSHER ENGINE (Mountain Helper Locomotive) */}
         {/* ======================================================== */}
         <g id="train-car-rear" transform="translate(240, 220)" className="pointer-events-auto">
-          {/* Headlight Beam Reversing */}
+          {/* Headlight Beam Reversing: Active only when scrolling backward */}
           {isNight && (
-            <g opacity="0.85">
+            <g id="rear-headlight-group" className="headlight-hidden">
               <polygon
                 points="-35,0 -240,-60 -240,60"
                 fill="url(#beamGradientRev)"
@@ -262,8 +262,14 @@ export function RailwayTrack({ progress = 0, isNight = false }: RailwayTrackProp
           {/* Reversing Cowcatcher */}
           <polygon points="-24,-8 -33,0 -24,8" fill="#2F6F6D" stroke="#122E2C" strokeWidth="1.3" />
 
-          {/* Rear Headlight Lamp */}
-          <circle cx="-26" cy="0" r="3.5" fill={isNight ? '#FEF08A' : '#FDE047'} />
+          {/* Rear Headlight Lamp (starts off/dim, lights up on backward scroll) */}
+          <circle
+            id="rear-headlight-lamp"
+            cx="-26"
+            cy="0"
+            r="3.5"
+            fill="#3A3828"
+          />
 
           {/* Forward Coupling Hitch to Coach 2 */}
           <rect x="25" y="-2" width="6" height="4" rx="1" fill="#182322" stroke="#5E160C" strokeWidth="0.8" />
@@ -367,9 +373,9 @@ export function RailwayTrack({ progress = 0, isNight = false }: RailwayTrackProp
         {/* CARRIAGE 1: LEAD LOCOMOTIVE ENGINE (The Express Engine)  */}
         {/* ======================================================== */}
         <g id="train-car-lead" transform="translate(240, 400)" className="pointer-events-auto">
-          {/* Headlight Beam Forward */}
+          {/* Headlight Beam Forward: Active when scrolling forward */}
           {isNight && (
-            <g opacity="0.95">
+            <g id="front-headlight-group" className="headlight-active">
               <polygon
                 points="42,0 260,-65 260,65"
                 fill="url(#beamGradientFwd)"
@@ -482,6 +488,7 @@ export function RailwayTrack({ progress = 0, isNight = false }: RailwayTrackProp
 
           {/* Headlight Lamp */}
           <circle
+            id="front-headlight-lamp"
             cx="34"
             cy="0"
             r="3.5"

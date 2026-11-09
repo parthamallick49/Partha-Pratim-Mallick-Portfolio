@@ -45,6 +45,10 @@ export function ScenicTrainJourney({
       const carRear = document.getElementById('train-car-rear');
       const smokeFront = document.getElementById('front-smoke-group');
       const smokeRear = document.getElementById('rear-smoke-group');
+      const lightFront = document.getElementById('front-headlight-group');
+      const lightRear = document.getElementById('rear-headlight-group');
+      const lampFront = document.getElementById('front-headlight-lamp');
+      const lampRear = document.getElementById('rear-headlight-lamp');
       const cameraStage = cameraStageRef.current;
 
       if (!trackGuide || !carLead || !cameraStage || !containerRef.current) return;
@@ -75,7 +79,7 @@ export function ScenicTrainJourney({
       applyCarTransform(carCoach2, initLeadDist - 120);
       applyCarTransform(carRear, initLeadDist - 180);
 
-      // Default initial smoke: Lead engine active
+      // Default initial state: Lead engine smoke & light active, rear engine off
       if (smokeFront) {
         smokeFront.classList.add('smoke-active');
         smokeFront.classList.remove('smoke-hidden');
@@ -83,6 +87,22 @@ export function ScenicTrainJourney({
       if (smokeRear) {
         smokeRear.classList.add('smoke-hidden');
         smokeRear.classList.remove('smoke-active');
+      }
+      if (lightFront) {
+        lightFront.classList.add('headlight-active');
+        lightFront.classList.remove('headlight-hidden');
+      }
+      if (lightRear) {
+        lightRear.classList.add('headlight-hidden');
+        lightRear.classList.remove('headlight-active');
+      }
+      if (lampFront) {
+        lampFront.setAttribute('fill', isNight ? '#FEF08A' : '#FDE047');
+        if (isNight) lampFront.setAttribute('filter', 'url(#railGlow)');
+      }
+      if (lampRear) {
+        lampRear.setAttribute('fill', '#3A3828');
+        lampRear.removeAttribute('filter');
       }
 
       cameraStage.style.transform = `translate3d(0, 0px, 0)`;
@@ -111,10 +131,11 @@ export function ScenicTrainJourney({
           applyCarTransform(carCoach2, leadDist - 120);
           applyCarTransform(carRear, leadDist - 180);
 
-          // Scroll-Direction Dependent Toy Train Smoke:
-          // Forward scroll (down): Front engine throws fluffy smoke circles.
-          // Backward scroll (up): Rear engine throws fluffy smoke circles.
+          // Scroll-Direction Dependent Toy Train Smoke & Headlights:
+          // Forward scroll (down): Front engine throws fluffy smoke circles & front headlight illuminates forward tracks.
+          // Backward scroll (up): Rear engine throws fluffy smoke circles & rear headlight illuminates reverse tracks.
           if (self.direction >= 0) {
+            // Forward travel
             if (smokeFront) {
               smokeFront.classList.add('smoke-active');
               smokeFront.classList.remove('smoke-hidden');
@@ -123,7 +144,24 @@ export function ScenicTrainJourney({
               smokeRear.classList.add('smoke-hidden');
               smokeRear.classList.remove('smoke-active');
             }
+            if (lightFront) {
+              lightFront.classList.add('headlight-active');
+              lightFront.classList.remove('headlight-hidden');
+            }
+            if (lightRear) {
+              lightRear.classList.add('headlight-hidden');
+              lightRear.classList.remove('headlight-active');
+            }
+            if (lampFront) {
+              lampFront.setAttribute('fill', isNight ? '#FEF08A' : '#FDE047');
+              if (isNight) lampFront.setAttribute('filter', 'url(#railGlow)');
+            }
+            if (lampRear) {
+              lampRear.setAttribute('fill', '#3A3828');
+              lampRear.removeAttribute('filter');
+            }
           } else {
+            // Backward reverse travel
             if (smokeFront) {
               smokeFront.classList.add('smoke-hidden');
               smokeFront.classList.remove('smoke-active');
@@ -131,6 +169,22 @@ export function ScenicTrainJourney({
             if (smokeRear) {
               smokeRear.classList.add('smoke-active');
               smokeRear.classList.remove('smoke-hidden');
+            }
+            if (lightFront) {
+              lightFront.classList.add('headlight-hidden');
+              lightFront.classList.remove('headlight-active');
+            }
+            if (lightRear) {
+              lightRear.classList.add('headlight-active');
+              lightRear.classList.remove('headlight-hidden');
+            }
+            if (lampFront) {
+              lampFront.setAttribute('fill', '#3A3828');
+              lampFront.removeAttribute('filter');
+            }
+            if (lampRear) {
+              lampRear.setAttribute('fill', isNight ? '#FEF08A' : '#FDE047');
+              if (isNight) lampRear.setAttribute('filter', 'url(#railGlow)');
             }
           }
 

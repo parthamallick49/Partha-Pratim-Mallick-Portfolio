@@ -330,6 +330,17 @@
     pointer-events: none;
   }
 
+  /* Direction-Dependent Headlight Beams */
+  .headlight-active {
+    opacity: 0.95;
+    transition: opacity 0.4s ease;
+  }
+  .headlight-hidden {
+    opacity: 0;
+    transition: opacity 0.4s ease;
+    pointer-events: none;
+  }
+
   /* Star Twinkle */
   @keyframes star-twinkle {
     0%, 100% { opacity: 0.25; transform: scale(0.85); }
