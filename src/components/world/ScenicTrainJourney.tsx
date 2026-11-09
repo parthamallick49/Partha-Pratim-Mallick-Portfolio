@@ -314,12 +314,12 @@ export function ScenicTrainJourney({
       let lastPuffDistance = initLeadDist;
       let currentDirection = 1;
 
-      // Master ScrollTrigger across 750vh with instantaneous, responsive 60fps tracking
+      // Master ScrollTrigger across 1250vh with luxurious, weighted locomotive inertia
       ScrollTrigger.create({
         trigger: containerRef.current,
         start: 'top top',
         end: 'bottom bottom',
-        scrub: 0.25, // Snappy 60fps tracking (no sluggish 1-second drag)
+        scrub: 1.2, // Weighted locomotive inertia (smooth, gentle momentum)
         onUpdate: (self) => {
           const p = self.progress;
           setScrollProgress(p);
@@ -473,8 +473,8 @@ export function ScenicTrainJourney({
 
       const targetY = getStationScrollY(targetIdx);
       const dist = Math.abs(targetY - window.scrollY);
-      // Pacing: ~6.5 to 7.5 seconds per station segment
-      const duration = Math.max(3.8, Math.min(8.5, (dist / (totalScrollable / 5)) * 7.0));
+      // Relaxed, cinematic pacing (~10 to 12 seconds per station segment)
+      const duration = Math.max(5.5, Math.min(14.0, (dist / (totalScrollable / 5)) * 10.5));
 
       onLiveTourStateChangeRef.current?.({
         status: 'cruising',
@@ -636,7 +636,7 @@ export function ScenicTrainJourney({
   };
 
   return (
-    <div ref={containerRef} className="relative w-full h-[750vh]">
+    <div ref={containerRef} className="relative w-full h-[1250vh]">
       {/* Pinned / Sticky Viewport Window */}
       <div className="sticky top-0 w-full h-screen overflow-hidden">
         {/* Parallax Celestial & Mountain Landscape Background with Real Scroll Depth */}
