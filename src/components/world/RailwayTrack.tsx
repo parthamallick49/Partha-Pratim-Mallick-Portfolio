@@ -8,28 +8,27 @@ interface RailwayTrackProps {
 }
 
 export function RailwayTrack({ progress = 0, isNight = false }: RailwayTrackProps) {
-  // World Dimensions: 1200 width x 4800 height
-  // True Alternating Zigzag:
-  // Station 1: (220, 350)  - Train on LEFT  -> Details on RIGHT
-  // Station 2: (980, 1150) - Train on RIGHT -> Details on LEFT
-  // Station 3: (220, 1950) - Train on LEFT  -> Details on RIGHT
-  // Station 4: (980, 2750) - Train on RIGHT -> Details on LEFT
-  // Station 5: (220, 3550) - Train on LEFT  -> Details on RIGHT
-  // Station 6: (980, 4350) - Train on RIGHT -> Details on LEFT
+  // World Dimensions: 1200 width x 6000 height (generous 1000px vertical station spacing)
+  // Station 1: (240, 400)  - Train on LEFT  -> Details on RIGHT
+  // Station 2: (960, 1400) - Train on RIGHT -> Details on LEFT
+  // Station 3: (240, 2400) - Train on LEFT  -> Details on RIGHT
+  // Station 4: (960, 3400) - Train on RIGHT -> Details on LEFT
+  // Station 5: (240, 4400) - Train on LEFT  -> Details on RIGHT
+  // Station 6: (960, 5400) - Train on RIGHT -> Details on LEFT
 
   const trackPathD = `
-    M 220 350
-    C 220 700, 980 800, 980 1150
-    C 980 1500, 220 1600, 220 1950
-    C 220 2300, 980 2400, 980 2750
-    C 980 3100, 220 3200, 220 3550
-    C 220 3900, 980 4000, 980 4350
+    M 240 400
+    C 240 850, 960 950, 960 1400
+    C 960 1850, 240 1950, 240 2400
+    C 240 2850, 960 2950, 960 3400
+    C 960 3850, 240 3950, 240 4400
+    C 240 4850, 960 4950, 960 5400
   `;
 
   return (
-    <div className="absolute inset-0 w-full h-[4800px] pointer-events-none z-10">
+    <div className="absolute inset-0 w-full h-[6000px] pointer-events-none z-10">
       <svg
-        viewBox="0 0 1200 4800"
+        viewBox="0 0 1200 6000"
         preserveAspectRatio="xMidYMin meet"
         className="w-full h-full"
         xmlns="http://www.w3.org/2000/svg"
@@ -64,23 +63,23 @@ export function RailwayTrack({ progress = 0, isNight = false }: RailwayTrackProp
           </linearGradient>
         </defs>
 
-        {/* Gravel Ballast Bed (Sub-track foundation) */}
+        {/* Gravel Ballast Bed */}
         <path
           d={trackPathD}
           fill="none"
           stroke={isNight ? '#122625' : '#D5C5A8'}
-          strokeWidth="42"
+          strokeWidth="44"
           strokeLinecap="round"
           strokeLinejoin="round"
           opacity="0.85"
         />
 
-        {/* Wooden Ties / Sleepers (Repeated dashed thick stroke) */}
+        {/* Wooden Ties / Sleepers */}
         <path
           d={trackPathD}
           fill="none"
           stroke={isNight ? '#1A3331' : '#654C38'}
-          strokeWidth="34"
+          strokeWidth="36"
           strokeDasharray="7, 16"
           strokeLinecap="butt"
           opacity="0.9"
@@ -101,7 +100,7 @@ export function RailwayTrack({ progress = 0, isNight = false }: RailwayTrackProp
           fill="none"
           stroke={isNight ? '#447C79' : '#8A7A68'}
           strokeWidth="4.5"
-          transform="translate(-8, 0)"
+          transform="translate(-8.5, 0)"
           opacity="0.95"
         />
 
@@ -111,11 +110,11 @@ export function RailwayTrack({ progress = 0, isNight = false }: RailwayTrackProp
           fill="none"
           stroke={isNight ? '#447C79' : '#8A7A68'}
           strokeWidth="4.5"
-          transform="translate(8, 0)"
+          transform="translate(8.5, 0)"
           opacity="0.95"
         />
 
-        {/* Center Guide Path (Used by getPointAtLength and MotionPath) */}
+        {/* Center Guide Path */}
         <path
           id="train-track-guide"
           d={trackPathD}
@@ -124,7 +123,7 @@ export function RailwayTrack({ progress = 0, isNight = false }: RailwayTrackProp
           strokeWidth="2"
         />
 
-        {/* Active Illuminated Rail Section (shows progress trail) */}
+        {/* Active Progress Illumination */}
         <path
           d={trackPathD}
           fill="none"
@@ -135,14 +134,14 @@ export function RailwayTrack({ progress = 0, isNight = false }: RailwayTrackProp
           filter={isNight ? 'url(#railGlow)' : undefined}
         />
 
-        {/* Station Platform Milepost Signal Lights */}
+        {/* Station Signal Lights */}
         {[
-          { cx: 220, cy: 350, name: 'STA 01', greenAt: 0.05, side: 'left' },
-          { cx: 980, cy: 1150, name: 'STA 02', greenAt: 0.22, side: 'right' },
-          { cx: 220, cy: 1950, name: 'STA 03', greenAt: 0.42, side: 'left' },
-          { cx: 980, cy: 2750, name: 'STA 04', greenAt: 0.62, side: 'right' },
-          { cx: 220, cy: 3550, name: 'STA 05', greenAt: 0.82, side: 'left' },
-          { cx: 980, cy: 4350, name: 'STA 06', greenAt: 0.98, side: 'right' },
+          { cx: 240, cy: 400, name: 'STA 01', greenAt: 0.05, side: 'left' },
+          { cx: 960, cy: 1400, name: 'STA 02', greenAt: 0.22, side: 'right' },
+          { cx: 240, cy: 2400, name: 'STA 03', greenAt: 0.42, side: 'left' },
+          { cx: 960, cy: 3400, name: 'STA 04', greenAt: 0.62, side: 'right' },
+          { cx: 240, cy: 4400, name: 'STA 05', greenAt: 0.82, side: 'left' },
+          { cx: 960, cy: 5400, name: 'STA 06', greenAt: 0.98, side: 'right' },
         ].map((sig, idx) => {
           const isPassed = progress >= sig.greenAt;
           const xOffset = sig.side === 'left' ? -38 : 38;
@@ -172,12 +171,9 @@ export function RailwayTrack({ progress = 0, isNight = false }: RailwayTrackProp
           );
         })}
 
-        {/* ==============================================================
-            THE LOCOMOTIVE (LOCKED DIRECTLY INSIDE SVG COORDINATE SYSTEM)
-            Starts at (220, 350), facing +X (Forward).
-            ============================================================== */}
-        <g id="locomotive-group" transform="translate(220, 350)" className="pointer-events-auto">
-          {/* Night Mode Forward Conical Headlight Beam */}
+        {/* The Locomotive */}
+        <g id="locomotive-group" transform="translate(240, 400)" className="pointer-events-auto">
+          {/* Headlight Beam */}
           {isNight && (
             <g opacity="0.95">
               <polygon
@@ -193,31 +189,29 @@ export function RailwayTrack({ progress = 0, isNight = false }: RailwayTrackProp
             </g>
           )}
 
-          {/* Steam Puffs Drifting Backward (-X Direction) */}
+          {/* Steam Puffs */}
           <g opacity={isNight ? 0.45 : 0.75}>
             <circle cx="-16" cy="-2" r="6" fill="#FAF6EE" opacity="0.65" />
             <circle cx="-30" cy="-6" r="8" fill="#FAF6EE" opacity="0.5" />
             <circle cx="-46" cy="-9" r="10" fill="#FAF6EE" opacity="0.35" />
           </g>
 
-          {/* Under-Chassis / Wheels Shadow */}
+          {/* Chassis */}
           <rect x="-46" y="-16" width="92" height="32" rx="6" fill="#0A1514" opacity="0.65" />
 
-          {/* Steel Flanged Wheels (aligned with dual rails at y = -9 and y = +9) */}
+          {/* Wheels */}
           {[-34, -19, -4, 11, 26].map((wx, wIdx) => (
             <g key={wIdx}>
-              {/* Left Rail Wheel */}
               <rect x={wx - 5.5} y="-13" width="11" height="4.5" rx="1.5" fill="#182322" stroke="#E3B23C" strokeWidth="1.2" />
-              {/* Right Rail Wheel */}
               <rect x={wx - 5.5} y="8.5" width="11" height="4.5" rx="1.5" fill="#182322" stroke="#E3B23C" strokeWidth="1.2" />
             </g>
           ))}
 
-          {/* Connecting Drive Rods on Left and Right */}
+          {/* Drive Rods */}
           <line x1="-34" y1="-13" x2="26" y2="-13" stroke="#E3B23C" strokeWidth="2" strokeLinecap="round" />
           <line x1="-34" y1="13" x2="26" y2="13" stroke="#E3B23C" strokeWidth="2" strokeLinecap="round" />
 
-          {/* Main Boiler Body (Bloody Orange) */}
+          {/* Boiler */}
           <rect
             x="-20"
             y="-10.5"
@@ -229,22 +223,22 @@ export function RailwayTrack({ progress = 0, isNight = false }: RailwayTrackProp
             strokeWidth="1.6"
           />
 
-          {/* Golden Brass Boiler Bands */}
+          {/* Brass Bands */}
           <line x1="-9" y1="-10.5" x2="-9" y2="10.5" stroke="#E3B23C" strokeWidth="1.6" />
           <line x1="7" y1="-10.5" x2="7" y2="10.5" stroke="#E3B23C" strokeWidth="1.6" />
           <line x1="22" y1="-10.5" x2="22" y2="10.5" stroke="#E3B23C" strokeWidth="1.6" />
 
-          {/* Front Boiler Cap / Nose Dome */}
+          {/* Nose Dome */}
           <path d="M 36 -10.5 Q 43 0 36 10.5 Z" fill="#8F2A1A" stroke="#5E160C" strokeWidth="1.4" />
 
-          {/* Smokestack / Chimney */}
+          {/* Smokestack */}
           <circle cx="26" cy="0" r="5" fill="#202A29" stroke="#0F1615" strokeWidth="1.4" />
           <circle cx="26" cy="0" r="2.8" fill="#E3B23C" />
 
           {/* Steam Dome */}
           <ellipse cx="7" cy="0" rx="4" ry="3.5" fill="#E3B23C" stroke="#A87F1C" strokeWidth="1.2" />
 
-          {/* Engineer Cabin (Rusted Teal with Overhanging Roof) */}
+          {/* Cabin */}
           <rect
             x="-45"
             y="-14.5"
@@ -256,7 +250,7 @@ export function RailwayTrack({ progress = 0, isNight = false }: RailwayTrackProp
             strokeWidth="1.6"
           />
 
-          {/* Cabin Warm Glowing Windows */}
+          {/* Windows */}
           <rect
             x="-39"
             y="-12.5"
@@ -278,10 +272,7 @@ export function RailwayTrack({ progress = 0, isNight = false }: RailwayTrackProp
             strokeWidth="0.9"
           />
 
-          {/* Cabin Roof Center Rib */}
-          <line x1="-45" y1="0" x2="-18" y2="0" stroke="#E3B23C" strokeWidth="1.6" />
-
-          {/* Cowcatcher / Pilot on Front Nose */}
+          {/* Cowcatcher */}
           <polygon
             points="36,-9 47,0 36,9"
             fill="#2F6F6D"
@@ -291,7 +282,7 @@ export function RailwayTrack({ progress = 0, isNight = false }: RailwayTrackProp
           <line x1="38" y1="-5.5" x2="44" y2="0" stroke="#FAF5EB" strokeWidth="1.2" strokeOpacity="0.8" />
           <line x1="38" y1="5.5" x2="44" y2="0" stroke="#FAF5EB" strokeWidth="1.2" strokeOpacity="0.8" />
 
-          {/* High-Intensity Headlight Lamp Housing */}
+          {/* Headlight Lamp */}
           <rect x="38" y="-4" width="5.5" height="8" rx="1.8" fill="#142625" />
           <circle
             cx="43"
@@ -301,7 +292,7 @@ export function RailwayTrack({ progress = 0, isNight = false }: RailwayTrackProp
             filter={isNight ? 'url(#railGlow)' : undefined}
           />
 
-          {/* Locomotive Brass Nameplate */}
+          {/* Nameplate */}
           <rect x="-11" y="-3.5" width="22" height="7" rx="1.2" fill="#E3B23C" stroke="#7A5A0A" strokeWidth="0.7" />
           <text
             x="0"
