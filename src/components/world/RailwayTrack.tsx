@@ -266,18 +266,6 @@ export function RailwayTrack({ progress = 0, isNight = false }: RailwayTrackProp
 
           {/* Forward Coupling Hitch to Coach 2 */}
           <rect x="25" y="-2" width="6" height="4" rx="1" fill="#182322" stroke="#5E160C" strokeWidth="0.8" />
-
-          {/* Reversing Toy Train Smoke: Placed on TOP of locomotive for full visibility */}
-          <g id="rear-smoke-group" transform="translate(-15, 0)" className="smoke-hidden">
-            {[1, 2, 3, 4, 5].map((num) => (
-              <g key={num} className={`toy-smoke-rev-${num}`} filter="url(#toySmokeFilter)">
-                <circle cx="0" cy="0" r="6" fill="#FFFFFF" stroke="#7A6858" strokeWidth="0.9" />
-                <circle cx="3" cy="2" r="4.5" fill="#FAF5EE" stroke="#7A6858" strokeWidth="0.8" />
-                <circle cx="-3" cy="-1.5" r="4" fill="#F0E8DC" stroke="#7A6858" strokeWidth="0.8" />
-                <circle cx="1" cy="-2" r="1.8" fill="#FFFFFF" opacity="0.95" />
-              </g>
-            ))}
-          </g>
         </g>
 
         {/* ======================================================== */}
@@ -503,19 +491,10 @@ export function RailwayTrack({ progress = 0, isNight = false }: RailwayTrackProp
           >
             EXP-01
           </text>
-
-          {/* Forward Toy Train Smoke: Placed on TOP of locomotive for full visibility */}
-          <g id="front-smoke-group" transform="translate(18, 0)" className="smoke-active">
-            {[1, 2, 3, 4, 5].map((num) => (
-              <g key={num} className={`toy-smoke-puff-${num}`} filter="url(#toySmokeFilter)">
-                <circle cx="0" cy="0" r="6" fill="#FFFFFF" stroke="#7A6858" strokeWidth="0.9" />
-                <circle cx="-3" cy="2" r="4.5" fill="#FAF5EE" stroke="#7A6858" strokeWidth="0.8" />
-                <circle cx="3" cy="-1.5" r="4" fill="#F0E8DC" stroke="#7A6858" strokeWidth="0.8" />
-                <circle cx="-1" cy="-2" r="1.8" fill="#FFFFFF" opacity="0.95" />
-              </g>
-            ))}
-          </g>
         </g>
+
+        {/* Dynamic World Smoke Particles (Billows and lingers on the track behind the train) */}
+        <g id="dynamic-smoke-container" className="pointer-events-none" />
       </svg>
     </div>
   );

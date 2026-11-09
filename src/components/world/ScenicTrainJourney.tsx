@@ -24,6 +24,22 @@ interface ScenicJourneyProps {
   onActiveStationChange?: (index: number) => void;
 }
 
+interface DynamicSmokeParticle {
+  x: number;
+  y: number;
+  vx: number;
+  vy: number;
+  r: number;
+  growth: number;
+  opacity: number;
+  fade: number;
+  el: SVGGElement;
+  c1: SVGCircleElement;
+  c2: SVGCircleElement;
+  c3: SVGCircleElement;
+  c4: SVGCircleElement;
+}
+
 export function ScenicTrainJourney({
   isNight = false,
   onActiveStationChange,
@@ -33,9 +49,12 @@ export function ScenicTrainJourney({
   const [activeStationIndex, setActiveStationIndex] = useState(0);
   const [scrollProgress, setScrollProgress] = useState(0);
 
-  // Setup GSAP Camera Follower & Articulated Multi-Carriage Train Controller
+  // Setup GSAP Camera Follower, Articulated Train, and Dynamic Procedural Smoke Engine
   useEffect(() => {
     if (typeof window === 'undefined') return;
+
+    let animFrameId: number;
+    let idlePuffIntervalId: NodeJS.Timeout;
 
     const ctx = gsap.context(() => {
       const trackGuide = document.getElementById('train-track-guide') as unknown as SVGPathElement | null;
@@ -43,12 +62,11 @@ export function ScenicTrainJourney({
       const carCoach1 = document.getElementById('train-car-coach-1');
       const carCoach2 = document.getElementById('train-car-coach-2');
       const carRear = document.getElementById('train-car-rear');
-      const smokeFront = document.getElementById('front-smoke-group');
-      const smokeRear = document.getElementById('rear-smoke-group');
       const lightFront = document.getElementById('front-headlight-group');
       const lightRear = document.getElementById('rear-headlight-group');
       const lampFront = document.getElementById('front-headlight-lamp');
       const lampRear = document.getElementById('rear-headlight-lamp');
+      const dynamicSmokeContainer = document.getElementById('dynamic-smoke-container');
       const cameraStage = cameraStageRef.current;
 
       if (!trackGuide || !carLead || !cameraStage || !containerRef.current) return;
@@ -62,32 +80,168 @@ export function ScenicTrainJourney({
       const endDist = Math.max(startDist + 100, totalLength - 280);
       const journeyLength = endDist - startDist;
 
+      // =========================================================================
+      // DYNAMIC PROCEDURAL TOY TRAIN SMOKE SYSTEM (World-Space Lingering Particles)
+      // =========================================================================
+      const activeParticles: DynamicSmokeParticle[] = [];
+      const particlePool: DynamicSmokeParticle[] = [];
+      const POOL_SIZE = 45;
+
+      if (dynamicSmokeContainer) {
+        dynamicSmokeContainer.innerHTML = '';
+        for (let i = 0; i < POOL_SIZE; i++) {
+          const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+          g.setAttribute('filter', 'url(#toySmokeFilter)');
+          g.style.display = 'none';
+
+          // Main cloud center
+          const c1 = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+          c1.setAttribute('cx', '0');
+          c1.setAttribute('cy', '0');
+          c1.setAttribute('r', '6');
+          c1.setAttribute('fill', '#FFFFFF');
+          c1.setAttribute('stroke', '#8A7868');
+          c1.setAttribute('stroke-width', '1.1');
+
+          // Left puff lobe
+          const c2 = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+          c2.setAttribute('cx', '-3');
+          c2.setAttribute('cy', '2');
+          c2.setAttribute('r', '4.5');
+          c2.setAttribute('fill', '#FAF5EE');
+          c2.setAttribute('stroke', '#8A7868');
+          c2.setAttribute('stroke-width', '0.9');
+
+          // Right puff lobe
+          const c3 = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+          c3.setAttribute('cx', '3');
+          c3.setAttribute('cy', '-1.5');
+          c3.setAttribute('r', '4');
+          c3.setAttribute('fill', '#EFE8DB');
+          c3.setAttribute('stroke', '#8A7868');
+          c3.setAttribute('stroke-width', '0.9');
+
+          // Highlight glint
+          const c4 = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+          c4.setAttribute('cx', '-1');
+          c4.setAttribute('cy', '-2');
+          c4.setAttribute('r', '1.6');
+          c4.setAttribute('fill', '#FFFFFF');
+          c4.setAttribute('opacity', '0.9');
+
+          g.appendChild(c1);
+          g.appendChild(c2);
+          g.appendChild(c3);
+          g.appendChild(c4);
+          dynamicSmokeContainer.appendChild(g);
+
+          particlePool.push({
+            x: 0,
+            y: 0,
+            vx: 0,
+            vy: 0,
+            r: 6,
+            growth: 0.35,
+            opacity: 0.9,
+            fade: 0.015,
+            el: g,
+            c1,
+            c2,
+            c3,
+            c4,
+          });
+        }
+      }
+
+      // Spawns a real toy smoke puff in world track coordinates
+      const spawnSmokePuff = (
+        originX: number,
+        originY: number,
+        headingAngleRad: number,
+        isReverse: boolean = false
+      ) => {
+        if (particlePool.length === 0) return;
+        const p = particlePool.pop()!;
+
+        p.x = originX + (Math.random() - 0.5) * 4;
+        p.y = originY + (Math.random() - 0.5) * 4;
+        p.r = 5.5 + Math.random() * 2.5;
+        p.growth = 0.32 + Math.random() * 0.15;
+        p.opacity = 0.92;
+        p.fade = 0.014 + Math.random() * 0.006;
+
+        // Velocity: Pushed backward opposite to travel direction + buoyant upward float (-Y)
+        const throwImpulse = isReverse
+          ? 0.7 + Math.random() * 0.5
+          : -(0.7 + Math.random() * 0.5);
+
+        p.vx = Math.cos(headingAngleRad) * throwImpulse + (Math.random() - 0.5) * 0.5;
+        p.vy = Math.sin(headingAngleRad) * throwImpulse - (0.5 + Math.random() * 0.4);
+
+        p.el.setAttribute('transform', `translate(${p.x.toFixed(1)}, ${p.y.toFixed(1)})`);
+        p.el.style.opacity = p.opacity.toFixed(2);
+        p.el.style.display = 'block';
+
+        activeParticles.push(p);
+      };
+
+      // Physics update loop for all floating smoke particles
+      const updateSmokePhysics = () => {
+        for (let i = activeParticles.length - 1; i >= 0; i--) {
+          const p = activeParticles[i];
+          p.x += p.vx;
+          p.y += p.vy;
+          p.r += p.growth;
+          p.opacity -= p.fade;
+
+          if (p.opacity <= 0) {
+            p.el.style.display = 'none';
+            activeParticles.splice(i, 1);
+            particlePool.push(p);
+          } else {
+            p.el.setAttribute('transform', `translate(${p.x.toFixed(1)}, ${p.y.toFixed(1)})`);
+            p.el.style.opacity = p.opacity.toFixed(2);
+
+            const r = p.r;
+            p.c1.setAttribute('r', r.toFixed(1));
+
+            p.c2.setAttribute('cx', (-r * 0.45).toFixed(1));
+            p.c2.setAttribute('cy', (r * 0.3).toFixed(1));
+            p.c2.setAttribute('r', (r * 0.72).toFixed(1));
+
+            p.c3.setAttribute('cx', (r * 0.45).toFixed(1));
+            p.c3.setAttribute('cy', (-r * 0.25).toFixed(1));
+            p.c3.setAttribute('r', (r * 0.68).toFixed(1));
+
+            p.c4.setAttribute('cx', (-r * 0.15).toFixed(1));
+            p.c4.setAttribute('cy', (-r * 0.35).toFixed(1));
+            p.c4.setAttribute('r', (r * 0.3).toFixed(1));
+          }
+        }
+        animFrameId = requestAnimationFrame(updateSmokePhysics);
+      };
+      animFrameId = requestAnimationFrame(updateSmokePhysics);
+
       // Helper to compute and apply articulated transform along the SVG track path
       const applyCarTransform = (el: HTMLElement | null, dist: number) => {
-        if (!el) return;
+        if (!el) return { x: 0, y: 0, angle: 0, angleRad: 0 };
         const clampedDist = Math.max(0, Math.min(dist, totalLength));
         const pt = trackGuide.getPointAtLength(clampedDist);
         const ahead = trackGuide.getPointAtLength(Math.min(clampedDist + 4, totalLength));
-        const angle = Math.atan2(ahead.y - pt.y, ahead.x - pt.x) * (180 / Math.PI);
+        const angleRad = Math.atan2(ahead.y - pt.y, ahead.x - pt.x);
+        const angle = angleRad * (180 / Math.PI);
         el.setAttribute('transform', `translate(${pt.x}, ${pt.y}) rotate(${angle})`);
+        return { x: pt.x, y: pt.y, angle, angleRad };
       };
 
       // Initial placement at Station 1 (Departure)
       const initLeadDist = startDist;
-      applyCarTransform(carLead, initLeadDist);
+      let currentLeadInfo = applyCarTransform(carLead, initLeadDist);
       applyCarTransform(carCoach1, initLeadDist - 60);
       applyCarTransform(carCoach2, initLeadDist - 120);
-      applyCarTransform(carRear, initLeadDist - 180);
+      let currentRearInfo = applyCarTransform(carRear, initLeadDist - 180);
 
-      // Default initial state: Lead engine smoke & light active, rear engine off
-      if (smokeFront) {
-        smokeFront.classList.add('smoke-active');
-        smokeFront.classList.remove('smoke-hidden');
-      }
-      if (smokeRear) {
-        smokeRear.classList.add('smoke-hidden');
-        smokeRear.classList.remove('smoke-active');
-      }
+      // Default initial headlights: Lead engine active, rear engine off
       if (lightFront) {
         lightFront.classList.add('headlight-active');
         lightFront.classList.remove('headlight-hidden');
@@ -107,6 +261,9 @@ export function ScenicTrainJourney({
 
       cameraStage.style.transform = `translate3d(0, 0px, 0)`;
 
+      let lastPuffDistance = initLeadDist;
+      let currentDirection = 1;
+
       // Master ScrollTrigger across 750vh
       ScrollTrigger.create({
         trigger: containerRef.current,
@@ -116,6 +273,7 @@ export function ScenicTrainJourney({
         onUpdate: (self) => {
           const p = self.progress;
           setScrollProgress(p);
+          currentDirection = self.direction;
 
           // Map progress to active station (0 to 5)
           const stationIdx = Math.min(Math.floor(p * 6), 5);
@@ -126,24 +284,31 @@ export function ScenicTrainJourney({
 
           // Exact mathematical position for each articulated car along the S-curve track
           const leadDist = startDist + p * journeyLength;
-          applyCarTransform(carLead, leadDist);
+          currentLeadInfo = applyCarTransform(carLead, leadDist);
           applyCarTransform(carCoach1, leadDist - 60);
           applyCarTransform(carCoach2, leadDist - 120);
-          applyCarTransform(carRear, leadDist - 180);
+          currentRearInfo = applyCarTransform(carRear, leadDist - 180);
 
-          // Scroll-Direction Dependent Toy Train Smoke & Headlights:
-          // Forward scroll (down): Front engine throws fluffy smoke circles & front headlight illuminates forward tracks.
-          // Backward scroll (up): Rear engine throws fluffy smoke circles & rear headlight illuminates reverse tracks.
+          // Spawn Dynamic Smoke Puff every ~18px of physical movement
+          const deltaMove = Math.abs(leadDist - lastPuffDistance);
+          if (deltaMove >= 18) {
+            lastPuffDistance = leadDist;
+
+            if (self.direction >= 0) {
+              // Forward travel: Front chimney throws smoke puff drifting backward along track
+              const frontChimneyX = currentLeadInfo.x + Math.cos(currentLeadInfo.angleRad) * 18;
+              const frontChimneyY = currentLeadInfo.y + Math.sin(currentLeadInfo.angleRad) * 18;
+              spawnSmokePuff(frontChimneyX, frontChimneyY, currentLeadInfo.angleRad, false);
+            } else {
+              // Backward reverse travel: Rear engine chimney throws smoke puff drifting forward
+              const rearChimneyX = currentRearInfo.x - Math.cos(currentRearInfo.angleRad) * 15;
+              const rearChimneyY = currentRearInfo.y - Math.sin(currentRearInfo.angleRad) * 15;
+              spawnSmokePuff(rearChimneyX, rearChimneyY, currentRearInfo.angleRad, true);
+            }
+          }
+
+          // Direction-dependent headlights
           if (self.direction >= 0) {
-            // Forward travel
-            if (smokeFront) {
-              smokeFront.classList.add('smoke-active');
-              smokeFront.classList.remove('smoke-hidden');
-            }
-            if (smokeRear) {
-              smokeRear.classList.add('smoke-hidden');
-              smokeRear.classList.remove('smoke-active');
-            }
             if (lightFront) {
               lightFront.classList.add('headlight-active');
               lightFront.classList.remove('headlight-hidden');
@@ -161,15 +326,6 @@ export function ScenicTrainJourney({
               lampRear.removeAttribute('filter');
             }
           } else {
-            // Backward reverse travel
-            if (smokeFront) {
-              smokeFront.classList.add('smoke-hidden');
-              smokeFront.classList.remove('smoke-active');
-            }
-            if (smokeRear) {
-              smokeRear.classList.add('smoke-active');
-              smokeRear.classList.remove('smoke-hidden');
-            }
             if (lightFront) {
               lightFront.classList.add('headlight-hidden');
               lightFront.classList.remove('headlight-active');
@@ -189,11 +345,23 @@ export function ScenicTrainJourney({
           }
 
           // Camera Stage: Smoothly follows train from 0 to -4980px
-          // Keeping all station cards safely positioned between HUD header and Ticket Stub navbar
           const targetCameraY = -p * 4980;
           cameraStage.style.transform = `translate3d(0, ${targetCameraY}px, 0)`;
         },
       });
+
+      // Subtle Idle Puff every 950ms when stationary so train feels alive
+      idlePuffIntervalId = setInterval(() => {
+        if (currentDirection >= 0) {
+          const frontChimneyX = currentLeadInfo.x + Math.cos(currentLeadInfo.angleRad) * 18;
+          const frontChimneyY = currentLeadInfo.y + Math.sin(currentLeadInfo.angleRad) * 18;
+          spawnSmokePuff(frontChimneyX, frontChimneyY, currentLeadInfo.angleRad, false);
+        } else {
+          const rearChimneyX = currentRearInfo.x - Math.cos(currentRearInfo.angleRad) * 15;
+          const rearChimneyY = currentRearInfo.y - Math.sin(currentRearInfo.angleRad) * 15;
+          spawnSmokePuff(rearChimneyX, rearChimneyY, currentRearInfo.angleRad, true);
+        }
+      }, 950);
 
       // Play subtle track clack on station transitions
       STATIONS.forEach((_, idx) => {
@@ -207,9 +375,11 @@ export function ScenicTrainJourney({
     }, containerRef);
 
     return () => {
+      cancelAnimationFrame(animFrameId);
+      clearInterval(idlePuffIntervalId);
       ctx.revert();
     };
-  }, [onActiveStationChange]);
+  }, [onActiveStationChange, isNight]);
 
   // Fast Travel jump
   const scrollToStation = (index: number) => {
@@ -232,7 +402,7 @@ export function ScenicTrainJourney({
           ref={cameraStageRef}
           className="relative w-full h-[6000px] will-change-transform transition-transform duration-75 ease-out"
         >
-          {/* SVG Railway Track & Articulated Multi-Carriage Train */}
+          {/* SVG Railway Track, Articulated Train & Dynamic Smoke Particles */}
           <RailwayTrack progress={scrollProgress} isNight={isNight} />
 
           {/* 6 Stations Alternating Along the Journey (Generous 1000px Spacing) */}
