@@ -4,7 +4,6 @@ import React, { useEffect, useRef, useState } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { MotionPathPlugin } from 'gsap/MotionPathPlugin';
-import { Locomotive } from '@/components/world/Locomotive';
 import { RailwayTrack } from '@/components/world/RailwayTrack';
 import { EnvironmentLayers } from '@/components/world/EnvironmentLayers';
 import { Station1Terminal } from '@/components/stations/Station1Terminal';
@@ -28,27 +27,25 @@ interface ScenicJourneyProps {
 
 export function ScenicTrainJourney({ isNight, onActiveStationChange }: ScenicJourneyProps) {
   const containerRef = useRef<HTMLDivElement>(null);
-  const trainRef = useRef<HTMLDivElement>(null);
   const [activeStationIndex, setActiveStationIndex] = useState(0);
   const [scrollProgress, setScrollProgress] = useState(0);
 
-  // Setup GSAP ScrollTrigger & MotionPath
+  // Setup GSAP ScrollTrigger & MotionPath on SVG #locomotive-group
   useEffect(() => {
     if (typeof window === 'undefined') return;
 
-    // Wait for DOM layout to settle
     const ctx = gsap.context(() => {
-      const train = trainRef.current;
+      const train = document.getElementById('locomotive-group');
       const trackGuide = document.getElementById('train-track-guide');
 
       if (train && trackGuide) {
-        // Timeline that scrubs train position across the full height container
-        const tl = gsap.timeline({
+        // Timeline that scrubs the SVG locomotive along the track
+        gsap.to('#locomotive-group', {
           scrollTrigger: {
             trigger: containerRef.current,
             start: 'top top',
             end: 'bottom bottom',
-            scrub: 1.2,
+            scrub: 0.8,
             onUpdate: (self) => {
               const p = self.progress;
               setScrollProgress(p);
@@ -61,27 +58,24 @@ export function ScenicTrainJourney({ isNight, onActiveStationChange }: ScenicJou
               }
             },
           },
-        });
-
-        tl.to(train, {
           motionPath: {
             path: '#train-track-guide',
             align: '#train-track-guide',
-            autoRotate: 90, // follow curve orientation
+            autoRotate: true,
             alignOrigin: [0.5, 0.5],
           },
           ease: 'none',
         });
       }
 
-      // Pin station platforms briefly during scroll for comfortable viewing
+      // Station milestones clack audio
       STATIONS.forEach((station) => {
         const stationEl = document.getElementById(station.id);
         if (stationEl) {
           ScrollTrigger.create({
             trigger: stationEl,
-            start: 'top 20%',
-            end: 'bottom 80%',
+            start: 'top 30%',
+            end: 'bottom 70%',
             onEnter: () => {
               soundEngine.playTrackClack();
             },
@@ -108,19 +102,8 @@ export function ScenicTrainJourney({ isNight, onActiveStationChange }: ScenicJou
       {/* Living Parallax Scenery (Mountains, Sun, Moon, Birds, Stars) */}
       <EnvironmentLayers isNight={isNight} />
 
-      {/* SVG Railway Track & Ballast with Active Signals */}
+      {/* SVG Railway Track with center-locked Locomotive */}
       <RailwayTrack progress={scrollProgress} isNight={isNight} />
-
-      {/* GSAP MotionPath Follower Locomotive */}
-      <div
-        ref={trainRef}
-        className="fixed top-0 left-0 z-40 pointer-events-none transform -translate-x-1/2 -translate-y-1/2 transition-opacity duration-300"
-        style={{
-          opacity: scrollProgress < 0.005 ? 0.95 : 1,
-        }}
-      >
-        <Locomotive isNight={isNight} isMoving={true} />
-      </div>
 
       {/* 6 Railway Station Platforms (Section-Pinned / Padded) */}
       <div className="relative z-20 space-y-36 sm:space-y-48 pt-16 pb-40">

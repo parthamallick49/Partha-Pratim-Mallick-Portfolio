@@ -39,6 +39,29 @@ export function RailwayTrack({ progress = 0, isNight = false }: RailwayTrackProp
             <feGaussianBlur stdDeviation="4" result="blur" />
             <feComposite in="SourceGraphic" in2="blur" operator="over" />
           </filter>
+
+          <filter id="headlightBlur" x="-30%" y="-30%" width="160%" height="160%">
+            <feGaussianBlur stdDeviation="6" result="blur" />
+          </filter>
+
+          <linearGradient id="trainBoiler" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0%" stopColor="#8F2A1A" />
+            <stop offset="35%" stopColor="#C84630" />
+            <stop offset="70%" stopColor="#E45B44" />
+            <stop offset="100%" stopColor="#8F2A1A" />
+          </linearGradient>
+
+          <linearGradient id="trainCabin" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor="#1E4D4B" />
+            <stop offset="50%" stopColor="#2F6F6D" />
+            <stop offset="100%" stopColor="#143634" />
+          </linearGradient>
+
+          <linearGradient id="beamGradient" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0%" stopColor="#FEF08A" stopOpacity="0.85" />
+            <stop offset="40%" stopColor="#FEF08A" stopOpacity="0.4" />
+            <stop offset="100%" stopColor="#FEF08A" stopOpacity="0" />
+          </linearGradient>
         </defs>
 
         {/* Gravel Ballast Bed (Sub-track foundation) */}
@@ -147,6 +170,150 @@ export function RailwayTrack({ progress = 0, isNight = false }: RailwayTrackProp
             </g>
           );
         })}
+
+        {/* ==============================================================
+            THE LOCOMOTIVE (LOCKED DIRECTLY INSIDE SVG COORDINATE SYSTEM)
+            Centered at (0,0), facing +X (Forward). GSAP will animate along #train-track-guide!
+            ============================================================== */}
+        <g id="locomotive-group" transform="translate(300, 350)" className="pointer-events-auto">
+          {/* Night Mode Forward Conical Headlight Beam (Shooting Forward in +X Direction) */}
+          {isNight && (
+            <g opacity="0.9">
+              <polygon
+                points="40,0 240,-55 240,55"
+                fill="url(#beamGradient)"
+                filter="url(#headlightBlur)"
+              />
+              <polygon
+                points="40,0 180,-30 180,30"
+                fill="url(#beamGradient)"
+                opacity="0.8"
+              />
+            </g>
+          )}
+
+          {/* Steam Puffs Drifting Backward (-X Direction) */}
+          <g opacity={isNight ? 0.45 : 0.75}>
+            <circle cx="-15" cy="-2" r="5" fill="#FAF6EE" opacity="0.6" />
+            <circle cx="-28" cy="-5" r="7" fill="#FAF6EE" opacity="0.5" />
+            <circle cx="-42" cy="-8" r="9" fill="#FAF6EE" opacity="0.35" />
+          </g>
+
+          {/* Under-Chassis / Wheels Shadow */}
+          <rect x="-44" y="-14" width="86" height="28" rx="5" fill="#0A1514" opacity="0.6" />
+
+          {/* Steel Flanged Wheels (aligned with dual rails at y = -8 and y = +8) */}
+          {[-32, -18, -4, 10, 24].map((wx, wIdx) => (
+            <g key={wIdx}>
+              {/* Left Rail Wheel */}
+              <rect x={wx - 5} y="-12" width="10" height="4" rx="1.5" fill="#182322" stroke="#E3B23C" strokeWidth="1" />
+              {/* Right Rail Wheel */}
+              <rect x={wx - 5} y="8" width="10" height="4" rx="1.5" fill="#182322" stroke="#E3B23C" strokeWidth="1" />
+            </g>
+          ))}
+
+          {/* Connecting Drive Rods on Left and Right */}
+          <line x1="-32" y1="-12" x2="24" y2="-12" stroke="#E3B23C" strokeWidth="1.8" strokeLinecap="round" />
+          <line x1="-32" y1="12" x2="24" y2="12" stroke="#E3B23C" strokeWidth="1.8" strokeLinecap="round" />
+
+          {/* Main Boiler Body (Bloody Orange) */}
+          <rect
+            x="-18"
+            y="-9.5"
+            width="52"
+            height="19"
+            rx="5"
+            fill="url(#trainBoiler)"
+            stroke="#6C1E12"
+            strokeWidth="1.5"
+          />
+
+          {/* Golden Brass Boiler Bands */}
+          <line x1="-8" y1="-9.5" x2="-8" y2="9.5" stroke="#E3B23C" strokeWidth="1.5" />
+          <line x1="6" y1="-9.5" x2="6" y2="9.5" stroke="#E3B23C" strokeWidth="1.5" />
+          <line x1="20" y1="-9.5" x2="20" y2="9.5" stroke="#E3B23C" strokeWidth="1.5" />
+
+          {/* Front Boiler Cap / Nose Dome */}
+          <path d="M 34 -9.5 Q 40 0 34 9.5 Z" fill="#8F2A1A" stroke="#5E160C" strokeWidth="1.2" />
+
+          {/* Smokestack / Chimney */}
+          <circle cx="24" cy="0" r="4.5" fill="#202A29" stroke="#0F1615" strokeWidth="1.2" />
+          <circle cx="24" cy="0" r="2.5" fill="#E3B23C" />
+
+          {/* Steam Dome */}
+          <ellipse cx="6" cy="0" rx="3.5" ry="3" fill="#E3B23C" stroke="#A87F1C" strokeWidth="1" />
+
+          {/* Engineer Cabin (Rusted Teal with Overhanging Roof) */}
+          <rect
+            x="-42"
+            y="-13"
+            width="25"
+            height="26"
+            rx="3"
+            fill="url(#trainCabin)"
+            stroke="#143634"
+            strokeWidth="1.5"
+          />
+
+          {/* Cabin Warm Glowing Windows (Left & Right) */}
+          <rect
+            x="-36"
+            y="-11"
+            width="14"
+            height="5"
+            rx="1.5"
+            fill={isNight ? '#FEF08A' : '#FFFBEB'}
+            stroke="#143634"
+            strokeWidth="0.8"
+          />
+          <rect
+            x="-36"
+            y="6"
+            width="14"
+            height="5"
+            rx="1.5"
+            fill={isNight ? '#FEF08A' : '#FFFBEB'}
+            stroke="#143634"
+            strokeWidth="0.8"
+          />
+
+          {/* Cabin Roof Center Rib */}
+          <line x1="-42" y1="0" x2="-17" y2="0" stroke="#E3B23C" strokeWidth="1.5" />
+
+          {/* Cowcatcher / Pilot on Front Nose */}
+          <polygon
+            points="34,-8 44,0 34,8"
+            fill="#2F6F6D"
+            stroke="#122E2C"
+            strokeWidth="1.2"
+          />
+          <line x1="36" y1="-5" x2="41" y2="0" stroke="#FAF5EB" strokeWidth="1" strokeOpacity="0.7" />
+          <line x1="36" y1="5" x2="41" y2="0" stroke="#FAF5EB" strokeWidth="1" strokeOpacity="0.7" />
+
+          {/* High-Intensity Headlight Lamp Housing */}
+          <rect x="36" y="-3.5" width="5" height="7" rx="1.5" fill="#142625" />
+          <circle
+            cx="40"
+            cy="0"
+            r="3.5"
+            fill={isNight ? '#FEF08A' : '#FDE047'}
+            filter={isNight ? 'url(#railGlow)' : undefined}
+          />
+
+          {/* Locomotive Brass Nameplate */}
+          <rect x="-10" y="-3" width="20" height="6" rx="1" fill="#E3B23C" stroke="#7A5A0A" strokeWidth="0.6" />
+          <text
+            x="0"
+            y="1.5"
+            fill="#1C2E2D"
+            fontSize="3.8"
+            fontWeight="bold"
+            fontFamily="monospace"
+            textAnchor="middle"
+          >
+            EXP-6000
+          </text>
+        </g>
       </svg>
     </div>
   );
