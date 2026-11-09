@@ -4,29 +4,70 @@ import React, { useState, useMemo } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  FolderGit2, 
-  ExternalLink, 
-  Github, 
-  Sparkles, 
-  Layers, 
-  CheckCircle2, 
-  X, 
-  Maximize2, 
-  Copy, 
-  Check, 
-  Terminal, 
-  Filter, 
+import {
+  FolderGit2,
+  ExternalLink,
+  Github,
+  Sparkles,
+  CheckCircle2,
+  X,
+  Maximize2,
+  Copy,
+  Check,
+  Terminal,
   RotateCcw,
-  Code2
+  ArrowUpRight,
 } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import { PROJECTS_DATA, ProjectItem } from '@/lib/data';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { useProjectFilter } from '@/hooks/use-project-filter';
 
 const CATEGORIES = ['All', 'Mobile', 'Enterprise', 'Full Stack'] as const;
+
+// Category badge config
+const CATEGORY_STYLES: Record<string, string> = {
+  Mobile: 'badge-cyan',
+  Enterprise: 'badge-indigo',
+  'Full Stack': 'badge-emerald',
+};
+
+// Variants outside component (rerender-variants-object rule)
+const gridVariants = {
+  hidden: {},
+  visible: { transition: { staggerChildren: 0.1 } },
+};
+
+const cardVariants = {
+  hidden: { opacity: 0, y: 32, scale: 0.97 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    scale: 1,
+    transition: { type: 'spring' as const, stiffness: 120, damping: 14 },
+  },
+  exit: {
+    opacity: 0,
+    y: -16,
+    scale: 0.96,
+    transition: { duration: 0.2 },
+  },
+};
+
+const modalVariants = {
+  hidden: { opacity: 0, scale: 0.94, y: 24 },
+  visible: {
+    opacity: 1,
+    scale: 1,
+    y: 0,
+    transition: { type: 'spring' as const, stiffness: 300, damping: 28 },
+  },
+  exit: {
+    opacity: 0,
+    scale: 0.94,
+    y: 24,
+    transition: { duration: 0.2 },
+  },
+};
 
 export function ProjectsSection() {
   const { filter, setFilter, resetFilter } = useProjectFilter();
@@ -34,23 +75,17 @@ export function ProjectsSection() {
   const [activeProject, setActiveProject] = useState<ProjectItem | null>(null);
   const [copiedClone, setCopiedClone] = useState(false);
 
-  // Compute filtered projects based on category or specific tech filter
   const filteredProjects = useMemo(() => {
     return PROJECTS_DATA.filter((project) => {
-      // If a specific tech filter is active (not All and not a category)
       if (filter !== 'All') {
-        const matchesTech = project.tags.some((tag) =>
-          tag.toLowerCase().includes(filter.toLowerCase()) ||
-          filter.toLowerCase().includes(tag.toLowerCase())
+        const matchesTech = project.tags.some(
+          (tag) =>
+            tag.toLowerCase().includes(filter.toLowerCase()) ||
+            filter.toLowerCase().includes(tag.toLowerCase())
         );
         if (!matchesTech) return false;
       }
-
-      // If category tab is active
-      if (selectedCategory !== 'All') {
-        return project.category === selectedCategory;
-      }
-
+      if (selectedCategory !== 'All') return project.category === selectedCategory;
       return true;
     });
   }, [filter, selectedCategory]);
@@ -63,263 +98,284 @@ export function ProjectsSection() {
 
   return (
     <section id="projects" className="section-padding relative">
+      <div className="absolute top-0 inset-x-0 h-px section-divider" />
+
       <div className="container-editorial">
-        
         {/* Section Header */}
-        <div className="flex flex-col items-center text-center space-y-3 mb-12">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#E6DBC2] dark:bg-[#204E4D] border border-[#DCD0B6] dark:border-[#2E6B69] text-xs font-mono text-[#2F6F6D] dark:text-[#E6DBC2]">
-            <FolderGit2 className="w-3.5 h-3.5 text-[#C84630]" />
-            <span>03 // Production Artifacts</span>
-          </div>
-          <h2 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-normal text-[#1C1B18] dark:text-[#FAF6EC] tracking-tight">
-            Featured Projects &amp; Systems
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: '-80px' }}
+          transition={{ type: 'spring', stiffness: 120, damping: 20 }}
+          className="flex flex-col items-center text-center space-y-4 mb-14"
+        >
+          <span className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full glass border border-primary/25 text-xs font-mono text-primary">
+            <FolderGit2 className="w-3.5 h-3.5" />
+            03 // Production Artifacts
+          </span>
+          <h2 className="font-display text-3xl sm:text-4xl lg:text-5xl font-bold text-foreground tracking-tight">
+            Featured Projects &amp;{' '}
+            <span className="text-gradient-indigo">Systems</span>
           </h2>
-          <p className="font-sans text-sm sm:text-base text-[#52504A] dark:text-[#B5C7C6] max-w-2xl">
+          <p className="font-sans text-sm sm:text-base text-muted-foreground max-w-2xl">
             Each project represents a distinct architectural challenge across mobile UX, state management, and cloud APIs.
           </p>
 
           {/* Category Filter Tabs */}
           <div className="flex flex-wrap items-center justify-center gap-2 pt-4">
             {CATEGORIES.map((cat) => (
-              <button
+              <motion.button
                 key={cat}
                 onClick={() => {
                   setSelectedCategory(cat);
                   if (filter !== 'All') resetFilter();
                 }}
-                className={`px-4 py-1.5 rounded-full text-xs font-mono transition-all duration-200 border ${
+                className={`px-4 py-2 rounded-xl text-xs font-mono font-medium transition-all duration-200 ${
                   selectedCategory === cat && filter === 'All'
-                    ? 'bg-[#2F6F6D] dark:bg-[#C84630] text-[#FAF6EC] border-transparent shadow-sm font-semibold'
-                    : 'bg-[#FAF6EC] dark:bg-[#204E4D] text-[#1C1B18] dark:text-[#FAF6EC] border-[#DCD0B6] dark:border-[#2E6B69] hover:bg-[#E6DBC2]'
+                    ? 'bg-primary/15 text-primary border border-primary/30 shadow-glow-sm-indigo'
+                    : 'glass border border-white/8 text-muted-foreground hover:text-foreground hover:border-white/15'
                 }`}
+                whileHover={{ scale: 1.04, y: -1 }}
+                whileTap={{ scale: 0.97 }}
+                transition={{ type: 'spring', stiffness: 400, damping: 25 }}
               >
                 {cat}
-              </button>
+              </motion.button>
             ))}
 
-            {/* Active Tech Tag Override */}
             {filter !== 'All' && (
-              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#C84630] text-[#FAF6EC] text-xs font-mono shadow-sm">
-                <span>Filtering by: {filter}</span>
-                <button
-                  onClick={resetFilter}
-                  className="hover:opacity-80"
-                  title="Clear tech filter"
-                >
+              <motion.div
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.9 }}
+                className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-primary/10 border border-primary/30 text-xs font-mono text-primary"
+              >
+                <span>Filtering: {filter}</span>
+                <button onClick={resetFilter} className="hover:text-white transition-colors">
                   <RotateCcw className="w-3 h-3" />
                 </button>
-              </div>
+              </motion.div>
             )}
           </div>
-        </div>
+        </motion.div>
 
-        {/* Projects Grid: Claude Artifact Style */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {filteredProjects.map((project, idx) => {
-            const projectImage = PlaceHolderImages.find((p) => p.id === project.image);
+        {/* Projects Grid */}
+        <AnimatePresence mode="popLayout">
+          <motion.div
+            key={`${selectedCategory}-${filter}`}
+            variants={gridVariants}
+            initial="hidden"
+            animate="visible"
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+          >
+            {filteredProjects.map((project) => {
+              const projectImage = PlaceHolderImages.find((p) => p.id === project.image);
+              const catStyle = CATEGORY_STYLES[project.category] || 'badge-indigo';
 
-            return (
-              <motion.div
-                key={project.id}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: idx * 0.1 }}
-                className="group flex flex-col justify-between rounded-3xl bg-[#FAF6EC] dark:bg-[#204E4D] border-2 border-[#DCD0B6] dark:border-[#2E6B69] shadow-claude-card hover:shadow-claude-hover transition-all overflow-hidden"
-              >
-                {/* Artifact Top Bar */}
-                <div className="px-4 py-2.5 bg-[#E6DBC2]/60 dark:bg-[#1A403F]/70 border-b border-[#DCD0B6] dark:border-[#2E6B69] flex items-center justify-between text-xs font-mono text-[#52504A] dark:text-[#B5C7C6]">
-                  <span className="flex items-center gap-1.5 truncate">
-                    <span className="w-2 h-2 rounded-full bg-[#C84630]" />
-                    artifact::{project.id}
-                  </span>
-                  <span className="text-[10px] uppercase font-bold text-[#2F6F6D] dark:text-[#FAF6EC]">
-                    {project.version}
-                  </span>
-                </div>
-
-                {/* Mockup Preview Area */}
-                <div
+              return (
+                <motion.div
+                  key={project.id}
+                  layout
+                  variants={cardVariants}
+                  exit="exit"
+                  whileHover={{
+                    y: -6,
+                    transition: { type: 'spring', stiffness: 300, damping: 25 },
+                  }}
+                  className="group flex flex-col rounded-3xl glass border border-white/8 glow-soft overflow-hidden cursor-pointer"
                   onClick={() => setActiveProject(project)}
-                  className="relative aspect-[16/10] bg-[#E6DBC2] dark:bg-[#1A403F] overflow-hidden cursor-pointer"
                 >
-                  {projectImage && (
-                    <Image
-                      src={projectImage.imageUrl}
-                      alt={project.title}
-                      fill
-                      className="object-cover transition-transform duration-500 group-hover:scale-105"
-                      sizes="(max-width: 768px) 100vw, 400px"
-                    />
-                  )}
-                  {/* Subtle hover overlay */}
-                  <div className="absolute inset-0 bg-[#1C1B18]/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center backdrop-blur-[2px]">
-                    <span className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-[#FAF6EC] text-[#1C1B18] font-mono text-xs font-bold shadow-lg">
-                      <Maximize2 className="w-3.5 h-3.5 text-[#C84630]" />
-                      Inspect Artifact
+                  {/* Top artifact bar */}
+                  <div className="px-4 py-2.5 bg-white/3 border-b border-white/6 flex items-center justify-between text-xs font-mono text-muted-foreground">
+                    <span className="flex items-center gap-1.5 truncate">
+                      <span className="w-2 h-2 rounded-full bg-primary/70" />
+                      artifact::{project.id}
+                    </span>
+                    <span className={`text-[10px] font-mono font-bold px-2 py-0.5 rounded-lg ${catStyle}`}>
+                      {project.version}
                     </span>
                   </div>
-                </div>
 
-                {/* Card Content */}
-                <div className="p-6 flex-grow flex flex-col justify-between space-y-4">
-                  <div className="space-y-2">
-                    <div className="flex items-center justify-between text-xs font-mono text-[#2F6F6D] dark:text-[#DCD0B6]">
-                      <span>{project.category}</span>
-                      <span>{project.year}</span>
+                  {/* Image */}
+                  <div className="relative aspect-[16/10] bg-white/3 overflow-hidden">
+                    {projectImage && (
+                      <Image
+                        src={projectImage.imageUrl}
+                        alt={project.title}
+                        fill
+                        className="object-cover transition-transform duration-500 group-hover:scale-105"
+                        sizes="(max-width: 768px) 100vw, 400px"
+                      />
+                    )}
+                    {/* Hover overlay */}
+                    <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center backdrop-blur-[2px]">
+                      <span className="inline-flex items-center gap-2 px-4 py-2 rounded-xl glass text-foreground font-mono text-xs font-bold border border-white/20">
+                        <Maximize2 className="w-3.5 h-3.5 text-primary" />
+                        Inspect Artifact
+                      </span>
                     </div>
-
-                    <h3
-                      onClick={() => setActiveProject(project)}
-                      className="font-serif text-xl sm:text-2xl font-bold text-[#1C1B18] dark:text-[#FAF6EC] hover:text-[#C84630] cursor-pointer transition-colors"
-                    >
-                      {project.title}
-                    </h3>
-
-                    <p className="font-sans text-xs sm:text-sm text-[#52504A] dark:text-[#DCD0B6] line-clamp-3 leading-relaxed">
-                      {project.description}
-                    </p>
+                    {/* Category badge overlay */}
+                    <div className="absolute top-3 left-3">
+                      <span className={`text-[10px] font-mono font-bold px-2.5 py-1 rounded-lg backdrop-blur-sm ${catStyle}`}>
+                        {project.category}
+                      </span>
+                    </div>
                   </div>
 
-                  {/* Monospace Tech Badges */}
-                  <div className="pt-2">
+                  {/* Content */}
+                  <div className="p-5 flex-1 flex flex-col justify-between space-y-4">
+                    <div className="space-y-2">
+                      <div className="flex items-center justify-between text-xs font-mono text-muted-foreground">
+                        <span>{project.year}</span>
+                        <span className="text-primary/70">{project.version}</span>
+                      </div>
+                      <h3 className="font-display text-xl font-bold text-foreground group-hover:text-primary transition-colors duration-200">
+                        {project.title}
+                      </h3>
+                      <p className="font-sans text-xs text-muted-foreground line-clamp-3 leading-relaxed">
+                        {project.description}
+                      </p>
+                    </div>
+
+                    {/* Tech badges */}
                     <div className="flex flex-wrap gap-1.5">
                       {project.tags.slice(0, 4).map((tag) => (
                         <span
                           key={tag}
-                          className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-[#E6DBC2]/80 dark:bg-[#1A403F] text-[#1C1B18] dark:text-[#FAF6EC] border border-[#DCD0B6]/60 dark:border-[#2E6B69]/60"
+                          className="text-[10px] font-mono px-2.5 py-1 rounded-lg bg-white/4 border border-white/8 text-muted-foreground"
                         >
                           {tag}
                         </span>
                       ))}
                       {project.tags.length > 4 && (
-                        <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-[#E6DBC2]/50 text-[#52504A] dark:text-[#B5C7C6]">
+                        <span className="text-[10px] font-mono px-2 py-1 rounded-lg text-muted-foreground">
                           +{project.tags.length - 4}
                         </span>
                       )}
                     </div>
                   </div>
-                </div>
 
-                {/* Card Footer Actions */}
-                <div className="px-6 py-4 bg-[#E6DBC2]/30 dark:bg-[#1A403F]/40 border-t border-[#DCD0B6]/60 dark:border-[#2E6B69]/60 flex items-center justify-between">
-                  <button
-                    onClick={() => setActiveProject(project)}
-                    className="text-xs font-mono font-semibold text-[#2F6F6D] dark:text-[#FAF6EC] hover:text-[#C84630] flex items-center gap-1"
-                  >
-                    Details &amp; Arch →
-                  </button>
-
-                  <div className="flex items-center gap-2">
-                    <Button
-                      asChild
-                      variant="ghost"
-                      size="sm"
-                      className="h-8 px-2.5 rounded-full text-xs font-mono hover:bg-[#E6DBC2] dark:hover:bg-[#1A403F]"
-                    >
-                      <Link href={project.github} target="_blank" rel="noopener noreferrer">
-                        <Github className="w-3.5 h-3.5 mr-1 text-[#1C1B18] dark:text-[#FAF6EC]" />
-                        Source
-                      </Link>
-                    </Button>
-
-                    <Button
-                      asChild
-                      size="sm"
-                      className="h-8 px-3 rounded-full text-xs font-mono bg-[#C84630] hover:bg-[#B83E29] text-[#FAF6EC]"
-                    >
-                      <Link href={project.link} target="_blank" rel="noopener noreferrer">
-                        <ExternalLink className="w-3.5 h-3.5 mr-1" />
-                        Demo
-                      </Link>
-                    </Button>
+                  {/* Card footer */}
+                  <div className="px-5 py-4 bg-white/2 border-t border-white/6 flex items-center justify-between">
+                    <span className="text-xs font-mono text-primary font-semibold group-hover:text-primary/70 transition-colors">
+                      Details & Arch →
+                    </span>
+                    <div className="flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
+                      <motion.a
+                        href={project.github}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="p-2 rounded-xl glass border border-white/8 text-muted-foreground hover:text-foreground hover:border-white/15 transition-all"
+                        whileHover={{ scale: 1.1 }}
+                        whileTap={{ scale: 0.95 }}
+                        transition={{ type: 'spring', stiffness: 400, damping: 25 }}
+                      >
+                        <Github className="w-3.5 h-3.5" />
+                      </motion.a>
+                      <motion.a
+                        href={project.link}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="p-2 rounded-xl bg-primary/10 border border-primary/25 text-primary hover:bg-primary/20 transition-all"
+                        whileHover={{ scale: 1.1 }}
+                        whileTap={{ scale: 0.95 }}
+                        transition={{ type: 'spring', stiffness: 400, damping: 25 }}
+                      >
+                        <ExternalLink className="w-3.5 h-3.5" />
+                      </motion.a>
+                    </div>
                   </div>
-                </div>
-              </motion.div>
-            );
-          })}
-        </div>
+                </motion.div>
+              );
+            })}
+          </motion.div>
+        </AnimatePresence>
 
-        {/* Empty state if filter yields zero */}
+        {/* Empty state */}
         {filteredProjects.length === 0 && (
-          <div className="py-16 text-center space-y-3">
-            <p className="font-serif text-xl text-[#1C1B18] dark:text-[#FAF6EC]">
-              No projects found matching &ldquo;{filter}&rdquo;
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="py-20 text-center space-y-4"
+          >
+            <p className="font-display text-xl text-muted-foreground">
+              No projects match &ldquo;{filter}&rdquo;
             </p>
-            <Button
+            <button
               onClick={resetFilter}
-              variant="outline"
-              className="rounded-full font-mono text-xs"
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl glass border border-white/10 text-sm font-mono text-muted-foreground hover:text-foreground hover:border-primary/30 transition-all"
             >
-              Reset Filters
-            </Button>
-          </div>
+              <RotateCcw className="w-3.5 h-3.5" /> Reset Filters
+            </button>
+          </motion.div>
         )}
-
       </div>
 
-      {/* ------------------------------------------------------------------ */}
-      {/* CLAUDE ARTIFACT LIVE INSPECTOR DRAWER / MODAL */}
-      {/* ------------------------------------------------------------------ */}
+      {/* ── Project Inspector Modal ── */}
       <AnimatePresence>
         {activeProject && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 overflow-y-auto">
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6">
             {/* Backdrop */}
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setActiveProject(null)}
-              className="fixed inset-0 bg-[#1C1B18]/70 backdrop-blur-sm"
+              className="fixed inset-0 bg-black/70 backdrop-blur-sm"
             />
 
-            {/* Artifact Container */}
+            {/* Modal */}
             <motion.div
-              initial={{ opacity: 0, scale: 0.95, y: 20 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              transition={{ type: 'spring', damping: 28, stiffness: 350 }}
-              className="relative w-full max-w-3xl rounded-3xl bg-[#FAF6EC] dark:bg-[#204E4D] border-2 border-[#DCD0B6] dark:border-[#2E6B69] shadow-2xl overflow-hidden z-10 max-h-[90vh] flex flex-col"
+              variants={modalVariants}
+              initial="hidden"
+              animate="visible"
+              exit="exit"
+              className="relative w-full max-w-3xl rounded-3xl glass border border-white/10 shadow-[0_32px_80px_rgba(0,0,0,0.6)] overflow-hidden z-10 max-h-[90vh] flex flex-col"
             >
-              {/* Modal Top Header styled as Claude Artifact window */}
-              <div className="px-6 py-4 bg-[#E6DBC2] dark:bg-[#1A403F] border-b border-[#DCD0B6] dark:border-[#2E6B69] flex items-center justify-between">
+              {/* Modal Top Bar */}
+              <div className="px-6 py-4 bg-white/3 border-b border-white/8 flex items-center justify-between flex-shrink-0">
                 <div className="flex items-center gap-2.5">
-                  <div className="w-3 h-3 rounded-full bg-[#C84630]" />
-                  <span className="font-mono text-xs text-[#1C1B18] dark:text-[#FAF6EC] font-semibold">
-                    claude-artifact://{activeProject.id}.spec
+                  <div className="flex gap-1.5">
+                    <div className="w-3 h-3 rounded-full bg-red-500/70" />
+                    <div className="w-3 h-3 rounded-full bg-amber-400/70" />
+                    <div className="w-3 h-3 rounded-full bg-secondary/70" />
+                  </div>
+                  <span className="font-mono text-xs text-muted-foreground">
+                    artifact://{activeProject.id}.spec
                   </span>
-                  <Badge variant="outline" className="text-[10px] font-mono border-[#C84630] text-[#C84630]">
+                  <span className={`text-[10px] font-mono font-bold px-2 py-0.5 rounded-lg ${CATEGORY_STYLES[activeProject.category] || 'badge-indigo'}`}>
                     {activeProject.version}
-                  </Badge>
+                  </span>
                 </div>
-                <button
+                <motion.button
                   onClick={() => setActiveProject(null)}
-                  className="p-1.5 rounded-full hover:bg-black/10 dark:hover:bg-white/10 text-[#1C1B18] dark:text-[#FAF6EC] transition-colors"
+                  className="p-1.5 rounded-xl hover:bg-white/8 text-muted-foreground hover:text-foreground transition-colors"
+                  whileHover={{ scale: 1.1, rotate: 90 }}
+                  whileTap={{ scale: 0.9 }}
+                  transition={{ type: 'spring', stiffness: 400, damping: 25 }}
                 >
-                  <X className="w-5 h-5" />
-                </button>
+                  <X className="w-4.5 h-4.5" />
+                </motion.button>
               </div>
 
-              {/* Modal Body Content (Scrollable) */}
-              <div className="p-6 sm:p-8 overflow-y-auto space-y-6">
-                
-                {/* Header Info */}
+              {/* Scrollable body */}
+              <div className="p-6 sm:p-8 overflow-y-auto space-y-6 flex-1">
                 <div className="space-y-2">
-                  <div className="flex items-center gap-2 text-xs font-mono text-[#2F6F6D] dark:text-[#DCD0B6]">
+                  <div className="flex items-center gap-2 text-xs font-mono text-muted-foreground">
                     <span>{activeProject.category} System</span>
                     <span>·</span>
-                    <span>Year: {activeProject.year}</span>
+                    <span>{activeProject.year}</span>
                   </div>
-                  <h3 className="font-serif text-2xl sm:text-3xl font-bold text-[#1C1B18] dark:text-[#FAF6EC]">
+                  <h3 className="font-display text-2xl sm:text-3xl font-bold text-foreground">
                     {activeProject.title}
                   </h3>
-                  <p className="font-serif italic text-base text-[#C84630]">
+                  <p className="font-sans italic text-sm text-primary/80">
                     {activeProject.subtitle}
                   </p>
                 </div>
 
-                {/* Device Mockup */}
-                <div className="relative aspect-[16/9] w-full rounded-2xl overflow-hidden border border-[#DCD0B6] dark:border-[#2E6B69] bg-[#E6DBC2]">
+                {/* Image */}
+                <div className="relative aspect-[16/9] rounded-2xl overflow-hidden border border-white/8 bg-white/3">
                   {PlaceHolderImages.find((p) => p.id === activeProject.image) && (
                     <Image
                       src={PlaceHolderImages.find((p) => p.id === activeProject.image)!.imageUrl}
@@ -330,108 +386,103 @@ export function ProjectsSection() {
                   )}
                 </div>
 
-                {/* Architecture Summary */}
-                <div className="p-5 rounded-2xl bg-[#E6DBC2]/50 dark:bg-[#1A403F]/60 border border-[#DCD0B6] dark:border-[#2E6B69] space-y-2">
-                  <div className="flex items-center gap-2 text-xs font-mono uppercase tracking-wider text-[#2F6F6D] dark:text-[#FAF6EC] font-semibold">
-                    <Terminal className="w-3.5 h-3.5 text-[#C84630]" />
-                    Architecture &amp; System Design Notes
+                {/* Architecture notes */}
+                <div className="p-5 rounded-2xl bg-white/3 border border-white/8 space-y-2">
+                  <div className="flex items-center gap-2 text-xs font-mono uppercase tracking-wider text-primary font-semibold">
+                    <Terminal className="w-3.5 h-3.5" />
+                    Architecture & System Design
                   </div>
-                  <p className="text-sm font-sans text-[#1C1B18]/90 dark:text-[#FAF6EC]/90 leading-relaxed">
+                  <p className="text-sm text-muted-foreground leading-relaxed">
                     {activeProject.architectureNotes}
                   </p>
                 </div>
 
-                {/* Key Features List */}
+                {/* Key features */}
                 <div className="space-y-3">
-                  <h4 className="font-serif text-lg font-bold text-[#1C1B18] dark:text-[#FAF6EC]">
-                    Key Production Features
-                  </h4>
+                  <h4 className="font-display text-lg font-bold text-foreground">Key Production Features</h4>
                   <ul className="grid sm:grid-cols-2 gap-2.5">
                     {activeProject.keyFeatures.map((feat, i) => (
-                      <li
+                      <motion.li
                         key={i}
-                        className="flex items-start gap-2 p-3 rounded-xl bg-[#FAF6EC] dark:bg-[#1A403F] border border-[#DCD0B6]/60 dark:border-[#2E6B69]/60 text-xs font-sans text-[#52504A] dark:text-[#DCD0B6]"
+                        initial={{ opacity: 0, x: -10 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: 0.1 + i * 0.07 }}
+                        className="flex items-start gap-2 p-3 rounded-xl bg-white/3 border border-white/8 text-xs text-muted-foreground"
                       >
-                        <CheckCircle2 className="w-4 h-4 text-[#C84630] shrink-0 mt-0.5" />
+                        <CheckCircle2 className="w-4 h-4 text-secondary shrink-0 mt-0.5" />
                         <span>{feat}</span>
-                      </li>
+                      </motion.li>
                     ))}
                   </ul>
                 </div>
 
-                {/* Tech Badges */}
+                {/* Tech badges */}
                 <div className="space-y-2">
-                  <h4 className="font-serif text-sm font-bold text-[#1C1B18] dark:text-[#FAF6EC]">
-                    Technologies &amp; Libraries
-                  </h4>
+                  <h4 className="font-mono text-sm font-semibold text-foreground">Technologies & Libraries</h4>
                   <div className="flex flex-wrap gap-2">
                     {activeProject.tags.map((tag) => (
-                      <span
-                        key={tag}
-                        className="text-xs font-mono px-3 py-1 rounded-full bg-[#2F6F6D]/10 dark:bg-[#1A403F] text-[#2F6F6D] dark:text-[#FAF6EC] border border-[#2F6F6D]/20 dark:border-[#2E6B69]"
-                      >
+                      <span key={tag} className="text-xs font-mono px-3 py-1.5 rounded-xl badge-indigo">
                         {tag}
                       </span>
                     ))}
                   </div>
                 </div>
 
-                {/* Quick Git Clone Command */}
-                <div className="p-3.5 rounded-xl bg-[#1C1B18] text-[#FAF6EC] font-mono text-xs flex items-center justify-between">
-                  <div className="flex items-center gap-2 truncate">
-                    <span className="text-[#C84630]">$</span>
+                {/* Git clone command */}
+                <div className="p-4 rounded-2xl bg-obsidian-800 border border-white/5 text-foreground font-mono text-xs flex items-center justify-between gap-3">
+                  <div className="flex items-center gap-2 truncate min-w-0">
+                    <span className="text-primary shrink-0">$</span>
                     <span className="truncate">git clone {activeProject.github}.git</span>
                   </div>
-                  <button
+                  <motion.button
                     onClick={() => handleCopyClone(activeProject.github)}
-                    className="ml-2 inline-flex items-center gap-1 px-2.5 py-1 rounded bg-[#2F6F6D] hover:bg-[#3D8C8A] text-[11px] transition-colors"
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-primary/15 border border-primary/30 text-primary text-[11px] font-semibold shrink-0 hover:bg-primary/25 transition-all"
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    transition={{ type: 'spring', stiffness: 400, damping: 25 }}
                   >
-                    {copiedClone ? <Check className="w-3 h-3 text-[#FAF6EC]" /> : <Copy className="w-3 h-3" />}
-                    <span>{copiedClone ? 'Copied' : 'Copy'}</span>
-                  </button>
+                    {copiedClone ? <Check className="w-3 h-3" /> : <Copy className="w-3 h-3" />}
+                    {copiedClone ? 'Copied!' : 'Copy'}
+                  </motion.button>
                 </div>
-
               </div>
 
-              {/* Modal Footer Action Bar */}
-              <div className="p-6 bg-[#E6DBC2] dark:bg-[#1A403F] border-t border-[#DCD0B6] dark:border-[#2E6B69] flex flex-wrap items-center justify-between gap-3">
-                <Button
-                  variant="outline"
+              {/* Modal footer */}
+              <div className="p-5 bg-white/2 border-t border-white/8 flex flex-wrap items-center justify-between gap-3 flex-shrink-0">
+                <button
                   onClick={() => setActiveProject(null)}
-                  className="rounded-full font-mono text-xs border-[#DCD0B6] dark:border-[#2E6B69]"
+                  className="px-4 py-2 rounded-xl glass border border-white/10 text-xs font-mono text-muted-foreground hover:text-foreground hover:border-white/15 transition-all"
                 >
                   Close Inspector
-                </Button>
-
+                </button>
                 <div className="flex items-center gap-3">
-                  <Button
-                    asChild
-                    variant="outline"
-                    className="rounded-full font-mono text-xs border-[#DCD0B6] dark:border-[#2E6B69] bg-[#FAF6EC] dark:bg-[#204E4D]"
+                  <motion.a
+                    href={activeProject.github}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl glass border border-white/10 text-xs font-mono text-muted-foreground hover:text-foreground hover:border-primary/25 transition-all"
+                    whileHover={{ scale: 1.03 }}
+                    whileTap={{ scale: 0.97 }}
                   >
-                    <Link href={activeProject.github} target="_blank" rel="noopener noreferrer">
-                      <Github className="w-3.5 h-3.5 mr-1.5" />
-                      View Repository
-                    </Link>
-                  </Button>
-
-                  <Button
-                    asChild
-                    className="rounded-full font-mono text-xs bg-[#C84630] hover:bg-[#B83E29] text-[#FAF6EC]"
+                    <Github className="w-3.5 h-3.5" /> Repository
+                  </motion.a>
+                  <motion.a
+                    href={activeProject.link}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-gradient-indigo text-white text-xs font-mono font-semibold shadow-glow-sm-indigo"
+                    whileHover={{ scale: 1.03, boxShadow: '0 0 20px rgba(124,58,237,0.5)' }}
+                    whileTap={{ scale: 0.97 }}
+                    transition={{ type: 'spring', stiffness: 400, damping: 25 }}
                   >
-                    <Link href={activeProject.link} target="_blank" rel="noopener noreferrer">
-                      <ExternalLink className="w-3.5 h-3.5 mr-1.5" />
-                      Live Demo / Build
-                    </Link>
-                  </Button>
+                    <ExternalLink className="w-3.5 h-3.5" /> Live Demo
+                  </motion.a>
                 </div>
               </div>
-
             </motion.div>
           </div>
         )}
       </AnimatePresence>
-
     </section>
   );
 }

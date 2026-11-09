@@ -3,45 +3,155 @@
 import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  Sparkles, 
-  ArrowRight, 
-  Download, 
-  Terminal, 
-  Send, 
-  CornerDownLeft, 
-  CheckCircle2, 
-  Layers, 
-  ExternalLink,
-  Code2,
+import {
+  motion,
+  AnimatePresence,
+} from 'framer-motion';
+import {
+  Sparkles,
+  ArrowRight,
+  Download,
+  CornerDownLeft,
   MapPin,
-  Clock
+  Github,
+  Linkedin,
 } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import { PERSONAL_DATA, CLAUDE_HERO_PROMPTS, ClaudeAssistantQuery } from '@/lib/data';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 
 const profileImage = PlaceHolderImages.find((p) => p.id === 'profile');
 
+// ─── Variants (defined outside component per framer-motion best practices) ───
+const heroContainerVariants = {
+  hidden: {},
+  visible: {
+    transition: {
+      staggerChildren: 0.1,
+      delayChildren: 0.15,
+    },
+  },
+};
+
+const heroItemVariants = {
+  hidden: { opacity: 0, y: 32 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { type: 'spring' as const, stiffness: 120, damping: 14 },
+  },
+};
+
+const statVariants = {
+  hidden: { opacity: 0, scale: 0.85 },
+  visible: (i: number) => ({
+    opacity: 1,
+    scale: 1,
+    transition: { delay: 0.6 + i * 0.1, type: 'spring' as const, stiffness: 200, damping: 20 },
+  }),
+};
+
+const roleBadges = [
+  { label: 'Flutter & Dart', color: 'badge-cyan', delay: 0 },
+  { label: 'Java / Android', color: 'badge-amber', delay: 0.1 },
+  { label: '.NET Core', color: 'badge-indigo', delay: 0.2 },
+  { label: 'SQL Server', color: 'badge-emerald', delay: 0.3 },
+];
+
+const stats = [
+  { value: '1.5+', label: 'Years Exp', sub: 'Industry' },
+  { value: '7+', label: 'Apps Shipped', sub: 'Production' },
+  { value: '14+', label: 'Technologies', sub: 'Cross-Platform' },
+  { value: '3.53', label: 'CGPA', sub: 'DIU CSE' },
+];
+
+// ─── Orbital visual element ───
+const OrbitalElement = () => (
+  <div className="relative w-72 h-72 sm:w-80 sm:h-80 mx-auto">
+    {/* Outer ambient glow rings */}
+    <div className="absolute inset-0 rounded-full border border-primary/10 animate-spin-slow" />
+    <div className="absolute inset-4 rounded-full border border-secondary/10" style={{ animation: 'spin-slow 15s linear infinite reverse' }} />
+
+    {/* Profile image container */}
+    <div className="absolute inset-8 rounded-full overflow-hidden border-2 border-primary/30 shadow-glow-indigo">
+      {profileImage ? (
+        <Image
+          src={profileImage.imageUrl}
+          alt={profileImage.description}
+          fill
+          priority
+          className="object-cover"
+          sizes="300px"
+        />
+      ) : (
+        <div className="w-full h-full bg-gradient-to-br from-primary/30 to-secondary/30 flex items-center justify-center">
+          <span className="font-display text-5xl font-bold text-gradient-indigo">P</span>
+        </div>
+      )}
+      {/* Overlay shimmer */}
+      <div className="absolute inset-0 bg-gradient-to-t from-background/60 via-transparent to-transparent" />
+    </div>
+
+    {/* Orbiting tech icons */}
+    {[
+      { icon: '⚡', label: 'Flutter', angle: 0, color: '#67e8f9' },
+      { icon: '☕', label: 'Java', angle: 90, color: '#fcd34d' },
+      { icon: '💜', label: '.NET', angle: 180, color: '#c4b5fd' },
+      { icon: '🔥', label: 'Firebase', angle: 270, color: '#6ee7b7' },
+    ].map(({ icon, label, angle, color }) => {
+      const rad = (angle * Math.PI) / 180;
+      const r = 118;
+      const cx = 50 + (r / 160) * 50 * Math.cos(rad);
+      const cy = 50 + (r / 160) * 50 * Math.sin(rad);
+      return (
+        <motion.div
+          key={label}
+          className="absolute w-10 h-10 rounded-full glass flex items-center justify-center text-base shadow-card"
+          style={{
+            left: `${cx}%`,
+            top: `${cy}%`,
+            transform: 'translate(-50%, -50%)',
+            border: `1px solid ${color}40`,
+          }}
+          animate={{ y: [-3, 3, -3] }}
+          transition={{ duration: 2 + angle / 90, repeat: Infinity, ease: 'easeInOut', delay: angle / 180 }}
+          title={label}
+        >
+          {icon}
+        </motion.div>
+      );
+    })}
+
+    {/* Status badge */}
+    <motion.div
+      className="absolute -bottom-2 left-1/2 -translate-x-1/2 flex items-center gap-2 px-3 py-1.5 rounded-full glass border border-secondary/30 text-xs font-mono"
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: 1, type: 'spring', stiffness: 200, damping: 20 }}
+    >
+      <span className="relative flex h-2 w-2">
+        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-secondary opacity-75" />
+        <span className="relative inline-flex rounded-full h-2 w-2 bg-secondary" />
+      </span>
+      <span className="text-secondary font-semibold">Available Now</span>
+    </motion.div>
+  </div>
+);
+
+// ─── Main component ───
 export function HeroSection() {
   const [selectedPrompt, setSelectedPrompt] = useState<ClaudeAssistantQuery | null>(null);
   const [customInput, setCustomInput] = useState('');
   const [isTyping, setIsTyping] = useState(false);
   const [streamedText, setStreamedText] = useState('');
 
-  // Handle suggestion chip click
   const handleSelectPrompt = (prompt: ClaudeAssistantQuery) => {
     setSelectedPrompt(prompt);
     setIsTyping(true);
     setStreamedText('');
   };
 
-  // Streaming text effect when prompt is activated
   useEffect(() => {
     if (!selectedPrompt || !isTyping) return;
-
     let index = 0;
     const fullText = selectedPrompt.responseParagraph;
     const timer = setInterval(() => {
@@ -53,17 +163,15 @@ export function HeroSection() {
       } else {
         setStreamedText(fullText.slice(0, index));
       }
-    }, 15);
-
+    }, 14);
     return () => clearInterval(timer);
   }, [selectedPrompt, isTyping]);
 
   const handleCustomSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!customInput.trim()) return;
-
     const lower = customInput.toLowerCase();
-    let match = CLAUDE_HERO_PROMPTS.find((p) =>
+    const match = CLAUDE_HERO_PROMPTS.find((p) =>
       lower.includes('project') || lower.includes('work') || lower.includes('build')
         ? p.id === 'projects'
         : lower.includes('skill') || lower.includes('stack') || lower.includes('flutter') || lower.includes('java')
@@ -72,240 +180,233 @@ export function HeroSection() {
         ? p.id === 'experience'
         : p.id === 'contact'
     ) || CLAUDE_HERO_PROMPTS[0];
-
-    setSelectedPrompt({
-      ...match,
-      query: customInput,
-    });
+    setSelectedPrompt({ ...match, query: customInput });
     setIsTyping(true);
     setStreamedText('');
     setCustomInput('');
   };
 
   return (
-    <section id="home" className="relative pt-6 pb-20 md:pt-12 md:pb-32 overflow-hidden">
-      {/* Background radial warmth */}
-      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[650px] h-[650px] bg-[#E6DBC2]/40 dark:bg-[#204E4D]/20 rounded-full blur-3xl pointer-events-none -z-10" />
+    <section id="home" className="relative min-h-screen flex items-center pt-16 pb-24 overflow-hidden hero-mesh">
+      {/* Ambient background blobs */}
+      <div className="absolute top-1/4 left-1/4 w-96 h-96 rounded-full bg-primary/8 blur-3xl pointer-events-none" />
+      <div className="absolute bottom-1/4 right-1/4 w-96 h-96 rounded-full bg-secondary/6 blur-3xl pointer-events-none" />
 
-      <div className="container-editorial">
-        <div className="grid lg:grid-cols-12 gap-10 lg:gap-14 items-center">
-          
-          {/* Left Column: Literary Introduction */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-            className="lg:col-span-7 space-y-6"
-          >
-            {/* Live Status Pill */}
-            <div className="inline-flex items-center gap-2.5 px-3.5 py-1.5 rounded-full bg-[#E6DBC2] dark:bg-[#204E4D] border border-[#DCD0B6] dark:border-[#2E6B69] text-xs font-mono text-[#1C1B18] dark:text-[#FAF6EC] shadow-sm">
-              <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#C84630] opacity-75" />
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-[#C84630]" />
-              </span>
-              <span className="font-medium tracking-tight">{PERSONAL_DATA.status}</span>
-              <span className="text-[#52504A] dark:text-[#B5C7C6]">· Dhaka, BD</span>
-            </div>
-
-            {/* Editorial Headline */}
-            <div className="space-y-3">
-              <p className="font-mono text-xs uppercase tracking-widest text-[#2F6F6D] dark:text-[#DCD0B6] font-semibold">
-                Software Engineer &amp; Mobile Developer
-              </p>
-              <h1 className="font-serif text-4xl sm:text-5xl lg:text-6xl font-normal tracking-tight text-[#1C1B18] dark:text-[#FAF6EC] leading-[1.08]">
-                Partha Pratim Mallick
-              </h1>
-              <p className="font-serif italic text-lg sm:text-xl text-[#2F6F6D] dark:text-[#E6DBC2]/90 leading-relaxed max-w-xl">
-                &ldquo;Engineering resilient mobile systems and scalable backend architectures with human-centric clarity.&rdquo;
-              </p>
-            </div>
-
-            {/* Sub-description */}
-            <p className="text-sm sm:text-base text-[#52504A] dark:text-[#DCD0B6]/90 leading-relaxed max-w-xl font-sans">
-              Currently delivering performant client apps and distributed data pipelines at{' '}
-              <strong className="text-[#1C1B18] dark:text-[#FAF6EC] font-semibold">Grameen Communications</strong>.
-              Specialized in Flutter/Dart, Java (Native Android), .NET Core, and Microsoft SQL Server.
-            </p>
-
-            {/* CTA Action Buttons */}
-            <div className="flex flex-wrap items-center gap-3 pt-2">
-              <Button
-                asChild
-                size="lg"
-                className="bg-[#C84630] hover:bg-[#B83E29] text-[#FAF6EC] font-medium rounded-full px-6 shadow-sm hover:shadow-claude-glow transition-all"
-              >
-                <Link href="#projects">
-                  Explore Artifacts <ArrowRight className="ml-2 w-4 h-4" />
-                </Link>
-              </Button>
-
-              <Button
-                asChild
-                variant="outline"
-                size="lg"
-                className="rounded-full border-[#DCD0B6] dark:border-[#2E6B69] bg-[#FAF6EC]/80 dark:bg-[#204E4D]/80 hover:bg-[#E6DBC2] dark:hover:bg-[#2F6F6D] text-[#1C1B18] dark:text-[#FAF6EC] font-mono text-xs px-5"
-              >
-                <a href={PERSONAL_DATA.cvUrl} target="_blank" rel="noopener noreferrer">
-                  <Download className="mr-2 w-3.5 h-3.5 text-[#C84630]" />
-                  Download CV (PDF)
-                </a>
-              </Button>
-
-              <Button
-                asChild
-                variant="ghost"
-                size="lg"
-                className="rounded-full hover:bg-[#E6DBC2]/60 dark:hover:bg-[#204E4D]/60 text-xs font-mono text-[#2F6F6D] dark:text-[#FAF6EC]"
-              >
-                <Link href="#contact">
-                  Direct Message →
-                </Link>
-              </Button>
-            </div>
-
-            {/* Quick Metrics Bar */}
-            <div className="pt-4 grid grid-cols-3 gap-3 border-t border-[#DCD0B6]/80 dark:border-[#2E6B69]/80 max-w-lg">
-              <div>
-                <p className="font-serif text-2xl font-bold text-[#1C1B18] dark:text-[#FAF6EC]">1.5+ yrs</p>
-                <p className="text-[11px] font-mono text-[#52504A] dark:text-[#B5C7C6]">Engineering Experience</p>
-              </div>
-              <div>
-                <p className="font-serif text-2xl font-bold text-[#C84630]">7+ Apps</p>
-                <p className="text-[11px] font-mono text-[#52504A] dark:text-[#B5C7C6]">Shipped &amp; Architected</p>
-              </div>
-              <div>
-                <p className="font-serif text-2xl font-bold text-[#2F6F6D] dark:text-[#FAF6EC]">DIU CSE</p>
-                <p className="text-[11px] font-mono text-[#52504A] dark:text-[#B5C7C6]">Honors Graduate</p>
-              </div>
-            </div>
-          </motion.div>
-
-          {/* Right Column: Profile Portrait & Architectural Card */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.7, delay: 0.15, ease: [0.16, 1, 0.3, 1] }}
-            className="lg:col-span-5 flex flex-col items-center lg:items-end"
-          >
-            <div className="relative w-full max-w-sm">
-              {/* Decorative warm aura */}
-              <div className="absolute -inset-1.5 rounded-3xl bg-gradient-to-tr from-[#C84630]/30 via-[#2F6F6D]/30 to-[#E6DBC2] blur-xl opacity-70 -z-10" />
-
-              {/* Card Container */}
-              <div className="rounded-3xl p-3.5 bg-[#FAF6EC] dark:bg-[#204E4D] border border-[#DCD0B6] dark:border-[#2E6B69] shadow-claude-card">
-                <div className="relative aspect-[4/4.5] w-full rounded-2xl overflow-hidden border border-[#DCD0B6]/60 dark:border-[#2E6B69]/60 bg-[#E6DBC2]">
-                  {profileImage && (
-                    <Image
-                      src={profileImage.imageUrl}
-                      alt={profileImage.description}
-                      fill
-                      priority
-                      className="object-cover transition-transform duration-700 hover:scale-105"
-                      sizes="(max-width: 768px) 100vw, 400px"
-                    />
-                  )}
-                  {/* Subtle vignette gradient */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-[#1C1B18]/70 via-transparent to-transparent" />
-
-                  {/* Overlay Meta Tag */}
-                  <div className="absolute bottom-3 left-3 right-3 p-3 rounded-xl bg-[#FAF6EC]/90 dark:bg-[#1A403F]/90 backdrop-blur-md border border-[#DCD0B6] dark:border-[#2E6B69] flex items-center justify-between">
-                    <div>
-                      <p className="text-xs font-serif font-bold text-[#1C1B18] dark:text-[#FAF6EC]">
-                        Partha Pratim Mallick
-                      </p>
-                      <p className="text-[10px] font-mono text-[#52504A] dark:text-[#B5C7C6]">
-                        Grameen Communications · Dhaka
-                      </p>
-                    </div>
-                    <span className="w-2.5 h-2.5 rounded-full bg-[#C84630] animate-pulse" />
-                  </div>
-                </div>
-
-                {/* Micro tech tags below avatar */}
-                <div className="mt-3 flex items-center justify-between px-1.5 text-[11px] font-mono text-[#52504A] dark:text-[#B5C7C6]">
-                  <span className="flex items-center gap-1">
-                    <span className="w-1.5 h-1.5 rounded-full bg-[#2F6F6D]" /> Flutter / Dart
-                  </span>
-                  <span>·</span>
-                  <span>Java / .NET</span>
-                  <span>·</span>
-                  <span>SQL Server</span>
-                </div>
-              </div>
-            </div>
-          </motion.div>
-        </div>
-
-        {/* ------------------------------------------------------------------ */}
-        {/* INTERACTIVE CLAUDE-STYLE "ASK / EXPLORE" PROMPT WIDGET */}
-        {/* ------------------------------------------------------------------ */}
+      <div className="container-editorial w-full">
         <motion.div
-          initial={{ opacity: 0, y: 25 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.3 }}
-          className="mt-14 max-w-4xl mx-auto"
+          variants={heroContainerVariants}
+          initial="hidden"
+          animate="visible"
+          className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center"
         >
-          <div className="rounded-3xl p-5 sm:p-7 bg-[#FAF6EC] dark:bg-[#204E4D] border-2 border-[#DCD0B6] dark:border-[#2E6B69] shadow-claude-card transition-all">
-            
-            {/* Claude Prompt Header */}
-            <div className="flex items-center justify-between pb-3.5 mb-3 border-b border-[#DCD0B6]/60 dark:border-[#2E6B69]/60">
-              <div className="flex items-center gap-2">
-                <div className="w-6 h-6 rounded-md bg-[#C84630] text-[#FAF6EC] flex items-center justify-center">
-                  <Sparkles className="w-3.5 h-3.5" />
-                </div>
-                <span className="font-serif text-sm sm:text-base font-semibold text-[#1C1B18] dark:text-[#FAF6EC]">
-                  Claude Assistant — Interactive Portfolio Inspector
-                </span>
-              </div>
-              <span className="text-[11px] font-mono text-[#52504A] dark:text-[#B5C7C6]">
-                Interactive Prompt
+          {/* ── Left Column ── */}
+          <div className="space-y-8 order-2 lg:order-1">
+            {/* Status pill */}
+            <motion.div variants={heroItemVariants} className="inline-flex items-center gap-2.5 px-4 py-2 rounded-full glass border border-secondary/25 text-xs font-mono">
+              <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-secondary opacity-75" />
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-secondary" />
               </span>
+              <span className="text-secondary font-semibold">{PERSONAL_DATA.status}</span>
+              <span className="text-muted-foreground">·</span>
+              <span className="text-muted-foreground flex items-center gap-1">
+                <MapPin className="w-3 h-3" /> Dhaka, BD
+              </span>
+            </motion.div>
+
+            {/* Main headline */}
+            <motion.div variants={heroItemVariants} className="space-y-3">
+              <p className="font-mono text-xs uppercase tracking-widest text-primary font-semibold">
+                Software Engineer & Mobile Developer
+              </p>
+              <h1 className="font-display text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-foreground leading-[1.05]">
+                {PERSONAL_DATA.name.split(' ').map((word, i) => (
+                  <span key={i} className={i === 2 ? 'text-gradient-aurora block' : 'block'}>
+                    {word}
+                  </span>
+                ))}
+              </h1>
+              <p className="text-base sm:text-lg text-muted-foreground leading-relaxed max-w-lg">
+                Crafting <span className="text-primary font-semibold">resilient mobile experiences</span> and{' '}
+                <span className="text-secondary font-semibold">scalable backend architectures</span> at{' '}
+                <span className="text-foreground font-semibold">Grameen Communications</span>.
+              </p>
+            </motion.div>
+
+            {/* Role badges */}
+            <motion.div variants={heroItemVariants} className="flex flex-wrap gap-2">
+              {roleBadges.map(({ label, color }, i) => (
+                <motion.span
+                  key={label}
+                  className={`inline-flex items-center px-3.5 py-1.5 rounded-full text-xs font-mono font-medium ${color}`}
+                  initial={{ opacity: 0, scale: 0.8, y: 10 }}
+                  animate={{ opacity: 1, scale: 1, y: 0 }}
+                  transition={{ delay: 0.5 + i * 0.08, type: 'spring', stiffness: 300, damping: 24 }}
+                  whileHover={{ scale: 1.06, y: -2 }}
+                >
+                  {label}
+                </motion.span>
+              ))}
+            </motion.div>
+
+            {/* CTA Buttons */}
+            <motion.div variants={heroItemVariants} className="flex flex-wrap items-center gap-3">
+              <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }} transition={{ type: 'spring', stiffness: 400, damping: 25 }}>
+                <Link
+                  href="#projects"
+                  className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-indigo text-white text-sm font-semibold shadow-glow-sm-indigo hover:shadow-glow-indigo transition-shadow duration-300"
+                >
+                  Explore Projects
+                  <ArrowRight className="w-4 h-4" />
+                </Link>
+              </motion.div>
+
+              <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }} transition={{ type: 'spring', stiffness: 400, damping: 25 }}>
+                <a
+                  href={PERSONAL_DATA.cvUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 px-6 py-3 rounded-xl glass border border-white/10 text-foreground text-sm font-medium hover:border-primary/30 hover:bg-primary/5 transition-all duration-200"
+                >
+                  <Download className="w-4 h-4 text-primary" />
+                  Download CV
+                </a>
+              </motion.div>
+
+              <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }} transition={{ type: 'spring', stiffness: 400, damping: 25 }}>
+                <Link
+                  href="#contact"
+                  className="inline-flex items-center gap-2 px-5 py-3 rounded-xl text-muted-foreground text-sm font-medium hover:text-foreground transition-colors duration-200"
+                >
+                  Say Hello →
+                </Link>
+              </motion.div>
+            </motion.div>
+
+            {/* Quick stats */}
+            <motion.div
+              variants={heroItemVariants}
+              className="grid grid-cols-4 gap-3 pt-2 border-t border-white/6"
+            >
+              {stats.map(({ value, label, sub }, i) => (
+                <motion.div
+                  key={label}
+                  custom={i}
+                  variants={statVariants}
+                  initial="hidden"
+                  animate="visible"
+                  className="flex flex-col"
+                >
+                  <span className="font-display text-xl sm:text-2xl font-bold text-gradient-indigo">{value}</span>
+                  <span className="text-[11px] font-semibold text-foreground leading-tight">{label}</span>
+                  <span className="text-[10px] font-mono text-muted-foreground">{sub}</span>
+                </motion.div>
+              ))}
+            </motion.div>
+
+            {/* Social links */}
+            <motion.div variants={heroItemVariants} className="flex items-center gap-3">
+              {[
+                { href: PERSONAL_DATA.github, icon: <Github className="w-4 h-4" />, label: 'GitHub' },
+                { href: PERSONAL_DATA.linkedin, icon: <Linkedin className="w-4 h-4" />, label: 'LinkedIn' },
+              ].map(({ href, icon, label }) => (
+                <motion.a
+                  key={label}
+                  href={href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-2 px-3.5 py-2 rounded-xl glass border border-white/8 text-muted-foreground text-xs font-mono hover:text-foreground hover:border-primary/25 transition-all duration-200"
+                  whileHover={{ scale: 1.05, y: -2 }}
+                  whileTap={{ scale: 0.96 }}
+                  transition={{ type: 'spring', stiffness: 400, damping: 25 }}
+                >
+                  {icon} {label}
+                </motion.a>
+              ))}
+            </motion.div>
+          </div>
+
+          {/* ── Right Column: Orbital Visual ── */}
+          <motion.div
+            className="order-1 lg:order-2 flex justify-center"
+            initial={{ opacity: 0, scale: 0.9, y: 20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.2, type: 'spring', stiffness: 100, damping: 20 }}
+          >
+            <OrbitalElement />
+          </motion.div>
+        </motion.div>
+
+        {/* ── Interactive Prompt Widget ── */}
+        <motion.div
+          initial={{ opacity: 0, y: 32 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.8, type: 'spring', stiffness: 120, damping: 20 }}
+          className="mt-20 max-w-4xl mx-auto"
+        >
+          <div className="glass border border-white/8 rounded-3xl p-6 sm:p-8 glow-soft">
+            {/* Widget header */}
+            <div className="flex items-center justify-between pb-4 mb-4 border-b border-white/6">
+              <div className="flex items-center gap-2.5">
+                <div className="w-7 h-7 rounded-lg bg-gradient-indigo flex items-center justify-center">
+                  <Sparkles className="w-3.5 h-3.5 text-white" />
+                </div>
+                <div>
+                  <span className="font-display font-semibold text-sm text-foreground">AI Portfolio Assistant</span>
+                  <p className="text-[11px] font-mono text-muted-foreground">Ask anything about Partha's background</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <div className="w-2 h-2 rounded-full bg-red-500/70" />
+                <div className="w-2 h-2 rounded-full bg-amber-400/70" />
+                <div className="w-2 h-2 rounded-full bg-secondary/70" />
+              </div>
             </div>
 
-            {/* Suggestion Chips */}
-            <div className="space-y-2 mb-4">
-              <p className="text-xs font-mono text-[#52504A] dark:text-[#B5C7C6]">
-                Click a prompt chip below to explore Partha's qualifications instantly:
-              </p>
+            {/* Suggestion chips */}
+            <div className="space-y-3 mb-5">
+              <p className="text-xs font-mono text-muted-foreground">Quick prompts:</p>
               <div className="flex flex-wrap gap-2">
                 {CLAUDE_HERO_PROMPTS.map((prompt) => {
                   const isSelected = selectedPrompt?.id === prompt.id;
                   return (
-                    <button
+                    <motion.button
                       key={prompt.id}
                       onClick={() => handleSelectPrompt(prompt)}
-                      className={`text-xs px-3.5 py-1.5 rounded-full font-mono transition-all duration-200 border ${
+                      className={`text-xs px-3.5 py-2 rounded-xl font-mono transition-all duration-200 ${
                         isSelected
-                          ? 'bg-[#C84630] text-[#FAF6EC] border-[#C84630] shadow-sm font-semibold'
-                          : 'bg-[#E6DBC2]/70 dark:bg-[#1A403F]/70 text-[#1C1B18] dark:text-[#FAF6EC] border-[#DCD0B6] dark:border-[#2E6B69] hover:bg-[#FAF6EC] dark:hover:bg-[#2F6F6D] hover:border-[#C84630]'
+                          ? 'bg-primary text-white shadow-glow-sm-indigo font-semibold'
+                          : 'glass border border-white/10 text-muted-foreground hover:text-foreground hover:border-primary/30'
                       }`}
+                      whileHover={{ scale: 1.03, y: -1 }}
+                      whileTap={{ scale: 0.97 }}
+                      transition={{ type: 'spring', stiffness: 400, damping: 25 }}
                     >
                       {prompt.chipLabel}
-                    </button>
+                    </motion.button>
                   );
                 })}
               </div>
             </div>
 
-            {/* Custom Input Box */}
-            <form onSubmit={handleCustomSubmit} className="relative mt-2">
+            {/* Custom input */}
+            <form onSubmit={handleCustomSubmit} className="relative">
               <input
                 type="text"
                 value={customInput}
                 onChange={(e) => setCustomInput(e.target.value)}
                 placeholder="Ask about Partha's mobile projects, .NET backend, or availability..."
-                className="w-full pl-4 pr-24 py-3 rounded-2xl bg-[#E6DBC2]/50 dark:bg-[#1A403F]/60 border border-[#DCD0B6] dark:border-[#2E6B69] text-sm text-[#1C1B18] dark:text-[#FAF6EC] placeholder:text-[#52504A]/60 dark:placeholder:text-[#B5C7C6]/60 focus:outline-none focus:ring-2 focus:ring-[#C84630] focus:border-transparent transition-all"
+                className="w-full pl-4 pr-28 py-3.5 rounded-2xl bg-white/4 border border-white/8 text-sm text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/40 transition-all font-mono"
               />
               <button
                 type="submit"
-                className="absolute right-2 top-1/2 -translate-y-1/2 inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-[#2F6F6D] dark:bg-[#C84630] hover:opacity-90 text-[#FAF6EC] text-xs font-mono font-medium transition-all"
+                className="absolute right-2 top-1/2 -translate-y-1/2 inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-primary/15 border border-primary/30 text-primary text-xs font-mono font-semibold hover:bg-primary/25 transition-all duration-200"
               >
-                <span>Ask</span>
-                <CornerDownLeft className="w-3 h-3" />
+                Ask <CornerDownLeft className="w-3 h-3" />
               </button>
             </form>
 
-            {/* Interactive Claude AI Response Stream */}
+            {/* AI Response stream */}
             <AnimatePresence mode="wait">
               {selectedPrompt && (
                 <motion.div
@@ -313,58 +414,56 @@ export function HeroSection() {
                   initial={{ opacity: 0, height: 0 }}
                   animate={{ opacity: 1, height: 'auto' }}
                   exit={{ opacity: 0, height: 0 }}
-                  transition={{ duration: 0.35 }}
-                  className="mt-5 pt-5 border-t border-[#DCD0B6] dark:border-[#2E6B69] space-y-3"
+                  transition={{ duration: 0.3, ease: 'easeInOut' }}
+                  className="mt-5 pt-5 border-t border-white/6 overflow-hidden"
                 >
-                  <div className="flex items-center justify-between">
-                    <span className="inline-flex items-center gap-1.5 text-xs font-mono font-semibold text-[#C84630]">
+                  <div className="flex items-center justify-between mb-3">
+                    <span className="inline-flex items-center gap-1.5 text-xs font-mono font-semibold text-primary">
                       <Sparkles className="w-3.5 h-3.5" />
-                      Claude Editorial Insight:
+                      Portfolio AI Response:
                     </span>
                     <button
                       onClick={() => setSelectedPrompt(null)}
-                      className="text-[11px] font-mono text-[#52504A] dark:text-[#B5C7C6] hover:text-[#C84630]"
+                      className="text-[11px] font-mono text-muted-foreground hover:text-foreground transition-colors"
                     >
-                      Clear response ×
+                      Dismiss ×
                     </button>
                   </div>
 
-                  <h3 className="font-serif text-lg font-bold text-[#1C1B18] dark:text-[#FAF6EC]">
+                  <h3 className="font-display text-lg font-bold text-foreground mb-2">
                     {selectedPrompt.responseHeadline}
                   </h3>
-
-                  <p className="text-sm text-[#1C1B18]/90 dark:text-[#FAF6EC]/90 leading-relaxed font-sans">
+                  <p className="text-sm text-muted-foreground leading-relaxed mb-3">
                     {streamedText}
-                    {isTyping && <span className="inline-block w-1.5 h-4 ml-1 bg-[#C84630] animate-pulse" />}
+                    {isTyping && <span className="inline-block w-1.5 h-4 ml-1 bg-primary cursor-blink" />}
                   </p>
 
-                  <ul className="space-y-1.5 pt-1">
+                  <ul className="space-y-2 mb-4">
                     {selectedPrompt.bulletPoints.map((bp, i) => (
-                      <li key={i} className="flex items-start gap-2 text-xs sm:text-sm text-[#52504A] dark:text-[#DCD0B6]">
-                        <span className="text-[#C84630] font-bold mt-0.5">✦</span>
+                      <motion.li
+                        key={i}
+                        className="flex items-start gap-2 text-xs text-muted-foreground"
+                        initial={{ opacity: 0, x: -10 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: 0.3 + i * 0.08 }}
+                      >
+                        <span className="text-primary font-bold mt-0.5">▸</span>
                         <span>{bp}</span>
-                      </li>
+                      </motion.li>
                     ))}
                   </ul>
 
-                  <div className="pt-2">
-                    <Button
-                      asChild
-                      size="sm"
-                      className="rounded-full bg-[#2F6F6D] hover:bg-[#235654] text-[#FAF6EC] text-xs font-mono"
-                    >
-                      <Link href={`#${selectedPrompt.targetSectionId}`}>
-                        {selectedPrompt.ctaLabel}
-                      </Link>
-                    </Button>
-                  </div>
+                  <Link
+                    href={`#${selectedPrompt.targetSectionId}`}
+                    className="inline-flex items-center gap-1.5 text-xs font-mono font-semibold text-secondary hover:text-secondary/80 transition-colors"
+                  >
+                    {selectedPrompt.ctaLabel} <ArrowRight className="w-3.5 h-3.5" />
+                  </Link>
                 </motion.div>
               )}
             </AnimatePresence>
-
           </div>
         </motion.div>
-
       </div>
     </section>
   );

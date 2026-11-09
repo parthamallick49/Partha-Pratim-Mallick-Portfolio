@@ -1,23 +1,23 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import Link from 'next/link';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { motion } from 'framer-motion';
-import { 
-  Mail, 
-  Send, 
-  Copy, 
-  Check, 
-  Github, 
-  Linkedin, 
-  MapPin, 
-  Clock, 
-  Sparkles, 
+import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion';
+import {
+  Mail,
+  Send,
+  Copy,
+  Check,
+  Github,
+  Linkedin,
+  MapPin,
+  Clock,
+  MessageSquare,
   ArrowUpRight,
-  MessageSquare
+  Zap,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -32,8 +32,66 @@ const contactFormSchema = z.object({
   subject: z.string().min(3, { message: 'Subject must be at least 3 characters.' }),
   message: z.string().min(10, { message: 'Message must be at least 10 characters.' }),
 });
-
 type ContactFormValues = z.infer<typeof contactFormSchema>;
+
+// Variants outside component
+const containerVariants = {
+  hidden: {},
+  visible: {
+    transition: { staggerChildren: 0.1, delayChildren: 0.1 },
+  },
+};
+
+const cardVariants = {
+  hidden: { opacity: 0, y: 24 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { type: 'spring' as const, stiffness: 120, damping: 14 },
+  },
+};
+
+// Magnetic social link hook
+function MagneticLink({
+  href,
+  children,
+  className,
+}: {
+  href: string;
+  children: React.ReactNode;
+  className?: string;
+}) {
+  const ref = useRef<HTMLAnchorElement>(null);
+  const x = useMotionValue(0);
+  const y = useMotionValue(0);
+  const springX = useSpring(x, { stiffness: 150, damping: 15 });
+  const springY = useSpring(y, { stiffness: 150, damping: 15 });
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (!ref.current) return;
+    const rect = ref.current.getBoundingClientRect();
+    x.set((e.clientX - rect.left - rect.width / 2) * 0.35);
+    y.set((e.clientY - rect.top - rect.height / 2) * 0.35);
+  };
+
+  return (
+    <motion.a
+      ref={ref}
+      href={href}
+      target="_blank"
+      rel="noopener noreferrer"
+      style={{ x: springX, y: springY }}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={() => { x.set(0); y.set(0); }}
+      whileHover={{ scale: 1.08 }}
+      whileTap={{ scale: 0.95 }}
+      transition={{ type: 'spring', stiffness: 400, damping: 25 }}
+      className={className}
+    >
+      {children}
+    </motion.a>
+  );
+}
 
 export function ContactSection() {
   const { toast } = useToast();
@@ -41,219 +99,206 @@ export function ContactSection() {
 
   const form = useForm<ContactFormValues>({
     resolver: zodResolver(contactFormSchema),
-    defaultValues: {
-      name: '',
-      email: '',
-      subject: '',
-      message: '',
-    },
+    defaultValues: { name: '', email: '', subject: '', message: '' },
   });
 
   const handleCopyEmail = () => {
     navigator.clipboard.writeText(PERSONAL_DATA.email);
     setCopied(true);
     toast({
-      title: "Email address copied to clipboard!",
-      description: "parthamallick.cs@gmail.com is ready to paste into your mail app.",
+      title: 'Email copied!',
+      description: `${PERSONAL_DATA.email} is ready to paste.`,
     });
     setTimeout(() => setCopied(false), 2500);
   };
 
   const onSubmit = (data: ContactFormValues) => {
     const name = encodeURIComponent(data.name);
-    const senderEmail = encodeURIComponent(data.email);
-    const subject = encodeURIComponent(`[Portfolio Inquiry] ${data.subject} — from ${name}`);
+    const subject = encodeURIComponent(`[Portfolio] ${data.subject} — from ${name}`);
     const body = encodeURIComponent(
       `Hello Partha,\n\n${data.message}\n\n---\nSender: ${data.name} (${data.email})`
     );
-
-    const mailtoUrl = `mailto:${PERSONAL_DATA.email}?subject=${subject}&body=${body}`;
-    window.location.href = mailtoUrl;
-
+    window.location.href = `mailto:${PERSONAL_DATA.email}?subject=${subject}&body=${body}`;
     toast({
-      title: "Opening your email client...",
-      description: "Draft generated with your message. Thank you for reaching out!",
+      title: 'Opening email client...',
+      description: 'Draft generated. Thank you for reaching out!',
     });
-
     form.reset();
   };
 
   return (
     <section id="contact" className="section-padding relative">
-      <div className="container-editorial">
-        
-        {/* Section Header */}
-        <div className="flex flex-col items-center text-center space-y-3 mb-16">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#E6DBC2] dark:bg-[#204E4D] border border-[#DCD0B6] dark:border-[#2E6B69] text-xs font-mono text-[#2F6F6D] dark:text-[#E6DBC2]">
-            <MessageSquare className="w-3.5 h-3.5 text-[#C84630]" />
-            <span>05 // Communication</span>
-          </div>
-          <h2 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-normal text-[#1C1B18] dark:text-[#FAF6EC] tracking-tight">
-            Initiate Contact &amp; Collaboration
-          </h2>
-          <p className="font-sans text-sm sm:text-base text-[#52504A] dark:text-[#B5C7C6] max-w-2xl">
-            Whether you have a full-time engineering opportunity, mobile app idea, or architectural inquiry, I'd love to hear from you.
-          </p>
-        </div>
+      <div className="absolute top-0 inset-x-0 h-px section-divider" />
+      {/* Ambient glow */}
+      <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-96 h-64 bg-primary/6 blur-3xl rounded-full pointer-events-none" />
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
-          
-          {/* Left Column: Direct Info & Quick Copy (Col 5) */}
-          <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5 }}
-            className="lg:col-span-5 space-y-6"
-          >
-            {/* Quick Email Card */}
-            <div className="p-6 sm:p-7 rounded-3xl bg-[#FAF6EC] dark:bg-[#204E4D] border-2 border-[#DCD0B6] dark:border-[#2E6B69] shadow-claude-card space-y-5">
-              <div className="space-y-2">
-                <span className="text-xs font-mono uppercase tracking-wider text-[#C84630] font-semibold flex items-center gap-1.5">
+      <div className="container-editorial relative">
+        {/* Section Header */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: '-80px' }}
+          transition={{ type: 'spring', stiffness: 120, damping: 20 }}
+          className="flex flex-col items-center text-center space-y-3 mb-16"
+        >
+          <span className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full glass border border-primary/25 text-xs font-mono text-primary">
+            <MessageSquare className="w-3.5 h-3.5" />
+            05 // Communication
+          </span>
+          <h2 className="font-display text-3xl sm:text-4xl lg:text-5xl font-bold text-foreground tracking-tight">
+            Initiate Contact &amp;{' '}
+            <span className="text-gradient-aurora">Collaboration</span>
+          </h2>
+          <p className="font-sans text-sm sm:text-base text-muted-foreground max-w-2xl">
+            Whether you have a full-time engineering opportunity, mobile app idea, or architectural inquiry — I&apos;d love to hear from you.
+          </p>
+        </motion.div>
+
+        <motion.div
+          variants={containerVariants}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: '-60px' }}
+          className="grid grid-cols-1 lg:grid-cols-12 gap-6"
+        >
+          {/* Left: Info Cards */}
+          <motion.div variants={cardVariants} className="lg:col-span-5 space-y-5">
+            {/* Email card */}
+            <div className="p-7 rounded-3xl glass border border-white/8 glow-soft space-y-5 relative overflow-hidden">
+              <div className="absolute top-0 left-0 w-32 h-32 bg-primary/8 rounded-full blur-2xl pointer-events-none" />
+              <div className="relative space-y-2">
+                <span className="text-xs font-mono uppercase tracking-wider text-primary font-semibold flex items-center gap-1.5">
                   <Mail className="w-3.5 h-3.5" /> Direct Inbox
                 </span>
-                <p className="font-serif text-xl sm:text-2xl font-bold text-[#1C1B18] dark:text-[#FAF6EC] break-all">
+                <p className="font-display text-xl sm:text-2xl font-bold text-foreground break-all">
                   {PERSONAL_DATA.email}
                 </p>
-                <p className="text-xs font-sans text-[#52504A] dark:text-[#B5C7C6]">
+                <p className="text-xs text-muted-foreground">
                   One click to copy or trigger your default email client.
                 </p>
               </div>
 
-              <div className="flex flex-wrap gap-2 pt-2">
-                <Button
+              <div className="relative flex flex-wrap gap-2 pt-1">
+                <motion.button
                   onClick={handleCopyEmail}
-                  className="rounded-full bg-[#2F6F6D] hover:bg-[#235654] text-[#FAF6EC] text-xs font-mono flex items-center gap-2"
+                  className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-secondary/10 border border-secondary/30 text-secondary text-xs font-mono font-semibold hover:bg-secondary/20 transition-all duration-200"
+                  whileHover={{ scale: 1.03 }}
+                  whileTap={{ scale: 0.97 }}
+                  transition={{ type: 'spring', stiffness: 400, damping: 25 }}
                 >
-                  {copied ? <Check className="w-3.5 h-3.5 text-[#FAF6EC]" /> : <Copy className="w-3.5 h-3.5" />}
-                  <span>{copied ? 'Copied to Clipboard!' : 'Copy Email Address'}</span>
-                </Button>
+                  {copied ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
+                  {copied ? 'Copied!' : 'Copy Address'}
+                </motion.button>
 
-                <Button
-                  asChild
-                  variant="outline"
-                  className="rounded-full border-[#DCD0B6] dark:border-[#2E6B69] text-xs font-mono"
+                <motion.a
+                  href={`mailto:${PERSONAL_DATA.email}`}
+                  className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl glass border border-white/10 text-xs font-mono text-muted-foreground hover:text-foreground hover:border-white/15 transition-all duration-200"
+                  whileHover={{ scale: 1.03 }}
+                  whileTap={{ scale: 0.97 }}
+                  transition={{ type: 'spring', stiffness: 400, damping: 25 }}
                 >
-                  <a href={`mailto:${PERSONAL_DATA.email}`}>
-                    Open Client <ArrowUpRight className="ml-1 w-3 h-3" />
-                  </a>
-                </Button>
+                  Open Client <ArrowUpRight className="w-3 h-3" />
+                </motion.a>
               </div>
             </div>
 
-            {/* Availability & Location Card */}
-            <div className="p-6 rounded-3xl bg-[#FAF6EC] dark:bg-[#204E4D] border-2 border-[#DCD0B6] dark:border-[#2E6B69] shadow-claude-card space-y-4">
-              <div className="flex items-center justify-between pb-3 border-b border-[#DCD0B6]/60 dark:border-[#2E6B69]/60">
+            {/* Status & Location card */}
+            <div className="p-6 rounded-3xl glass border border-white/8 glow-soft space-y-4 relative overflow-hidden">
+              <div className="absolute top-0 right-0 w-24 h-24 bg-secondary/6 rounded-full blur-2xl pointer-events-none" />
+
+              <div className="relative flex items-center justify-between pb-3 border-b border-white/6">
                 <div className="flex items-center gap-2">
-                  <span className="w-2.5 h-2.5 rounded-full bg-[#C84630] animate-pulse" />
-                  <span className="font-serif font-bold text-sm text-[#1C1B18] dark:text-[#FAF6EC]">
-                    Live Status
+                  <span className="relative flex h-2.5 w-2.5">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-secondary opacity-75" />
+                    <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-secondary" />
                   </span>
+                  <span className="font-display font-bold text-sm text-foreground">Live Status</span>
                 </div>
-                <span className="text-[11px] font-mono text-[#2F6F6D] dark:text-[#E6DBC2] font-semibold">
-                  Open to Opportunities
-                </span>
+                <span className="text-xs font-mono text-secondary font-semibold">Open to Opportunities</span>
               </div>
 
-              <div className="space-y-2 text-xs font-sans text-[#52504A] dark:text-[#DCD0B6]">
+              <div className="relative space-y-3 text-xs text-muted-foreground">
                 <div className="flex items-center gap-2">
-                  <MapPin className="w-4 h-4 text-[#C84630] shrink-0" />
-                  <span>Based in {PERSONAL_DATA.location} (Remote &amp; On-Site)</span>
+                  <MapPin className="w-4 h-4 text-primary shrink-0" />
+                  <span>Based in {PERSONAL_DATA.location} (Remote & On-Site)</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <Clock className="w-4 h-4 text-[#2F6F6D] shrink-0" />
-                  <span>Timezone: {PERSONAL_DATA.timezone} · Responsive within 24 hrs</span>
+                  <Clock className="w-4 h-4 text-secondary shrink-0" />
+                  <span>{PERSONAL_DATA.timezone} · Responsive within 24 hrs</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Zap className="w-4 h-4 text-amber-400 shrink-0" />
+                  <span>{PERSONAL_DATA.availability}</span>
                 </div>
               </div>
 
-              {/* Social Channels */}
-              <div className="pt-4 border-t border-[#DCD0B6]/60 dark:border-[#2E6B69]/60 flex items-center gap-2">
-                <Button
-                  asChild
-                  variant="ghost"
-                  size="sm"
-                  className="rounded-full hover:bg-[#E6DBC2] dark:hover:bg-[#1A403F] text-xs font-mono"
+              {/* Social links with magnetic physics */}
+              <div className="relative pt-4 border-t border-white/6 flex items-center gap-3">
+                <MagneticLink
+                  href={PERSONAL_DATA.github}
+                  className="flex items-center gap-2 px-4 py-2.5 rounded-xl glass border border-white/10 text-xs font-mono text-muted-foreground hover:text-foreground hover:border-primary/25 transition-all duration-200"
                 >
-                  <Link href={PERSONAL_DATA.github} target="_blank" rel="noopener noreferrer">
-                    <Github className="w-4 h-4 mr-1.5" />
-                    GitHub
-                  </Link>
-                </Button>
-
-                <Button
-                  asChild
-                  variant="ghost"
-                  size="sm"
-                  className="rounded-full hover:bg-[#E6DBC2] dark:hover:bg-[#1A403F] text-xs font-mono"
+                  <Github className="w-4 h-4" /> GitHub
+                </MagneticLink>
+                <MagneticLink
+                  href={PERSONAL_DATA.linkedin}
+                  className="flex items-center gap-2 px-4 py-2.5 rounded-xl glass border border-white/10 text-xs font-mono text-muted-foreground hover:text-foreground hover:border-cyan-400/25 transition-all duration-200"
                 >
-                  <Link href={PERSONAL_DATA.linkedin} target="_blank" rel="noopener noreferrer">
-                    <Linkedin className="w-4 h-4 mr-1.5 text-[#0077b5]" />
-                    LinkedIn
-                  </Link>
-                </Button>
+                  <Linkedin className="w-4 h-4 text-cyan-400" /> LinkedIn
+                </MagneticLink>
               </div>
             </div>
-
           </motion.div>
 
-          {/* Right Column: Editorial Contact Form (Col 7) */}
-          <motion.div
-            initial={{ opacity: 0, x: 20 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5 }}
-            className="lg:col-span-7"
-          >
-            <div className="p-6 sm:p-8 rounded-3xl bg-[#FAF6EC] dark:bg-[#204E4D] border-2 border-[#DCD0B6] dark:border-[#2E6B69] shadow-claude-card">
-              <div className="pb-4 mb-6 border-b border-[#DCD0B6]/60 dark:border-[#2E6B69]/60">
-                <h3 className="font-serif text-2xl font-bold text-[#1C1B18] dark:text-[#FAF6EC]">
+          {/* Right: Contact Form */}
+          <motion.div variants={cardVariants} className="lg:col-span-7">
+            <div className="p-7 sm:p-8 rounded-3xl glass border border-white/8 glow-soft relative overflow-hidden">
+              <div className="absolute top-0 right-0 w-40 h-40 bg-primary/5 rounded-full blur-3xl pointer-events-none" />
+
+              <div className="relative pb-5 mb-6 border-b border-white/6">
+                <h3 className="font-display text-2xl font-bold text-foreground">
                   Send a Direct Message
                 </h3>
-                <p className="text-xs font-sans text-[#52504A] dark:text-[#B5C7C6] mt-1">
-                  Fill in the details below and hit send. It will format an email directly to Partha.
+                <p className="text-xs text-muted-foreground mt-1">
+                  Fill in the details below — it&apos;ll format a draft email directly to Partha.
                 </p>
               </div>
 
               <Form {...form}>
-                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
+                <form onSubmit={form.handleSubmit(onSubmit)} className="relative space-y-5">
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <FormField
                       control={form.control}
                       name="name"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="text-xs font-mono text-[#1C1B18] dark:text-[#FAF6EC]">
-                            Your Name
-                          </FormLabel>
+                          <FormLabel className="text-xs font-mono text-muted-foreground">Your Name</FormLabel>
                           <FormControl>
                             <Input
                               placeholder="e.g. John Doe"
-                              className="rounded-xl bg-[#E6DBC2]/40 dark:bg-[#1A403F]/60 border-[#DCD0B6] dark:border-[#2E6B69] focus-visible:ring-[#C84630]"
+                              className="rounded-xl bg-white/4 border-white/10 focus-visible:ring-primary/50 focus-visible:border-primary/40 text-foreground placeholder:text-muted-foreground/40"
                               {...field}
                             />
                           </FormControl>
-                          <FormMessage className="text-[11px] font-mono text-[#C84630]" />
+                          <FormMessage className="text-[11px] font-mono text-destructive" />
                         </FormItem>
                       )}
                     />
-
                     <FormField
                       control={form.control}
                       name="email"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="text-xs font-mono text-[#1C1B18] dark:text-[#FAF6EC]">
-                            Your Email
-                          </FormLabel>
+                          <FormLabel className="text-xs font-mono text-muted-foreground">Your Email</FormLabel>
                           <FormControl>
                             <Input
                               type="email"
                               placeholder="name@company.com"
-                              className="rounded-xl bg-[#E6DBC2]/40 dark:bg-[#1A403F]/60 border-[#DCD0B6] dark:border-[#2E6B69] focus-visible:ring-[#C84630]"
+                              className="rounded-xl bg-white/4 border-white/10 focus-visible:ring-primary/50 focus-visible:border-primary/40 text-foreground placeholder:text-muted-foreground/40"
                               {...field}
                             />
                           </FormControl>
-                          <FormMessage className="text-[11px] font-mono text-[#C84630]" />
+                          <FormMessage className="text-[11px] font-mono text-destructive" />
                         </FormItem>
                       )}
                     />
@@ -264,17 +309,15 @@ export function ContactSection() {
                     name="subject"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="text-xs font-mono text-[#1C1B18] dark:text-[#FAF6EC]">
-                          Subject
-                        </FormLabel>
+                        <FormLabel className="text-xs font-mono text-muted-foreground">Subject</FormLabel>
                         <FormControl>
                           <Input
                             placeholder="Mobile Engineering Role / Flutter Consulting"
-                            className="rounded-xl bg-[#E6DBC2]/40 dark:bg-[#1A403F]/60 border-[#DCD0B6] dark:border-[#2E6B69] focus-visible:ring-[#C84630]"
+                            className="rounded-xl bg-white/4 border-white/10 focus-visible:ring-primary/50 focus-visible:border-primary/40 text-foreground placeholder:text-muted-foreground/40"
                             {...field}
                           />
                         </FormControl>
-                        <FormMessage className="text-[11px] font-mono text-[#C84630]" />
+                        <FormMessage className="text-[11px] font-mono text-destructive" />
                       </FormItem>
                     )}
                   />
@@ -284,42 +327,40 @@ export function ContactSection() {
                     name="message"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="text-xs font-mono text-[#1C1B18] dark:text-[#FAF6EC]">
-                          Your Message
-                        </FormLabel>
+                        <FormLabel className="text-xs font-mono text-muted-foreground">Your Message</FormLabel>
                         <FormControl>
                           <Textarea
                             placeholder="Hi Partha, I came across your portfolio and wanted to discuss..."
                             rows={5}
-                            className="rounded-xl bg-[#E6DBC2]/40 dark:bg-[#1A403F]/60 border-[#DCD0B6] dark:border-[#2E6B69] focus-visible:ring-[#C84630] resize-none"
+                            className="rounded-xl bg-white/4 border-white/10 focus-visible:ring-primary/50 focus-visible:border-primary/40 text-foreground placeholder:text-muted-foreground/40 resize-none"
                             {...field}
                           />
                         </FormControl>
-                        <FormMessage className="text-[11px] font-mono text-[#C84630]" />
+                        <FormMessage className="text-[11px] font-mono text-destructive" />
                       </FormItem>
                     )}
                   />
 
                   <div className="pt-2 flex items-center justify-between">
-                    <p className="text-[11px] font-mono text-[#52504A] dark:text-[#B5C7C6]">
-                      Direct mailto dispatch
+                    <p className="text-[11px] font-mono text-muted-foreground">
+                      Direct mailto dispatch · No server required
                     </p>
-
-                    <Button
+                    <motion.button
                       type="submit"
-                      className="rounded-full bg-[#C84630] hover:bg-[#B83E29] text-[#FAF6EC] px-6 text-xs font-mono font-medium shadow-sm hover:shadow transition-all"
+                      className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-indigo text-white text-sm font-semibold shadow-glow-sm-indigo hover:shadow-glow-indigo transition-shadow duration-300"
+                      whileHover={{ scale: 1.03 }}
+                      whileTap={{ scale: 0.97 }}
+                      transition={{ type: 'spring', stiffness: 400, damping: 25 }}
                     >
-                      <span>Send Dispatch</span>
-                      <Send className="ml-2 w-3.5 h-3.5" />
-                    </Button>
+                      <span>Send Message</span>
+                      <Send className="w-3.5 h-3.5" />
+                    </motion.button>
                   </div>
                 </form>
               </Form>
             </div>
           </motion.div>
-
-        </div>
-
+        </motion.div>
       </div>
     </section>
   );

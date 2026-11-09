@@ -2,137 +2,184 @@
 
 import React, { useRef } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
-import { 
-  Briefcase, 
-  GraduationCap, 
-  Calendar, 
-  MapPin, 
-  CheckCircle2, 
-  Clock, 
-  Sparkles,
-  Award
+import {
+  Briefcase,
+  GraduationCap,
+  Calendar,
+  MapPin,
+  CheckCircle2,
+  Clock,
+  Award,
+  Zap,
 } from 'lucide-react';
 import { EXPERIENCE_DATA, EDUCATION_DATA } from '@/lib/data';
-import { Badge } from '@/components/ui/badge';
+
+// Variants defined outside component
+const timelineItemVariants = {
+  hidden: (isEven: boolean) => ({
+    opacity: 0,
+    x: isEven ? -32 : 32,
+  }),
+  visible: {
+    opacity: 1,
+    x: 0,
+    transition: { type: 'spring' as const, stiffness: 120, damping: 18 },
+  },
+};
+
+const nodePulseVariants = {
+  idle: { scale: 1 },
+  pulse: {
+    scale: [1, 1.3, 1],
+    transition: { duration: 1.5, repeat: Infinity, ease: 'easeInOut' },
+  },
+};
 
 export function ExperienceSection() {
   const containerRef = useRef<HTMLDivElement>(null);
-  
-  // Track scroll progress across the timeline container
+
   const { scrollYProgress } = useScroll({
     target: containerRef,
-    offset: ['start 80%', 'end 70%'],
+    offset: ['start 85%', 'end 65%'],
   });
 
-  const lineHeight = useTransform(scrollYProgress, [0, 1], ['0%', '100%']);
+  // GPU-accelerated: only animating scaleY (transform)
+  const lineScaleY = useTransform(scrollYProgress, [0, 1], [0, 1]);
 
   return (
-    <section id="experience" className="section-padding bg-[#E6DBC2]/25 dark:bg-[#1A403F]/25 relative">
+    <section id="experience" className="section-padding relative">
+      <div className="absolute top-0 inset-x-0 h-px section-divider" />
+
       <div className="container-editorial">
-        
         {/* Section Header */}
-        <div className="flex flex-col items-center text-center space-y-3 mb-16">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#E6DBC2] dark:bg-[#204E4D] border border-[#DCD0B6] dark:border-[#2E6B69] text-xs font-mono text-[#2F6F6D] dark:text-[#E6DBC2]">
-            <Clock className="w-3.5 h-3.5 text-[#C84630]" />
-            <span>04 // Chronology</span>
-          </div>
-          <h2 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-normal text-[#1C1B18] dark:text-[#FAF6EC] tracking-tight">
-            Experience &amp; Education Timeline
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: '-80px' }}
+          transition={{ type: 'spring', stiffness: 120, damping: 20 }}
+          className="flex flex-col items-center text-center space-y-3 mb-16"
+        >
+          <span className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full glass border border-primary/25 text-xs font-mono text-primary">
+            <Clock className="w-3.5 h-3.5" />
+            04 // Chronology
+          </span>
+          <h2 className="font-display text-3xl sm:text-4xl lg:text-5xl font-bold text-foreground tracking-tight">
+            Experience &amp;{' '}
+            <span className="text-gradient-aurora">Education Timeline</span>
           </h2>
-          <p className="font-sans text-sm sm:text-base text-[#52504A] dark:text-[#B5C7C6] max-w-2xl">
+          <p className="font-sans text-sm sm:text-base text-muted-foreground max-w-2xl">
             A chronological progression of engineering roles, software achievements, and academic rigor.
           </p>
-        </div>
+        </motion.div>
 
-        {/* Timeline Container with Animated Progress Beam */}
-        <div ref={containerRef} className="relative max-w-4xl mx-auto pt-6">
-          
-          {/* Static Track (Rusted Teal) */}
-          <div className="absolute left-4 sm:left-1/2 -translate-x-1/2 top-0 bottom-0 w-1 bg-[#2F6F6D]/20 dark:bg-[#2E6B69]/40 rounded-full" />
+        {/* Timeline */}
+        <div ref={containerRef} className="relative max-w-4xl mx-auto">
+          {/* Static track */}
+          <div className="absolute left-4 sm:left-1/2 -translate-x-1/2 top-0 bottom-0 w-px bg-white/6 rounded-full" />
 
-          {/* Animated Scroll Progress Beam (Bloody Orange) */}
+          {/* Animated scroll beam — only scaleY is animated (GPU-safe transform) */}
           <motion.div
-            style={{ height: lineHeight }}
-            className="absolute left-4 sm:left-1/2 -translate-x-1/2 top-0 w-1 bg-[#C84630] rounded-full shadow-claude-glow origin-top"
+            style={{ scaleY: lineScaleY, transformOrigin: 'top' }}
+            className="absolute left-4 sm:left-1/2 -translate-x-1/2 top-0 bottom-0 w-px bg-gradient-to-b from-primary via-secondary to-primary/50 rounded-full"
           />
 
-          {/* Part 1: Professional Work Experience */}
-          <div className="mb-14">
+          {/* ── Work Experience ── */}
+          <div className="mb-16">
             <div className="flex items-center justify-center mb-10">
-              <span className="px-4 py-1.5 rounded-full bg-[#2F6F6D] text-[#FAF6EC] font-serif text-sm font-bold shadow-sm flex items-center gap-2 z-10">
-                <Briefcase className="w-4 h-4 text-[#FAF6EC]" />
-                Professional Industry Experience
-              </span>
+              <div className="flex items-center gap-2.5 px-5 py-2.5 rounded-2xl bg-primary/10 border border-primary/25 shadow-glow-sm-indigo z-10">
+                <Briefcase className="w-4 h-4 text-primary" />
+                <span className="font-display font-bold text-sm text-primary">
+                  Professional Industry Experience
+                </span>
+              </div>
             </div>
 
-            <div className="space-y-12">
+            <div className="space-y-14">
               {EXPERIENCE_DATA.map((exp, idx) => {
                 const isEven = idx % 2 === 0;
 
                 return (
                   <div
                     key={exp.title + exp.date}
-                    className="relative grid grid-cols-1 sm:grid-cols-2 gap-8 items-center"
+                    className="relative grid grid-cols-1 sm:grid-cols-2 gap-8 items-start"
                   >
-                    {/* Pulsing Central Node */}
-                    <div className="absolute left-4 sm:left-1/2 -translate-x-1/2 w-8 h-8 rounded-full bg-[#FAF6EC] dark:bg-[#1A403F] border-2 border-[#C84630] flex items-center justify-center z-10 shadow-sm">
-                      <span className="w-2.5 h-2.5 rounded-full bg-[#C84630]" />
+                    {/* Timeline node */}
+                    <div className="absolute left-4 sm:left-1/2 -translate-x-1/2 z-20 mt-6">
+                      <div className="relative w-9 h-9 rounded-full glass border-2 border-primary flex items-center justify-center shadow-glow-sm-indigo">
+                        <Zap className="w-4 h-4 text-primary" />
+                        {/* Pulse ring for current role */}
+                        {exp.badge === 'Current Role' && (
+                          <span className="absolute inset-0 rounded-full border-2 border-primary animate-ping opacity-40" />
+                        )}
+                      </div>
                     </div>
 
-                    {/* Timeline Content Card */}
+                    {/* Card */}
                     <motion.div
-                      initial={{ opacity: 0, x: isEven ? -25 : 25 }}
-                      whileInView={{ opacity: 1, x: 0 }}
-                      viewport={{ once: true, margin: '-50px' }}
-                      transition={{ duration: 0.5 }}
-                      className={`pl-12 sm:pl-0 ${
-                        isEven ? 'sm:text-right sm:pr-8' : 'sm:col-start-2 sm:pl-8'
-                      }`}
+                      custom={isEven}
+                      variants={timelineItemVariants}
+                      initial="hidden"
+                      whileInView="visible"
+                      viewport={{ once: true, margin: '-60px' }}
+                      whileHover={{
+                        y: -4,
+                        transition: { type: 'spring', stiffness: 300, damping: 25 },
+                      }}
+                      className={`pl-14 sm:pl-0 ${isEven ? 'sm:pr-10 sm:text-left' : 'sm:col-start-2 sm:pl-10'}`}
                     >
-                      <div className="p-6 rounded-3xl bg-[#FAF6EC] dark:bg-[#204E4D] border-2 border-[#DCD0B6] dark:border-[#2E6B69] shadow-claude-card hover:shadow-claude-hover transition-all text-left">
+                      <div className="glass border border-white/8 rounded-3xl p-6 glow-soft relative overflow-hidden">
+                        {/* Top glow accent */}
+                        <div className="absolute top-0 right-0 w-24 h-24 bg-primary/6 rounded-full blur-2xl pointer-events-none" />
+
                         {/* Meta header */}
-                        <div className="flex flex-wrap items-center justify-between gap-2 pb-3 mb-3 border-b border-[#DCD0B6]/60 dark:border-[#2E6B69]/60">
-                          <span className="text-xs font-mono font-semibold text-[#C84630] flex items-center gap-1">
+                        <div className="flex flex-wrap items-center justify-between gap-2 pb-3 mb-3 border-b border-white/6">
+                          <span className="text-xs font-mono font-semibold text-primary flex items-center gap-1.5">
                             <Calendar className="w-3.5 h-3.5" />
                             {exp.date}
                           </span>
-                          <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-[#E6DBC2] dark:bg-[#1A403F] text-[#2F6F6D] dark:text-[#FAF6EC] font-semibold">
+                          <span
+                            className={`text-[10px] font-mono px-2.5 py-1 rounded-xl font-bold ${
+                              exp.badge === 'Current Role'
+                                ? 'badge-emerald'
+                                : 'badge-amber'
+                            }`}
+                          >
                             {exp.badge}
                           </span>
                         </div>
 
-                        {/* Title & Organization */}
-                        <h3 className="font-serif text-xl sm:text-2xl font-bold text-[#1C1B18] dark:text-[#FAF6EC]">
+                        {/* Title & Company */}
+                        <h3 className="font-display text-xl sm:text-2xl font-bold text-foreground">
                           {exp.title}
                         </h3>
-                        <p className="font-sans font-medium text-xs sm:text-sm text-[#2F6F6D] dark:text-[#E6DBC2] mt-0.5 flex items-center gap-1.5">
-                          <span>{exp.company}</span>
-                          <span>·</span>
-                          <span className="flex items-center gap-1 text-[#52504A] dark:text-[#B5C7C6]">
+                        <p className="font-sans text-sm text-secondary mt-1 flex items-center gap-1.5 flex-wrap">
+                          <span className="font-semibold">{exp.company}</span>
+                          <span className="text-muted-foreground">·</span>
+                          <span className="text-muted-foreground flex items-center gap-1 text-xs">
                             <MapPin className="w-3 h-3" />
                             {exp.location}
                           </span>
                         </p>
 
-                        {/* Key Responsibilities */}
-                        <ul className="mt-4 space-y-2">
+                        {/* Responsibilities */}
+                        <ul className="mt-4 space-y-2.5">
                           {exp.responsibilities.map((resp, i) => (
                             <li
                               key={i}
-                              className="flex items-start gap-2 text-xs sm:text-sm font-sans text-[#52504A] dark:text-[#DCD0B6] leading-relaxed"
+                              className="flex items-start gap-2 text-xs sm:text-sm text-muted-foreground leading-relaxed"
                             >
-                              <CheckCircle2 className="w-3.5 h-3.5 text-[#C84630] shrink-0 mt-1" />
+                              <CheckCircle2 className="w-3.5 h-3.5 text-secondary shrink-0 mt-0.5" />
                               <span>{resp}</span>
                             </li>
                           ))}
                         </ul>
 
-                        {/* Tech Tags */}
-                        <div className="mt-5 pt-3 border-t border-[#DCD0B6]/50 dark:border-[#2E6B69]/50 flex flex-wrap gap-1.5">
+                        {/* Tech tags */}
+                        <div className="mt-5 pt-3 border-t border-white/6 flex flex-wrap gap-1.5">
                           {exp.technologies.map((tech) => (
                             <span
                               key={tech}
-                              className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-[#E6DBC2]/60 dark:bg-[#1A403F] text-[#1C1B18] dark:text-[#FAF6EC]"
+                              className="text-[10px] font-mono px-2.5 py-1 rounded-xl bg-white/4 border border-white/8 text-muted-foreground"
                             >
                               {tech}
                             </span>
@@ -146,70 +193,76 @@ export function ExperienceSection() {
             </div>
           </div>
 
-          {/* Part 2: Formal Education Timeline */}
-          <div className="pt-8">
+          {/* ── Education ── */}
+          <div className="pt-6">
             <div className="flex items-center justify-center mb-10">
-              <span className="px-4 py-1.5 rounded-full bg-[#C84630] text-[#FAF6EC] font-serif text-sm font-bold shadow-sm flex items-center gap-2 z-10">
-                <GraduationCap className="w-4 h-4 text-[#FAF6EC]" />
-                Formal Education &amp; Degrees
-              </span>
+              <div className="flex items-center gap-2.5 px-5 py-2.5 rounded-2xl bg-secondary/10 border border-secondary/25 z-10">
+                <GraduationCap className="w-4 h-4 text-secondary" />
+                <span className="font-display font-bold text-sm text-secondary">
+                  Formal Education & Degrees
+                </span>
+              </div>
             </div>
 
-            <div className="space-y-12">
+            <div className="space-y-14">
               {EDUCATION_DATA.map((edu, idx) => {
                 const isEven = idx % 2 === 0;
 
                 return (
                   <div
                     key={edu.degree}
-                    className="relative grid grid-cols-1 sm:grid-cols-2 gap-8 items-center"
+                    className="relative grid grid-cols-1 sm:grid-cols-2 gap-8 items-start"
                   >
-                    {/* Node */}
-                    <div className="absolute left-4 sm:left-1/2 -translate-x-1/2 w-8 h-8 rounded-full bg-[#FAF6EC] dark:bg-[#1A403F] border-2 border-[#2F6F6D] dark:border-[#E6DBC2] flex items-center justify-center z-10 shadow-sm">
-                      <span className="w-2.5 h-2.5 rounded-full bg-[#2F6F6D] dark:bg-[#FAF6EC]" />
+                    {/* Timeline node */}
+                    <div className="absolute left-4 sm:left-1/2 -translate-x-1/2 z-20 mt-6">
+                      <div className="w-9 h-9 rounded-full glass border-2 border-secondary flex items-center justify-center shadow-glow-emerald">
+                        <Award className="w-4 h-4 text-secondary" />
+                      </div>
                     </div>
 
-                    {/* Timeline Content Card */}
+                    {/* Card */}
                     <motion.div
-                      initial={{ opacity: 0, x: isEven ? 25 : -25 }}
-                      whileInView={{ opacity: 1, x: 0 }}
-                      viewport={{ once: true, margin: '-50px' }}
-                      transition={{ duration: 0.5 }}
-                      className={`pl-12 sm:pl-0 ${
-                        !isEven ? 'sm:text-right sm:pr-8' : 'sm:col-start-2 sm:pl-8'
-                      }`}
+                      custom={!isEven}
+                      variants={timelineItemVariants}
+                      initial="hidden"
+                      whileInView="visible"
+                      viewport={{ once: true, margin: '-60px' }}
+                      whileHover={{
+                        y: -4,
+                        transition: { type: 'spring', stiffness: 300, damping: 25 },
+                      }}
+                      className={`pl-14 sm:pl-0 ${!isEven ? 'sm:pr-10 sm:text-left' : 'sm:col-start-2 sm:pl-10'}`}
                     >
-                      <div className="p-6 rounded-3xl bg-[#FAF6EC] dark:bg-[#204E4D] border-2 border-[#DCD0B6] dark:border-[#2E6B69] shadow-claude-card hover:shadow-claude-hover transition-all text-left">
-                        {/* Meta Header */}
-                        <div className="flex flex-wrap items-center justify-between gap-2 pb-3 mb-3 border-b border-[#DCD0B6]/60 dark:border-[#2E6B69]/60">
-                          <span className="text-xs font-mono font-semibold text-[#2F6F6D] dark:text-[#E6DBC2] flex items-center gap-1">
+                      <div className="glass border border-white/8 rounded-3xl p-6 glow-soft relative overflow-hidden">
+                        <div className="absolute top-0 right-0 w-24 h-24 bg-secondary/6 rounded-full blur-2xl pointer-events-none" />
+
+                        {/* Meta */}
+                        <div className="flex flex-wrap items-center justify-between gap-2 pb-3 mb-3 border-b border-white/6">
+                          <span className="text-xs font-mono font-semibold text-secondary flex items-center gap-1.5">
                             <Calendar className="w-3.5 h-3.5" />
                             {edu.date}
                           </span>
-                          <span className="text-xs font-mono px-2.5 py-0.5 rounded-full bg-[#C84630] text-[#FAF6EC] font-bold">
+                          <span className="text-xs font-mono px-2.5 py-1 rounded-xl badge-emerald font-bold">
                             {edu.scoreLabel}: {edu.score}
                           </span>
                         </div>
 
                         {/* Degree & School */}
-                        <h3 className="font-serif text-lg sm:text-xl font-bold text-[#1C1B18] dark:text-[#FAF6EC]">
+                        <h3 className="font-display text-lg sm:text-xl font-bold text-foreground">
                           {edu.degree}
                         </h3>
-                        <p className="font-sans font-medium text-xs sm:text-sm text-[#C84630] mt-0.5">
+                        <p className="font-sans text-sm text-primary mt-1 font-semibold">
                           {edu.institution}
                         </p>
-                        <p className="text-[11px] font-mono text-[#52504A] dark:text-[#B5C7C6] mt-0.5">
+                        <p className="text-xs font-mono text-muted-foreground mt-0.5">
                           {edu.location} · {edu.field}
                         </p>
 
                         {/* Highlights */}
                         <ul className="mt-3 space-y-1.5">
                           {edu.highlights.map((h, i) => (
-                            <li
-                              key={i}
-                              className="text-xs font-sans text-[#52504A] dark:text-[#DCD0B6] flex items-start gap-1.5"
-                            >
-                              <span className="text-[#C84630] font-bold">✦</span>
+                            <li key={i} className="text-xs text-muted-foreground flex items-start gap-1.5">
+                              <span className="text-primary font-bold">▸</span>
                               <span>{h}</span>
                             </li>
                           ))}
@@ -221,9 +274,7 @@ export function ExperienceSection() {
               })}
             </div>
           </div>
-
         </div>
-
       </div>
     </section>
   );

@@ -4,76 +4,128 @@ import React, { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  Terminal, 
-  Sparkles, 
-  Layers, 
-  Filter, 
-  ArrowRight, 
-  RotateCcw,
-  CheckCircle2,
-  ExternalLink,
-  Code
-} from 'lucide-react';
+import { Terminal, Filter, ArrowRight, RotateCcw, Code, Layers } from 'lucide-react';
 import { SKILLS_CATEGORIES, SkillItem, PROJECTS_DATA } from '@/lib/data';
 import { useProjectFilter } from '@/hooks/use-project-filter';
+
+// Variants outside component
+const containerVariants = {
+  hidden: {},
+  visible: {
+    transition: { staggerChildren: 0.08, delayChildren: 0.1 },
+  },
+};
+
+const cardVariants = {
+  hidden: { opacity: 0, y: 24 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { type: 'spring' as const, stiffness: 120, damping: 14 },
+  },
+};
+
+const skillButtonVariants = {
+  idle: { scale: 1, y: 0 },
+  hover: {
+    scale: 1.06,
+    y: -3,
+    transition: { type: 'spring' as const, stiffness: 400, damping: 20 },
+  },
+  tap: { scale: 0.96 },
+  selected: {
+    scale: 1.04,
+    y: -2,
+    transition: { type: 'spring' as const, stiffness: 400, damping: 20 },
+  },
+};
+
+// Category accent colors
+const CATEGORY_ACCENTS: Record<string, { border: string; glow: string; badge: string }> = {
+  'mobile-frontend': {
+    border: 'rgba(6,182,212,0.25)',
+    glow: 'rgba(6,182,212,0.08)',
+    badge: 'badge-cyan',
+  },
+  backend: {
+    border: 'rgba(124,58,237,0.25)',
+    glow: 'rgba(124,58,237,0.08)',
+    badge: 'badge-indigo',
+  },
+  databases: {
+    border: 'rgba(16,185,129,0.25)',
+    glow: 'rgba(16,185,129,0.08)',
+    badge: 'badge-emerald',
+  },
+  'tools-devops': {
+    border: 'rgba(245,158,11,0.25)',
+    glow: 'rgba(245,158,11,0.08)',
+    badge: 'badge-amber',
+  },
+};
 
 export function SkillsSection() {
   const { filter, setFilter, resetFilter } = useProjectFilter();
   const [hoveredSkill, setHoveredSkill] = useState<string | null>(null);
 
-  const handleSkillClick = (skillName: string) => {
-    setFilter(skillName);
-  };
-
-  // Count how many projects match the active or hovered skill
-  const getMatchingCount = (tech: string) => {
-    return PROJECTS_DATA.filter((p) =>
-      p.tags.some((tag) => tag.toLowerCase().includes(tech.toLowerCase()) || tech.toLowerCase().includes(tag.toLowerCase()))
+  const getMatchingCount = (tech: string) =>
+    PROJECTS_DATA.filter((p) =>
+      p.tags.some(
+        (tag) =>
+          tag.toLowerCase().includes(tech.toLowerCase()) ||
+          tech.toLowerCase().includes(tag.toLowerCase())
+      )
     ).length;
-  };
 
-  const activeMatchingCount = filter !== 'All' ? getMatchingCount(filter) : PROJECTS_DATA.length;
+  const activeMatchingCount =
+    filter !== 'All' ? getMatchingCount(filter) : PROJECTS_DATA.length;
 
   return (
-    <section id="skills" className="section-padding bg-[#E6DBC2]/30 dark:bg-[#1A403F]/30 relative">
+    <section id="skills" className="section-padding relative">
+      <div className="absolute top-0 inset-x-0 h-px section-divider" />
+      <div className="absolute bottom-0 inset-x-0 h-px section-divider" />
+
       <div className="container-editorial">
-        
         {/* Section Header */}
-        <div className="flex flex-col items-center text-center space-y-3 mb-14">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#E6DBC2] dark:bg-[#204E4D] border border-[#DCD0B6] dark:border-[#2E6B69] text-xs font-mono text-[#2F6F6D] dark:text-[#E6DBC2]">
-            <Terminal className="w-3.5 h-3.5 text-[#C84630]" />
-            <span>02 // Interactive Tech Matrix</span>
-          </div>
-          <h2 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-normal text-[#1C1B18] dark:text-[#FAF6EC] tracking-tight">
-            Live Skills &amp; Technology Stack
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: '-80px' }}
+          transition={{ type: 'spring', stiffness: 120, damping: 20 }}
+          className="flex flex-col items-center text-center space-y-3 mb-14"
+        >
+          <span className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full glass border border-primary/25 text-xs font-mono text-primary">
+            <Terminal className="w-3.5 h-3.5" />
+            02 // Interactive Tech Matrix
+          </span>
+          <h2 className="font-display text-3xl sm:text-4xl lg:text-5xl font-bold text-foreground tracking-tight">
+            Live Skills &amp;{' '}
+            <span className="text-gradient-emerald">Technology Stack</span>
           </h2>
-          <p className="font-sans text-sm sm:text-base text-[#52504A] dark:text-[#B5C7C6] max-w-2xl">
-            Click any technology below to dynamically filter and inspect corresponding projects in the showcase.
+          <p className="font-sans text-sm sm:text-base text-muted-foreground max-w-2xl">
+            Click any technology to dynamically filter and inspect corresponding projects.
           </p>
 
-          {/* Active Filter Notification Pill */}
+          {/* Active Filter Pill */}
           <AnimatePresence>
             {filter !== 'All' && (
               <motion.div
-                initial={{ opacity: 0, scale: 0.9, y: -10 }}
+                initial={{ opacity: 0, scale: 0.9, y: -8 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
-                exit={{ opacity: 0, scale: 0.9, y: -10 }}
-                className="mt-3 inline-flex items-center gap-3 px-4 py-2 rounded-full bg-[#C84630] text-[#FAF6EC] text-xs font-mono shadow-claude-glow"
+                exit={{ opacity: 0, scale: 0.9, y: -8 }}
+                transition={{ type: 'spring', stiffness: 300, damping: 25 }}
+                className="mt-3 inline-flex items-center gap-3 px-4 py-2.5 rounded-2xl bg-primary/10 border border-primary/30 text-sm font-mono shadow-glow-sm-indigo"
               >
-                <span className="flex items-center gap-1.5 font-semibold">
-                  <Filter className="w-3.5 h-3.5" />
-                  Filtering Projects by: {filter} ({activeMatchingCount} {activeMatchingCount === 1 ? 'match' : 'matches'})
+                <Filter className="w-3.5 h-3.5 text-primary" />
+                <span className="text-primary font-semibold">
+                  {filter} — {activeMatchingCount} {activeMatchingCount === 1 ? 'match' : 'matches'}
                 </span>
-                <Link
-                  href="#projects"
-                  className="underline underline-offset-2 hover:opacity-80 flex items-center gap-1"
-                >
-                  View in Showcase <ArrowRight className="w-3 h-3" />
+                <Link href="#projects" className="text-muted-foreground hover:text-foreground flex items-center gap-1 text-xs">
+                  View <ArrowRight className="w-3 h-3" />
                 </Link>
                 <button
                   onClick={resetFilter}
-                  className="p-1 rounded-full hover:bg-black/20 text-[#FAF6EC]"
+                  className="p-1 rounded-lg hover:bg-white/10 text-muted-foreground hover:text-foreground transition-colors"
                   title="Clear filter"
                 >
                   <RotateCcw className="w-3 h-3" />
@@ -81,110 +133,142 @@ export function SkillsSection() {
               </motion.div>
             )}
           </AnimatePresence>
-        </div>
+        </motion.div>
 
-        {/* Bento Grid: 4 Pillars of Engineering */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {SKILLS_CATEGORIES.map((category) => (
-            <motion.div
-              key={category.id}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5 }}
-              className="rounded-3xl p-6 sm:p-7 bg-[#FAF6EC] dark:bg-[#204E4D] border-2 border-[#DCD0B6] dark:border-[#2E6B69] shadow-claude-card hover:shadow-claude-hover transition-all flex flex-col justify-between"
-            >
-              <div>
-                {/* Category Header */}
-                <div className="flex items-center justify-between pb-4 mb-5 border-b border-[#DCD0B6]/60 dark:border-[#2E6B69]/60">
-                  <div>
-                    <h3 className="font-serif text-xl sm:text-2xl font-bold text-[#1C1B18] dark:text-[#FAF6EC]">
-                      {category.title}
-                    </h3>
-                    <p className="text-xs font-sans text-[#52504A] dark:text-[#B5C7C6] mt-0.5">
-                      {category.description}
-                    </p>
+        {/* Bento Grid */}
+        <motion.div
+          variants={containerVariants}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: '-60px' }}
+          className="grid grid-cols-1 md:grid-cols-2 gap-5"
+        >
+          {SKILLS_CATEGORIES.map((category) => {
+            const accent = CATEGORY_ACCENTS[category.id] || {
+              border: 'rgba(255,255,255,0.1)',
+              glow: 'rgba(255,255,255,0.03)',
+              badge: 'badge-indigo',
+            };
+
+            return (
+              <motion.div
+                key={category.id}
+                variants={cardVariants}
+                whileHover={{
+                  y: -4,
+                  transition: { type: 'spring', stiffness: 300, damping: 25 },
+                }}
+                className="rounded-3xl p-6 sm:p-7 glass glow-soft flex flex-col justify-between relative overflow-hidden"
+                style={{
+                  borderColor: accent.border,
+                  border: `1px solid ${accent.border}`,
+                }}
+              >
+                {/* Background glow */}
+                <div
+                  className="absolute top-0 right-0 w-40 h-40 rounded-full blur-3xl pointer-events-none"
+                  style={{ background: accent.glow }}
+                />
+
+                <div className="relative">
+                  {/* Category Header */}
+                  <div className="flex items-center justify-between pb-4 mb-5 border-b border-white/6">
+                    <div>
+                      <h3 className="font-display text-xl font-bold text-foreground">
+                        {category.title}
+                      </h3>
+                      <p className="text-xs text-muted-foreground mt-0.5">{category.description}</p>
+                    </div>
+                    <span className={`text-xs font-mono font-semibold px-2.5 py-1 rounded-xl ${accent.badge}`}>
+                      {category.skills.length} techs
+                    </span>
                   </div>
-                  <span className="text-xs font-mono font-medium px-2.5 py-1 rounded-full bg-[#E6DBC2] dark:bg-[#1A403F] text-[#2F6F6D] dark:text-[#FAF6EC]">
-                    {category.skills.length} techs
+
+                  {/* Skills Grid */}
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
+                    {category.skills.map((skill: SkillItem) => {
+                      const isSelected = filter.toLowerCase() === skill.name.toLowerCase();
+                      const matchCount = getMatchingCount(skill.name);
+
+                      return (
+                        <motion.button
+                          key={skill.name}
+                          onClick={() => setFilter(skill.name)}
+                          onMouseEnter={() => setHoveredSkill(skill.name)}
+                          onMouseLeave={() => setHoveredSkill(null)}
+                          variants={skillButtonVariants}
+                          initial="idle"
+                          whileHover="hover"
+                          whileTap="tap"
+                          animate={isSelected ? 'selected' : 'idle'}
+                          className={`text-left p-3 rounded-2xl border transition-all duration-200 flex flex-col justify-between relative overflow-hidden ${
+                            isSelected
+                              ? 'bg-primary/15 border-primary/40 shadow-glow-sm-indigo'
+                              : 'bg-white/3 border-white/8 hover:bg-white/6 hover:border-white/15'
+                          }`}
+                        >
+                          {isSelected && (
+                            <motion.div
+                              layoutId={`skill-selected-${category.id}`}
+                              className="absolute inset-0 bg-gradient-to-br from-primary/10 to-primary/5 rounded-2xl"
+                              transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+                            />
+                          )}
+
+                          <div className="relative flex items-center justify-between w-full mb-2">
+                            <div className="w-8 h-8 rounded-xl bg-white/5 border border-white/8 flex items-center justify-center p-1">
+                              {skill.iconSrc ? (
+                                <Image
+                                  src={skill.iconSrc}
+                                  alt={skill.name}
+                                  width={22}
+                                  height={22}
+                                  unoptimized
+                                  className="object-contain"
+                                />
+                              ) : (
+                                <Code className="w-4 h-4 text-primary" />
+                              )}
+                            </div>
+                            <span
+                              className={`text-[9px] font-mono px-1.5 py-0.5 rounded-lg ${
+                                isSelected ? 'badge-indigo' : 'bg-white/5 text-muted-foreground'
+                              }`}
+                            >
+                              {skill.badge}
+                            </span>
+                          </div>
+
+                          <div className="relative">
+                            <p className={`font-sans font-semibold text-xs truncate ${isSelected ? 'text-primary' : 'text-foreground'}`}>
+                              {skill.name}
+                            </p>
+                            <div className="flex items-center justify-between mt-1 text-[10px] font-mono text-muted-foreground">
+                              <span>{skill.proficiency}</span>
+                              {matchCount > 0 && (
+                                <span className={`font-bold ${isSelected ? 'text-primary' : ''}`}>
+                                  {matchCount}p
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                        </motion.button>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* Footer hint */}
+                <div className="relative mt-5 pt-3 border-t border-white/5 flex items-center justify-between text-[11px] font-mono text-muted-foreground">
+                  <span>Tap to filter showcase</span>
+                  <span className="text-primary/70 flex items-center gap-1">
+                    <Layers className="w-3 h-3" /> Spring Physics
                   </span>
                 </div>
-
-                {/* Skills Interactive Badges */}
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                  {category.skills.map((skill: SkillItem) => {
-                    const isSelected = filter.toLowerCase() === skill.name.toLowerCase();
-                    const matchCount = getMatchingCount(skill.name);
-
-                    return (
-                      <motion.button
-                        key={skill.name}
-                        onClick={() => handleSkillClick(skill.name)}
-                        onMouseEnter={() => setHoveredSkill(skill.name)}
-                        onMouseLeave={() => setHoveredSkill(null)}
-                        whileHover={{ scale: 1.04, y: -2 }}
-                        whileTap={{ scale: 0.98 }}
-                        transition={{ type: 'spring', stiffness: 400, damping: 25 }}
-                        className={`text-left p-3 rounded-2xl border transition-all duration-200 flex flex-col justify-between ${
-                          isSelected
-                            ? 'bg-[#C84630] text-[#FAF6EC] border-[#C84630] shadow-md'
-                            : 'bg-[#E6DBC2]/50 dark:bg-[#1A403F]/60 hover:bg-[#FAF6EC] dark:hover:bg-[#2F6F6D] text-[#1C1B18] dark:text-[#FAF6EC] border-[#DCD0B6] dark:border-[#2E6B69]'
-                        }`}
-                      >
-                        <div className="flex items-center justify-between w-full mb-2">
-                          <div className="w-8 h-8 rounded-lg bg-[#FAF6EC] dark:bg-[#1A403F] flex items-center justify-center p-1 shadow-sm">
-                            {skill.iconSrc ? (
-                              <Image
-                                src={skill.iconSrc}
-                                alt={skill.name}
-                                width={24}
-                                height={24}
-                                unoptimized
-                                className="object-contain"
-                              />
-                            ) : (
-                              <Code className="w-4 h-4 text-[#C84630]" />
-                            )}
-                          </div>
-                          <span
-                            className={`text-[9px] font-mono px-1.5 py-0.5 rounded-full ${
-                              isSelected
-                                ? 'bg-[#FAF6EC] text-[#C84630] font-semibold'
-                                : 'bg-[#DCD0B6]/60 dark:bg-[#204E4D] text-[#52504A] dark:text-[#B5C7C6]'
-                            }`}
-                          >
-                            {skill.badge}
-                          </span>
-                        </div>
-
-                        <div>
-                          <p className="font-sans font-semibold text-xs truncate">
-                            {skill.name}
-                          </p>
-                          <div className="flex items-center justify-between mt-1 text-[10px] font-mono opacity-80">
-                            <span>{skill.proficiency}</span>
-                            {matchCount > 0 && (
-                              <span className="font-bold underline decoration-dotted">
-                                {matchCount} {matchCount === 1 ? 'proj' : 'projs'}
-                              </span>
-                            )}
-                          </div>
-                        </div>
-                      </motion.button>
-                    );
-                  })}
-                </div>
-              </div>
-
-              {/* Bottom Hint */}
-              <div className="mt-5 pt-3 border-t border-[#DCD0B6]/40 dark:border-[#2E6B69]/40 flex items-center justify-between text-[11px] font-mono text-[#52504A] dark:text-[#B5C7C6]">
-                <span>Tap to filter showcase</span>
-                <span className="text-[#C84630]">Spring Physics Active</span>
-              </div>
-            </motion.div>
-          ))}
-        </div>
-
+              </motion.div>
+            );
+          })}
+        </motion.div>
       </div>
     </section>
   );

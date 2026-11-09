@@ -3,7 +3,7 @@
 import * as React from "react";
 import { Moon, Sun } from "lucide-react";
 import { useTheme } from "next-themes";
-import { Button } from "@/components/ui/button";
+import { motion, AnimatePresence } from "framer-motion";
 
 export function ThemeToggle() {
   const { theme, setTheme } = useTheme();
@@ -15,7 +15,6 @@ export function ThemeToggle() {
 
   const toggleTheme = (event: React.MouseEvent<HTMLButtonElement>) => {
     const nextTheme = theme === "dark" ? "light" : "dark";
-
     if (typeof document !== "undefined" && (document as any).startViewTransition) {
       const x = event.clientX;
       const y = event.clientY;
@@ -23,7 +22,6 @@ export function ThemeToggle() {
         Math.max(x, window.innerWidth - x),
         Math.max(y, window.innerHeight - y)
       );
-
       (document as any).startViewTransition(() => {
         setTheme(nextTheme);
       }).ready.then(() => {
@@ -35,7 +33,7 @@ export function ThemeToggle() {
             ],
           },
           {
-            duration: 400,
+            duration: 450,
             easing: "cubic-bezier(0.4, 0, 0.2, 1)",
             pseudoElement: "::view-transition-new(root)",
           }
@@ -48,31 +46,47 @@ export function ThemeToggle() {
 
   if (!mounted) {
     return (
-      <Button
-        variant="ghost"
-        size="icon"
-        className="w-9 h-9 rounded-full text-[#1C1B18] dark:text-[#F3E9D2] hover:bg-[#E6DBC2] dark:hover:bg-[#204E4D]"
-        aria-label="Toggle palette theme"
-      >
-        <span className="w-4 h-4 rounded-full bg-current opacity-60" />
-      </Button>
+      <div className="w-9 h-9 rounded-xl glass border border-white/8 flex items-center justify-center">
+        <span className="w-4 h-4 rounded-full bg-primary/40" />
+      </div>
     );
   }
 
   const isDark = theme === "dark";
 
   return (
-    <Button
-      variant="ghost"
-      size="icon"
+    <motion.button
       onClick={toggleTheme}
-      className="relative w-9 h-9 rounded-full text-[#1C1B18] dark:text-[#F3E9D2] hover:bg-[#E6DBC2] dark:hover:bg-[#204E4D] transition-colors"
-      title={isDark ? "Switch to Smoked Vanilla (Light)" : "Switch to Rusted Teal (Dark)"}
-      aria-label="Toggle palette theme"
+      className="relative w-9 h-9 rounded-xl glass border border-white/8 flex items-center justify-center text-muted-foreground hover:text-foreground hover:border-primary/25 transition-all duration-200"
+      whileHover={{ scale: 1.08 }}
+      whileTap={{ scale: 0.92 }}
+      transition={{ type: "spring", stiffness: 400, damping: 25 }}
+      title={isDark ? "Switch to Light Mode" : "Switch to Dark Mode"}
+      aria-label="Toggle theme"
     >
-      <Sun className="h-4 w-4 rotate-0 scale-100 transition-all duration-300 dark:-rotate-90 dark:scale-0 text-[#C84630]" />
-      <Moon className="absolute h-4 w-4 rotate-90 scale-0 transition-all duration-300 dark:rotate-0 dark:scale-100 text-[#FAF6EC]" />
-      <span className="sr-only">Toggle theme</span>
-    </Button>
+      <AnimatePresence mode="wait">
+        {isDark ? (
+          <motion.div
+            key="moon"
+            initial={{ rotate: -90, opacity: 0, scale: 0.8 }}
+            animate={{ rotate: 0, opacity: 1, scale: 1 }}
+            exit={{ rotate: 90, opacity: 0, scale: 0.8 }}
+            transition={{ duration: 0.2 }}
+          >
+            <Moon className="h-4 w-4" />
+          </motion.div>
+        ) : (
+          <motion.div
+            key="sun"
+            initial={{ rotate: 90, opacity: 0, scale: 0.8 }}
+            animate={{ rotate: 0, opacity: 1, scale: 1 }}
+            exit={{ rotate: -90, opacity: 0, scale: 0.8 }}
+            transition={{ duration: 0.2 }}
+          >
+            <Sun className="h-4 w-4" />
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </motion.button>
   );
 }
