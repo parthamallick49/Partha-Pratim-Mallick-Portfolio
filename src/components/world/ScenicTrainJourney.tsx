@@ -3,6 +3,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import Lenis from 'lenis';
 import { RailwayTrack } from './RailwayTrack';
 import { EnvironmentLayers } from './EnvironmentLayers';
 import { Station1Terminal } from '../stations/Station1Terminal';
@@ -72,6 +73,36 @@ export function ScenicTrainJourney({
   onLiveTourStateChangeRef.current = onLiveTourStateChange;
   const onLiveViewChangeRef = useRef(onLiveViewChange);
   onLiveViewChangeRef.current = onLiveViewChange;
+  const lenisRef = useRef<Lenis | null>(null);
+
+  // Initialize Lenis Ultra-Smooth, Slow Cinematic Scroll Engine
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+
+    const lenis = new Lenis({
+      duration: 1.6, // Generous, smooth deceleration
+      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)), // Exponential smooth decay
+      smoothWheel: true,
+      wheelMultiplier: 0.65, // Deliberately slower, controlled wheel progression
+      touchMultiplier: 0.9,
+    });
+    lenisRef.current = lenis;
+
+    // Connect to GSAP ScrollTrigger
+    lenis.on('scroll', ScrollTrigger.update);
+
+    const updateTicker = (time: number) => {
+      lenis.raf(time * 1000);
+    };
+    gsap.ticker.add(updateTicker);
+    gsap.ticker.lagSmoothing(0);
+
+    return () => {
+      lenis.destroy();
+      gsap.ticker.remove(updateTicker);
+      lenisRef.current = null;
+    };
+  }, []);
 
   const stopLiveTour = () => {
     if (liveTweenRef.current) {
@@ -81,6 +112,11 @@ export function ScenicTrainJourney({
     if (countdownIntervalRef.current) {
       clearInterval(countdownIntervalRef.current);
       countdownIntervalRef.current = null;
+    }
+    if (lenisRef.current) {
+      // Cleanly stop any active programmatic scrollTo without resetting user position
+      lenisRef.current.stop();
+      lenisRef.current.start();
     }
   };
 
@@ -314,12 +350,12 @@ export function ScenicTrainJourney({
       let lastPuffDistance = initLeadDist;
       let currentDirection = 1;
 
-      // Master ScrollTrigger across 1250vh with luxurious, weighted locomotive inertia
+      // Master ScrollTrigger across 1600vh synchronized with Lenis smooth engine
       ScrollTrigger.create({
         trigger: containerRef.current,
         start: 'top top',
         end: 'bottom bottom',
-        scrub: 1.2, // Weighted locomotive inertia (smooth, gentle momentum)
+        scrub: 0.8, // Harmonized with Lenis smooth physics
         onUpdate: (self) => {
           const p = self.progress;
           setScrollProgress(p);
@@ -632,11 +668,15 @@ export function ScenicTrainJourney({
     const containerTop = containerRef.current.offsetTop;
     const totalScrollable = containerRef.current.offsetHeight - window.innerHeight;
     const targetScroll = containerTop + (index / 5) * totalScrollable;
-    window.scrollTo({ top: targetScroll, behavior: 'smooth' });
+    if (lenisRef.current) {
+      lenisRef.current.scrollTo(targetScroll, { duration: 1.8 });
+    } else {
+      window.scrollTo({ top: targetScroll, behavior: 'smooth' });
+    }
   };
 
   return (
-    <div ref={containerRef} className="relative w-full h-[1250vh]">
+    <div ref={containerRef} className="relative w-full h-[1600vh]">
       {/* Pinned / Sticky Viewport Window */}
       <div className="sticky top-0 w-full h-screen overflow-hidden">
         {/* Parallax Celestial & Mountain Landscape Background with Real Scroll Depth */}
