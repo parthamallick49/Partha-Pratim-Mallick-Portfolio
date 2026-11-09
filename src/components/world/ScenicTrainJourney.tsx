@@ -49,7 +49,9 @@ export function ScenicTrainJourney({ isNight, onActiveStationChange }: ScenicJou
       const startAngle = Math.atan2(nextPoint.y - startPoint.y, nextPoint.x - startPoint.x) * (180 / Math.PI);
       train.setAttribute('transform', `translate(${startPoint.x}, ${startPoint.y}) rotate(${startAngle})`);
 
-      const initialCameraY = -(startPoint.y - window.innerHeight * 0.42);
+      // Camera starts at 0 so Station 1 sits comfortably below the HUD header
+      const viewportHeight = window.innerHeight;
+      const initialCameraY = Math.min(0, -(startPoint.y - viewportHeight * 0.42));
       cameraStage.style.transform = `translate3d(0, ${initialCameraY}px, 0)`;
 
       // Master ScrollTrigger across 750vh
@@ -78,9 +80,11 @@ export function ScenicTrainJourney({ isNight, onActiveStationChange }: ScenicJou
           // Update train transform directly inside SVG coordinate space
           train.setAttribute('transform', `translate(${pt.x}, ${pt.y}) rotate(${angle})`);
 
-          // Camera Stage: Keep train locked at 42% from top of viewport
-          const viewportHeight = window.innerHeight;
-          const targetCameraY = -(pt.y - viewportHeight * 0.42);
+          // Camera Stage: Clamped at top (0) so Station 1 never collides with HUD header
+          const currentViewportH = window.innerHeight;
+          const minCameraY = -(6000 - currentViewportH);
+          const rawCameraY = -(pt.y - currentViewportH * 0.42);
+          const targetCameraY = Math.max(minCameraY, Math.min(0, rawCameraY));
           cameraStage.style.transform = `translate3d(0, ${targetCameraY}px, 0)`;
         },
       });
