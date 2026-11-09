@@ -30,46 +30,38 @@ export function Station1Terminal({ isNight = false, onScrollToNext }: StationPro
     >
       {/* Professional Profile Header */}
       <div className="border-b border-rail-teal/30 pb-2.5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1.5">
-        <div>
-          <div className="flex items-center gap-2 text-xs font-mono mb-1">
-            <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-rail-orange/15 border border-rail-orange/40 text-rail-orange font-bold text-[11px]">
-              ENGINEERING DOSSIER
-            </span>
-            <span className="text-rail-gold font-mono text-[10px]">{BIOGRAPHY.location}</span>
-          </div>
-          <h1 className="font-editorial text-2xl sm:text-3xl font-bold tracking-tight text-rail-vanilla leading-tight">
-            {BIOGRAPHY.name}
-          </h1>
-        </div>
-        <p className="font-mono text-xs text-rail-orange font-semibold sm:text-right">
+        <h1 className="font-editorial text-2xl sm:text-3xl font-bold tracking-tight text-rail-vanilla leading-tight">
+          {BIOGRAPHY.name}
+        </h1>
+        <p className="font-mono text-xs sm:text-sm text-rail-orange font-semibold sm:text-right">
           {BIOGRAPHY.headline}
         </p>
       </div>
 
       {/* Main Dossier Content (Wide Multi-Column Layout) */}
-      <div className="grid grid-cols-1 md:grid-cols-12 gap-4 items-center">
-        {/* Left Column: Station Master Portrait & Location (4 cols) */}
-        <div className="md:col-span-4 flex flex-row md:flex-col items-center gap-3">
-          <div className="relative w-24 h-28 sm:w-28 sm:h-32 rounded-xl overflow-hidden border-2 border-rail-gold/70 bg-rail-midnight shadow-md shrink-0">
+      <div className="grid grid-cols-1 md:grid-cols-12 gap-5 items-start">
+        {/* Left Column: Portrait & Location (4 cols) */}
+        <div className="md:col-span-4 flex flex-col items-center gap-3">
+          <div className="relative w-36 h-44 sm:w-48 sm:h-56 md:w-full md:max-w-[210px] md:h-[250px] rounded-2xl overflow-hidden border-2 border-rail-gold/80 bg-rail-midnight shadow-xl shrink-0">
             <Image
               src={imgError ? BIOGRAPHY.fallbackPhotoUrl : BIOGRAPHY.photoUrl}
               alt={BIOGRAPHY.name}
               fill
               priority
-              className="object-cover object-center filter saturate-105"
+              className="object-cover object-top filter saturate-105"
               onError={() => setImgError(true)}
             />
           </div>
-          <div className="flex flex-col items-start md:items-center text-left md:text-center">
-            <span className="text-[10px] font-mono text-rail-gold font-bold uppercase tracking-wider">
+          <div className="flex flex-col items-center text-center">
+            <span className="text-[11px] font-mono text-rail-gold font-bold uppercase tracking-wider">
               Lead Mobile Engineer
             </span>
-            <div className="flex items-center gap-1.5 text-[11px] font-mono text-rail-vanilla/80 mt-1">
-              <MapPin className="w-3 h-3 text-rail-orange" />
+            <div className="flex items-center gap-1.5 text-xs font-mono text-rail-vanilla/80 mt-1">
+              <MapPin className="w-3.5 h-3.5 text-rail-orange" />
               <span>{BIOGRAPHY.location}</span>
             </div>
-            <div className="flex items-center gap-1.5 text-[11px] font-mono text-rail-teal mt-0.5">
-              <Building2 className="w-3 h-3" />
+            <div className="flex items-center gap-1.5 text-xs font-mono text-rail-teal mt-0.5">
+              <Building2 className="w-3.5 h-3.5" />
               <span>{BIOGRAPHY.company}</span>
             </div>
           </div>
