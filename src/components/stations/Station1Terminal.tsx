@@ -134,7 +134,6 @@ export function Station1Terminal({ isNight = false, onScrollToNext }: StationPro
           </div>
         </div>
       </div>
-      </div>
     </section>
   );
 }
