@@ -68,6 +68,10 @@ export function ScenicTrainJourney({
   isLiveViewRef.current = isLiveView;
   const activeStationIndexRef = useRef(activeStationIndex);
   activeStationIndexRef.current = activeStationIndex;
+  const onLiveTourStateChangeRef = useRef(onLiveTourStateChange);
+  onLiveTourStateChangeRef.current = onLiveTourStateChange;
+  const onLiveViewChangeRef = useRef(onLiveViewChange);
+  onLiveViewChangeRef.current = onLiveViewChange;
 
   const stopLiveTour = () => {
     if (liveTweenRef.current) {
@@ -472,7 +476,7 @@ export function ScenicTrainJourney({
       // Pacing: ~6.5 to 7.5 seconds per station segment
       const duration = Math.max(3.8, Math.min(8.5, (dist / (totalScrollable / 5)) * 7.0));
 
-      onLiveTourStateChange?.({
+      onLiveTourStateChangeRef.current?.({
         status: 'cruising',
         targetStationIndex: targetIdx,
         countdown: 10,
@@ -492,7 +496,7 @@ export function ScenicTrainJourney({
           if (targetIdx >= 5) {
             // Reached Station 06 (Terminal Pier)
             let dwellCount = 10;
-            onLiveTourStateChange?.({
+            onLiveTourStateChangeRef.current?.({
               status: 'dwelling',
               targetStationIndex: 5,
               countdown: dwellCount,
@@ -501,7 +505,7 @@ export function ScenicTrainJourney({
             countdownIntervalRef.current = setInterval(() => {
               dwellCount -= 1;
               if (dwellCount > 0) {
-                onLiveTourStateChange?.({
+                onLiveTourStateChangeRef.current?.({
                   status: 'dwelling',
                   targetStationIndex: 5,
                   countdown: dwellCount,
@@ -511,18 +515,18 @@ export function ScenicTrainJourney({
                   clearInterval(countdownIntervalRef.current);
                   countdownIntervalRef.current = null;
                 }
-                onLiveTourStateChange?.({
+                onLiveTourStateChangeRef.current?.({
                   status: 'finished',
                   targetStationIndex: 5,
                   countdown: 0,
                 });
-                onLiveViewChange?.(false);
+                onLiveViewChangeRef.current?.(false);
               }
             }, 1000);
           } else {
             // Dwell for 10 seconds at this intermediate station
             let dwellCount = 10;
-            onLiveTourStateChange?.({
+            onLiveTourStateChangeRef.current?.({
               status: 'dwelling',
               targetStationIndex: targetIdx,
               countdown: dwellCount,
@@ -531,7 +535,7 @@ export function ScenicTrainJourney({
             countdownIntervalRef.current = setInterval(() => {
               dwellCount -= 1;
               if (dwellCount > 0) {
-                onLiveTourStateChange?.({
+                onLiveTourStateChangeRef.current?.({
                   status: 'dwelling',
                   targetStationIndex: targetIdx,
                   countdown: dwellCount,
@@ -556,7 +560,7 @@ export function ScenicTrainJourney({
     return () => {
       stopLiveTour();
     };
-  }, [isLiveView, onLiveTourStateChange, onLiveViewChange]);
+  }, [isLiveView]);
 
   // Detect manual user interruption during Live Tour (auto-pause on scroll/touch/arrow keys)
   useEffect(() => {
@@ -565,8 +569,8 @@ export function ScenicTrainJourney({
     const handleUserInterruption = () => {
       if (!isLiveViewRef.current) return;
       stopLiveTour();
-      onLiveViewChange?.(false);
-      onLiveTourStateChange?.({
+      onLiveViewChangeRef.current?.(false);
+      onLiveTourStateChangeRef.current?.({
         status: 'idle',
         targetStationIndex: activeStationIndexRef.current,
         countdown: 10,
@@ -587,13 +591,13 @@ export function ScenicTrainJourney({
       window.removeEventListener('touchstart', handleUserInterruption);
       window.removeEventListener('keydown', handleKey);
     };
-  }, [isLiveView, onLiveTourStateChange, onLiveViewChange]);
+  }, [isLiveView]);
 
   // Fast Travel jump (also cleanly suspends Live Tour if active)
   const scrollToStation = (index: number) => {
     if (isLiveViewRef.current) {
       stopLiveTour();
-      onLiveViewChange?.(false);
+      onLiveViewChangeRef.current?.(false);
     }
     if (!containerRef.current) return;
     const containerTop = containerRef.current.offsetTop;

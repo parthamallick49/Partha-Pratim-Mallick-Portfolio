@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { HudHeader } from '@/components/navigation/HudHeader';
 import { ScenicTrainJourney } from '@/components/world/ScenicTrainJourney';
 import { STATIONS } from '@/data/portfolioData';
@@ -40,16 +40,37 @@ export default function Home() {
     }
   }, []);
 
-  const handleToggleLiveView = () => {
-    const nextLive = !isLiveView;
-    setIsLiveView(nextLive);
+  const handleToggleLiveView = useCallback(() => {
+    setIsLiveView(prev => {
+      const nextLive = !prev;
+      if (nextLive) {
+        setIsMuted(currentMuted => {
+          if (currentMuted) {
+            soundEngine.setMuted(false);
+            return false;
+          }
+          return currentMuted;
+        });
+      }
+      return nextLive;
+    });
+  }, []);
 
-    // If starting Live Tour and audio was muted, auto-unmute so locomotive whistle & SFX are heard!
-    if (nextLive && isMuted) {
-      setIsMuted(false);
-      soundEngine.setMuted(false);
-    }
-  };
+  const handleActiveStationChange = useCallback((idx: number) => {
+    setActiveStationIndex(idx);
+  }, []);
+
+  const handleLiveViewChange = useCallback((active: boolean) => {
+    setIsLiveView(active);
+  }, []);
+
+  const handleLiveTourStateChange = useCallback((state: {
+    status: 'idle' | 'cruising' | 'dwelling' | 'finished';
+    targetStationIndex: number;
+    countdown: number;
+  }) => {
+    setLiveTourState(state);
+  }, []);
 
   const currentStation = STATIONS[activeStationIndex] || STATIONS[0];
 
@@ -76,10 +97,10 @@ export default function Home() {
       <main className="w-full">
         <ScenicTrainJourney
           isNight={isNight}
-          onActiveStationChange={(idx) => setActiveStationIndex(idx)}
+          onActiveStationChange={handleActiveStationChange}
           isLiveView={isLiveView}
-          onLiveViewChange={(active) => setIsLiveView(active)}
-          onLiveTourStateChange={(state) => setLiveTourState(state)}
+          onLiveViewChange={handleLiveViewChange}
+          onLiveTourStateChange={handleLiveTourStateChange}
         />
       </main>
     </div>
