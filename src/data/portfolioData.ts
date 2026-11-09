@@ -114,7 +114,7 @@ export const STATIONS: StationInfo[] = [
 
 export const BIOGRAPHY = {
   name: 'Partha Pratim Mallick',
-  headline: 'Software Engineer & Mobile Developer',
+  headline: 'Software Engineer & Mobile App Developer',
   company: 'Grameen Communications',
   stationMasterTitle: 'Chief Locomotive Engineer & System Architect',
   location: 'Dhaka, Bangladesh',
