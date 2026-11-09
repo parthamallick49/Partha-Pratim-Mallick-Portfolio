@@ -1,9 +1,8 @@
 'use client';
 
 import React from 'react';
-import { STATIONS } from '@/data/portfolioData';
 import { soundEngine } from '@/lib/audioSynthesizer';
-import { Ticket } from 'lucide-react';
+import { User, Cpu, Code2, Briefcase, GraduationCap, Mail } from 'lucide-react';
 
 interface NavbarProps {
   activeStationIndex: number; // 0 to 5
@@ -12,13 +11,13 @@ interface NavbarProps {
 }
 
 export function FastTravelNavbar({ activeStationIndex, onSelectStation, className = '' }: NavbarProps) {
-  const stationLabels = [
-    { num: '01', label: 'About', id: 'station-1' },
-    { num: '02', label: 'Skills', id: 'station-2' },
-    { num: '03', label: 'Projects', id: 'station-3' },
-    { num: '04', label: 'Experience', id: 'station-4' },
-    { num: '05', label: 'Education', id: 'station-5' },
-    { num: '06', label: 'Contact', id: 'station-6' },
+  const navItems = [
+    { label: 'About', icon: User },
+    { label: 'Skills', icon: Cpu },
+    { label: 'Projects', icon: Code2 },
+    { label: 'Experience', icon: Briefcase },
+    { label: 'Education', icon: GraduationCap },
+    { label: 'Contact', icon: Mail },
   ];
 
   const handleClick = (index: number) => {
@@ -28,42 +27,34 @@ export function FastTravelNavbar({ activeStationIndex, onSelectStation, classNam
 
   return (
     <nav
-      aria-label="Railway Ticket Stub Schedule"
-      className={`fixed bottom-2.5 sm:bottom-3.5 left-1/2 -translate-x-1/2 z-50 max-w-[95vw] sm:max-w-3xl w-full px-2 pointer-events-auto ${className}`}
+      aria-label="Portfolio Navigation Dock"
+      className={`fixed bottom-3 sm:bottom-4 left-1/2 -translate-x-1/2 z-50 pointer-events-auto select-none ${className}`}
     >
-      <div className="relative rounded-xl border border-rail-teal/50 bg-rail-midnight/95 backdrop-blur-lg px-2 sm:px-3 py-1 sm:py-1.5 shadow-2xl flex items-center justify-between gap-1 overflow-x-auto scrollbar-none">
-        {/* Ticket Perforation Notch Indicator */}
-        <div className="hidden sm:flex items-center gap-1.5 pl-1 pr-2 border-r border-rail-teal/40 text-[11px] font-mono font-bold text-rail-gold shrink-0">
-          <Ticket className="w-3.5 h-3.5 text-rail-orange" />
-          <span>TICKET STUB</span>
-        </div>
+      <div className="flex items-center gap-1 sm:gap-1.5 p-1 sm:p-1.5 rounded-full border border-rail-teal/40 bg-rail-midnight/90 backdrop-blur-xl shadow-2xl shadow-black/50">
+        {navItems.map((item, idx) => {
+          const isActive = activeStationIndex === idx;
+          const Icon = item.icon;
 
-        {/* Station Navigation Nodes */}
-        <div className="flex items-center gap-1 sm:gap-2 flex-1 justify-around">
-          {stationLabels.map((st, idx) => {
-            const isActive = activeStationIndex === idx;
-            return (
-              <button
-                key={st.num}
-                type="button"
-                onClick={() => handleClick(idx)}
-                className={`relative px-2 sm:px-3 py-1.5 rounded-xl font-mono text-[10px] sm:text-xs transition-all flex items-center gap-1.5 whitespace-nowrap ${
-                  isActive
-                    ? 'bg-rail-orange text-rail-vanilla font-bold shadow-md shadow-rail-orange/40 scale-105'
-                    : 'text-rail-vanilla/70 hover:text-rail-vanilla hover:bg-rail-teal/30'
-                }`}
-              >
-                <span className={`text-[10px] ${isActive ? 'text-rail-vanilla' : 'text-rail-gold'}`}>
-                  [{st.num}]
-                </span>
-                <span className="truncate">{st.label}</span>
-                {isActive && (
-                  <span className="w-1.5 h-1.5 rounded-full bg-rail-vanilla animate-pulse shrink-0" />
-                )}
-              </button>
-            );
-          })}
-        </div>
+          return (
+            <button
+              key={item.label}
+              type="button"
+              onClick={() => handleClick(idx)}
+              className={`relative flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-full text-xs font-mono transition-all duration-300 ${
+                isActive
+                  ? 'bg-rail-orange text-rail-vanilla font-bold shadow-lg shadow-rail-orange/30 scale-105'
+                  : 'text-rail-vanilla/65 hover:text-rail-vanilla hover:bg-rail-teal/25'
+              }`}
+              title={`Jump to ${item.label}`}
+            >
+              <Icon className={`w-3.5 h-3.5 transition-transform ${isActive ? 'scale-110' : 'opacity-80'}`} />
+              <span className="hidden sm:inline text-[11px] tracking-wide">{item.label}</span>
+              {isActive && (
+                <span className="w-1 h-1 rounded-full bg-rail-vanilla animate-pulse" />
+              )}
+            </button>
+          );
+        })}
       </div>
     </nav>
   );
