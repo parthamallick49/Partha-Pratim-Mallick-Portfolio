@@ -38,54 +38,70 @@ export function Station1Terminal({ isNight = false, onScrollToNext }: StationPro
         </p>
       </div>
 
-      {/* Main Dossier Content (Wide Multi-Column Layout) */}
-      <div className="grid grid-cols-1 md:grid-cols-12 gap-5 items-start">
-        {/* Left Column: Portrait & Location (4 cols) */}
-        <div className="md:col-span-4 flex flex-col items-center gap-3">
-          <div className="relative w-36 h-44 sm:w-48 sm:h-56 md:w-full md:max-w-[210px] md:h-[250px] rounded-2xl overflow-hidden border-2 border-rail-gold/80 bg-rail-midnight shadow-xl shrink-0">
+      {/* Main Dossier Content (Balanced 5-col / 7-col Split with Large Portrait) */}
+      <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-stretch">
+        {/* Left Column: Large Clear Executive Portrait & Credentials (5 cols) */}
+        <div className="md:col-span-5 flex flex-col items-center">
+          <div className="relative w-full max-w-[280px] h-[320px] sm:h-[350px] rounded-2xl overflow-hidden border-2 border-rail-gold/80 bg-rail-midnight shadow-2xl shrink-0 group">
             <Image
               src={imgError ? BIOGRAPHY.fallbackPhotoUrl : BIOGRAPHY.photoUrl}
               alt={BIOGRAPHY.name}
               fill
               priority
-              className="object-cover object-top filter saturate-105"
+              sizes="(max-width: 768px) 280px, 300px"
+              className="object-cover object-top filter saturate-105 group-hover:scale-102 transition-transform duration-500"
               onError={() => setImgError(true)}
             />
-          </div>
-          <div className="flex flex-col items-center text-center">
-            <span className="text-[11px] font-mono text-rail-gold font-bold uppercase tracking-wider">
-              Lead Mobile Engineer
-            </span>
-            <div className="flex items-center gap-1.5 text-xs font-mono text-rail-vanilla/80 mt-1">
-              <MapPin className="w-3.5 h-3.5 text-rail-orange" />
-              <span>{BIOGRAPHY.location}</span>
+            {/* Live Availability Badge overlay */}
+            <div className="absolute bottom-2.5 left-2.5 right-2.5 px-3 py-1.5 rounded-xl bg-rail-midnight/90 backdrop-blur-md border border-rail-teal/40 flex items-center justify-between text-[11px] font-mono">
+              <span className="flex items-center gap-1.5 text-emerald-400 font-bold">
+                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                Available for Roles
+              </span>
+              <span className="text-rail-gold font-mono text-[10px]">Dhaka, BD</span>
             </div>
-            <div className="flex items-center gap-1.5 text-xs font-mono text-rail-teal mt-0.5">
-              <Building2 className="w-3.5 h-3.5" />
-              <span>{BIOGRAPHY.company}</span>
+          </div>
+
+          {/* Quick Credential Card */}
+          <div className="w-full max-w-[280px] mt-3 p-2.5 rounded-xl bg-rail-teal/15 border border-rail-teal/30 space-y-1.5 font-mono text-xs">
+            <div className="flex items-center justify-between text-rail-vanilla/90">
+              <span className="text-[10px] text-rail-gold uppercase font-bold">Organization:</span>
+              <span className="font-semibold">{BIOGRAPHY.company}</span>
+            </div>
+            <div className="flex items-center justify-between text-rail-vanilla/90 pt-1 border-t border-rail-teal/20">
+              <span className="text-[10px] text-rail-gold uppercase font-bold">Engineering:</span>
+              <span className="font-semibold text-rail-orange">Mobile & Backend</span>
             </div>
           </div>
         </div>
 
-        {/* Right Column: Bio Details, Architecture Badges & Actions (8 cols) */}
-        <div className="md:col-span-8 space-y-3">
-          <p className="text-xs sm:text-sm text-rail-vanilla/90 leading-relaxed font-sans">
-            {BIOGRAPHY.summary}
-          </p>
+        {/* Right Column: Bio Details, Architecture Badges & Actions (7 cols) */}
+        <div className="md:col-span-7 flex flex-col justify-between space-y-3.5">
+          <div>
+            <h3 className="font-editorial text-lg sm:text-xl font-bold text-rail-vanilla leading-tight mb-2">
+              Engineering High-Performance Mobile & Distributed Solutions
+            </h3>
+            <p className="text-xs sm:text-sm text-rail-vanilla/85 leading-relaxed font-sans">
+              {BIOGRAPHY.summary}
+            </p>
+          </div>
 
-          {/* 3 Architecture Metric Pills */}
-          <div className="grid grid-cols-3 gap-2 text-center pt-0.5">
-            <div className="p-2 rounded-lg bg-rail-teal/20 border border-rail-teal/30">
-              <span className="block text-[9px] font-mono text-rail-vanilla/60 uppercase">Primary Focus</span>
-              <span className="text-xs font-semibold text-rail-vanilla">Flutter & Android</span>
+          {/* 3 Architecture Metric Pillars */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-left pt-0.5">
+            <div className="p-2.5 rounded-xl bg-rail-teal/20 border border-rail-teal/30">
+              <span className="block text-[9.5px] font-mono text-rail-gold uppercase font-bold">Mobile Apps</span>
+              <span className="text-xs font-bold text-rail-vanilla block mt-0.5">Flutter & Android</span>
+              <span className="text-[10px] text-rail-vanilla/70 block mt-0.5">Offline-first, 60fps</span>
             </div>
-            <div className="p-2 rounded-lg bg-rail-teal/20 border border-rail-teal/30">
-              <span className="block text-[9px] font-mono text-rail-vanilla/60 uppercase">Backend Core</span>
-              <span className="text-xs font-semibold text-rail-vanilla">.NET & SQL</span>
+            <div className="p-2.5 rounded-xl bg-rail-teal/20 border border-rail-teal/30">
+              <span className="block text-[9.5px] font-mono text-rail-gold uppercase font-bold">Backend & DB</span>
+              <span className="text-xs font-bold text-rail-vanilla block mt-0.5">.NET & SQL Server</span>
+              <span className="text-[10px] text-rail-vanilla/70 block mt-0.5">REST APIs, scalable</span>
             </div>
-            <div className="p-2 rounded-lg bg-rail-teal/20 border border-rail-teal/30">
-              <span className="block text-[9px] font-mono text-rail-vanilla/60 uppercase">Methodology</span>
-              <span className="text-xs font-semibold text-rail-vanilla">Clean Architecture</span>
+            <div className="p-2.5 rounded-xl bg-rail-teal/20 border border-rail-teal/30">
+              <span className="block text-[9.5px] font-mono text-rail-gold uppercase font-bold">Discipline</span>
+              <span className="text-xs font-bold text-rail-vanilla block mt-0.5">Clean Architecture</span>
+              <span className="text-[10px] text-rail-vanilla/70 block mt-0.5">Modular, robust</span>
             </div>
           </div>
 
@@ -96,16 +112,16 @@ export function Station1Terminal({ isNight = false, onScrollToNext }: StationPro
               download
               target="_blank"
               rel="noopener noreferrer"
-              className="w-full sm:flex-1 inline-flex items-center justify-center gap-2 px-3.5 py-2 rounded-xl bg-rail-orange hover:bg-rail-orange-glow text-rail-vanilla font-mono text-xs font-bold shadow-md shadow-rail-orange/20 transition-all text-center"
+              className="w-full sm:flex-1 inline-flex items-center justify-center gap-2 px-3.5 py-2.5 rounded-xl bg-rail-orange hover:bg-rail-orange-glow text-rail-vanilla font-mono text-xs font-bold shadow-md shadow-rail-orange/30 transition-all text-center"
             >
-              <Download className="w-3.5 h-3.5" />
+              <Download className="w-4 h-4" />
               <span>Download Official Resume</span>
             </a>
 
             <button
               type="button"
               onClick={handleDepartClick}
-              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-3.5 py-2 rounded-xl border border-rail-teal/60 bg-rail-teal/25 hover:bg-rail-teal/40 text-rail-vanilla font-mono text-xs transition-all"
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-3.5 py-2.5 rounded-xl border border-rail-teal/60 bg-rail-teal/25 hover:bg-rail-teal/40 text-rail-vanilla font-mono text-xs font-bold transition-all"
             >
               <span
                 className={`w-2.5 h-2.5 rounded-full border border-black/40 transition-colors ${
@@ -117,6 +133,7 @@ export function Station1Terminal({ isNight = false, onScrollToNext }: StationPro
             </button>
           </div>
         </div>
+      </div>
       </div>
     </section>
   );
