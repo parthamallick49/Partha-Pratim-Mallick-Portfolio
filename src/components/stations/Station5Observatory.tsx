@@ -13,24 +13,19 @@ export function Station5Observatory({ isNight = false }: StationProps) {
   return (
     <section
       id="station-5"
-      className="relative min-h-[95vh] flex flex-col justify-center items-center py-16 px-4 max-w-6xl mx-auto"
+      className="relative w-full max-w-2xl p-2 sm:p-4"
     >
-      {/* Background Summit Observatory Scenery */}
-      <div className="absolute top-8 left-1/2 -translate-x-1/2 w-full max-w-lg z-0 opacity-40 sm:opacity-60 pointer-events-none">
-        <StationScenery type="summit" isNight={isNight} />
-      </div>
-
       {/* Station Plaque */}
-      <div className="relative z-10 text-center mb-8">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-rail-gold/40 bg-rail-gold/10 text-rail-gold text-xs font-mono font-semibold uppercase tracking-widest mb-3">
+      <div className="relative z-10 mb-4 text-left">
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-rail-gold/40 bg-rail-gold/10 text-rail-gold text-xs font-mono font-semibold uppercase tracking-widest mb-2">
           <Compass className="w-3.5 h-3.5 text-rail-gold" />
           <span>Station 05 • Crest Station (MP 78.5)</span>
         </div>
-        <h2 className="font-editorial text-4xl sm:text-6xl font-bold tracking-tight text-rail-vanilla drop-shadow-md">
+        <h2 className="font-editorial text-3xl sm:text-5xl font-bold tracking-tight text-rail-vanilla drop-shadow-md">
           The Summit Observatory
         </h2>
-        <p className="font-mono text-xs sm:text-sm text-rail-vanilla/70 mt-2 tracking-wide">
-          ACADEMIC DEGREES • ADVANCED COMPUTER SCIENCE & DISTRIBUTED SYSTEMS
+        <p className="font-mono text-xs text-rail-gold mt-1 tracking-wide">
+          ACADEMIC DEGREES • ADVANCED COMPUTER SCIENCE
         </p>
       </div>
 

@@ -38,23 +38,18 @@ export function Station3Bridge({ isNight = false }: StationProps) {
   return (
     <section
       id="station-3"
-      className="relative min-h-[95vh] flex flex-col justify-center items-center py-16 px-4 max-w-6xl mx-auto"
+      className="relative w-full max-w-2xl p-2 sm:p-4"
     >
-      {/* Background Suspension Bridge Scenery */}
-      <div className="absolute top-8 left-1/2 -translate-x-1/2 w-full max-w-lg z-0 opacity-40 sm:opacity-60 pointer-events-none">
-        <StationScenery type="suspension-bridge" isNight={isNight} />
-      </div>
-
       {/* Station Plaque */}
-      <div className="relative z-10 text-center mb-8">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-rail-orange/40 bg-rail-orange/10 text-rail-orange text-xs font-mono font-semibold uppercase tracking-widest mb-3">
+      <div className="relative z-10 mb-4 text-left">
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-rail-orange/40 bg-rail-orange/10 text-rail-orange text-xs font-mono font-semibold uppercase tracking-widest mb-2">
           <span>Station 03 • Canyon Viaduct (MP 32.4)</span>
         </div>
-        <h2 className="font-editorial text-4xl sm:text-6xl font-bold tracking-tight text-rail-vanilla drop-shadow-md">
+        <h2 className="font-editorial text-3xl sm:text-5xl font-bold tracking-tight text-rail-vanilla drop-shadow-md">
           Innovation Valley Suspension Bridge
         </h2>
-        <p className="font-mono text-xs sm:text-sm text-rail-vanilla/70 mt-2 tracking-wide">
-          FOUR FEATURED PROJECT PAVILIONS • 1-CLICK GIT CLONE TERMINAL INTEGRATION
+        <p className="font-mono text-xs text-rail-gold mt-1 tracking-wide">
+          FOUR FEATURED PROJECT PAVILIONS • 1-CLICK GIT CLONE
         </p>
       </div>
 

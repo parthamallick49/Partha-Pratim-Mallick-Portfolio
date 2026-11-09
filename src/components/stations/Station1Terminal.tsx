@@ -27,24 +27,19 @@ export function Station1Terminal({ isNight = false, onScrollToNext }: StationPro
   return (
     <section
       id="station-1"
-      className="relative min-h-[95vh] flex flex-col justify-center items-center py-16 px-4 max-w-6xl mx-auto"
+      className="relative w-full max-w-2xl p-2 sm:p-4"
     >
-      {/* Background Architectural Station Arch */}
-      <div className="absolute top-8 left-1/2 -translate-x-1/2 w-full max-w-lg z-0 opacity-40 sm:opacity-60 pointer-events-none">
-        <StationScenery type="terminal" isNight={isNight} />
-      </div>
-
       {/* Station Platform Header Plaque */}
-      <div className="relative z-10 text-center mb-8">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-rail-orange/40 bg-rail-orange/10 text-rail-orange text-xs font-mono font-semibold uppercase tracking-widest mb-3">
+      <div className="relative z-10 mb-4 text-left">
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-rail-orange/40 bg-rail-orange/10 text-rail-orange text-xs font-mono font-semibold uppercase tracking-widest mb-2">
           <Ticket className="w-3.5 h-3.5" />
           <span>Station 01 • Origin Platform (MP 00.0)</span>
         </div>
-        <h1 className="font-editorial text-4xl sm:text-6xl md:text-7xl font-bold tracking-tight text-rail-vanilla drop-shadow-md">
+        <h1 className="font-editorial text-3xl sm:text-5xl font-bold tracking-tight text-rail-vanilla drop-shadow-md">
           Grand Central Terminal
         </h1>
-        <p className="font-mono text-xs sm:text-sm text-rail-vanilla/70 mt-2 tracking-wide">
-          DEPARTURE STATION • PARTHA PRATIM MALLICK ARCHITECTURE LINE
+        <p className="font-mono text-xs text-rail-gold mt-1 tracking-wide">
+          DEPARTURE STATION • PARTHA PRATIM MALLICK
         </p>
       </div>
 

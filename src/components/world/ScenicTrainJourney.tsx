@@ -125,38 +125,38 @@ export function ScenicTrainJourney({ isNight, onActiveStationChange }: ScenicJou
           {/* SVG Railway Track & Locked Locomotive */}
           <RailwayTrack progress={scrollProgress} isNight={isNight} />
 
-          {/* 6 Stations Anchored Along the Journey */}
+          {/* 6 Stations Alternating Along the Journey (Train on Left -> Details on Right, & vice-versa) */}
           <div className="absolute inset-0 w-full pointer-events-auto">
-            {/* Station 1: Grand Central Terminal (Y ≈ 350) */}
-            <div className="absolute top-[80px] left-0 right-0 z-20">
+            {/* Station 1: Grand Central Terminal (Train on LEFT, Details on RIGHT) */}
+            <div className="absolute top-[80px] right-2 sm:right-6 lg:right-14 left-auto w-full max-w-xl lg:max-w-2xl max-md:left-16 max-md:right-2 z-20">
               <Station1Terminal
                 isNight={isNight}
                 onScrollToNext={() => scrollToStation(1)}
               />
             </div>
 
-            {/* Station 2: The Foundry & Switchyard (Y ≈ 1150) */}
-            <div className="absolute top-[880px] left-0 right-0 z-20">
+            {/* Station 2: The Foundry & Switchyard (Train on RIGHT, Details on LEFT) */}
+            <div className="absolute top-[880px] left-2 sm:left-6 lg:left-14 right-auto w-full max-w-xl lg:max-w-2xl max-md:left-16 max-md:right-2 z-20">
               <Station2Switchyard isNight={isNight} />
             </div>
 
-            {/* Station 3: Innovation Valley Suspension Bridge (Y ≈ 1950) */}
-            <div className="absolute top-[1680px] left-0 right-0 z-20">
+            {/* Station 3: Innovation Valley Suspension Bridge (Train on LEFT, Details on RIGHT) */}
+            <div className="absolute top-[1680px] right-2 sm:right-6 lg:right-14 left-auto w-full max-w-xl lg:max-w-2xl max-md:left-16 max-md:right-2 z-20">
               <Station3Bridge isNight={isNight} />
             </div>
 
-            {/* Station 4: The Mountain Pass (Y ≈ 2750) */}
-            <div className="absolute top-[2480px] left-0 right-0 z-20">
+            {/* Station 4: The Mountain Pass (Train on RIGHT, Details on LEFT) */}
+            <div className="absolute top-[2480px] left-2 sm:left-6 lg:left-14 right-auto w-full max-w-xl lg:max-w-2xl max-md:left-16 max-md:right-2 z-20">
               <Station4MountainPass isNight={isNight} />
             </div>
 
-            {/* Station 5: The Summit Observatory (Y ≈ 3550) */}
-            <div className="absolute top-[3280px] left-0 right-0 z-20">
+            {/* Station 5: The Summit Observatory (Train on LEFT, Details on RIGHT) */}
+            <div className="absolute top-[3280px] right-2 sm:right-6 lg:right-14 left-auto w-full max-w-xl lg:max-w-2xl max-md:left-16 max-md:right-2 z-20">
               <Station5Observatory isNight={isNight} />
             </div>
 
-            {/* Station 6: Coastal Lighthouse Pier (Y ≈ 4350) */}
-            <div className="absolute top-[4080px] left-0 right-0 z-20">
+            {/* Station 6: Coastal Lighthouse Pier (Train on RIGHT, Details on LEFT) */}
+            <div className="absolute top-[4080px] left-2 sm:left-6 lg:left-14 right-auto w-full max-w-xl lg:max-w-2xl max-md:left-16 max-md:right-2 z-20">
               <Station6Pier
                 isNight={isNight}
                 onReturnToStart={() => scrollToStation(0)}

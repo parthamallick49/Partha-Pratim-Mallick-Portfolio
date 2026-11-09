@@ -13,24 +13,19 @@ export function Station4MountainPass({ isNight = false }: StationProps) {
   return (
     <section
       id="station-4"
-      className="relative min-h-[95vh] flex flex-col justify-center items-center py-16 px-4 max-w-6xl mx-auto"
+      className="relative w-full max-w-2xl p-2 sm:p-4"
     >
-      {/* Background Mountain Pass Tunnel Scenery */}
-      <div className="absolute top-8 left-1/2 -translate-x-1/2 w-full max-w-lg z-0 opacity-40 sm:opacity-60 pointer-events-none">
-        <StationScenery type="mountain-pass" isNight={isNight} />
-      </div>
-
       {/* Station Plaque */}
-      <div className="relative z-10 text-center mb-8">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-rail-teal-light/40 bg-rail-teal/20 text-rail-teal-light text-xs font-mono font-semibold uppercase tracking-widest mb-3">
+      <div className="relative z-10 mb-4 text-left">
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-rail-teal-light/40 bg-rail-teal/20 text-rail-teal-light text-xs font-mono font-semibold uppercase tracking-widest mb-2">
           <Milestone className="w-3.5 h-3.5 text-rail-orange" />
           <span>Station 04 • Alpine Switchback (MP 56.1)</span>
         </div>
-        <h2 className="font-editorial text-4xl sm:text-6xl font-bold tracking-tight text-rail-vanilla drop-shadow-md">
+        <h2 className="font-editorial text-3xl sm:text-5xl font-bold tracking-tight text-rail-vanilla drop-shadow-md">
           The Mountain Pass
         </h2>
-        <p className="font-mono text-xs sm:text-sm text-rail-vanilla/70 mt-2 tracking-wide">
-          PROFESSIONAL ENGINEERING STOPS • GRAMEEN COMMUNICATIONS MILEPOSTS
+        <p className="font-mono text-xs text-rail-gold mt-1 tracking-wide">
+          PROFESSIONAL ENGINEERING STOPS • GRAMEEN COMMUNICATIONS
         </p>
       </div>
 

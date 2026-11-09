@@ -9,21 +9,21 @@ interface RailwayTrackProps {
 
 export function RailwayTrack({ progress = 0, isNight = false }: RailwayTrackProps) {
   // World Dimensions: 1200 width x 4800 height
-  // 6 Stations evenly spaced at 800px intervals along Y
-  // Station 1: (450, 350) - Grand Central Terminal
-  // Station 2: (750, 1150) - The Foundry & Switchyard
-  // Station 3: (450, 1950) - Innovation Valley Suspension Bridge
-  // Station 4: (750, 2750) - The Mountain Pass
-  // Station 5: (450, 3550) - The Summit Observatory
-  // Station 6: (600, 4350) - Coastal Lighthouse Pier
+  // True Alternating Zigzag:
+  // Station 1: (220, 350)  - Train on LEFT  -> Details on RIGHT
+  // Station 2: (980, 1150) - Train on RIGHT -> Details on LEFT
+  // Station 3: (220, 1950) - Train on LEFT  -> Details on RIGHT
+  // Station 4: (980, 2750) - Train on RIGHT -> Details on LEFT
+  // Station 5: (220, 3550) - Train on LEFT  -> Details on RIGHT
+  // Station 6: (980, 4350) - Train on RIGHT -> Details on LEFT
 
   const trackPathD = `
-    M 450 350
-    C 450 650, 750 850, 750 1150
-    C 750 1450, 450 1650, 450 1950
-    C 450 2250, 750 2450, 750 2750
-    C 750 3050, 450 3250, 450 3550
-    C 450 3850, 600 4050, 600 4350
+    M 220 350
+    C 220 700, 980 800, 980 1150
+    C 980 1500, 220 1600, 220 1950
+    C 220 2300, 980 2400, 980 2750
+    C 980 3100, 220 3200, 220 3550
+    C 220 3900, 980 4000, 980 4350
   `;
 
   return (
@@ -135,18 +135,19 @@ export function RailwayTrack({ progress = 0, isNight = false }: RailwayTrackProp
           filter={isNight ? 'url(#railGlow)' : undefined}
         />
 
-        {/* Station Milepost Signal Lights */}
+        {/* Station Platform Milepost Signal Lights */}
         {[
-          { cx: 450, cy: 350, name: 'STA 01', greenAt: 0.05 },
-          { cx: 750, cy: 1150, name: 'STA 02', greenAt: 0.22 },
-          { cx: 450, cy: 1950, name: 'STA 03', greenAt: 0.42 },
-          { cx: 750, cy: 2750, name: 'STA 04', greenAt: 0.62 },
-          { cx: 450, cy: 3550, name: 'STA 05', greenAt: 0.82 },
-          { cx: 600, cy: 4350, name: 'STA 06', greenAt: 0.98 },
+          { cx: 220, cy: 350, name: 'STA 01', greenAt: 0.05, side: 'left' },
+          { cx: 980, cy: 1150, name: 'STA 02', greenAt: 0.22, side: 'right' },
+          { cx: 220, cy: 1950, name: 'STA 03', greenAt: 0.42, side: 'left' },
+          { cx: 980, cy: 2750, name: 'STA 04', greenAt: 0.62, side: 'right' },
+          { cx: 220, cy: 3550, name: 'STA 05', greenAt: 0.82, side: 'left' },
+          { cx: 980, cy: 4350, name: 'STA 06', greenAt: 0.98, side: 'right' },
         ].map((sig, idx) => {
           const isPassed = progress >= sig.greenAt;
+          const xOffset = sig.side === 'left' ? -38 : 38;
           return (
-            <g key={idx} transform={`translate(${sig.cx + (idx % 2 === 0 ? 36 : -36)}, ${sig.cy})`}>
+            <g key={idx} transform={`translate(${sig.cx + xOffset}, ${sig.cy})`}>
               {/* Signal Mast */}
               <line x1="0" y1="-28" x2="0" y2="28" stroke="#122524" strokeWidth="3" />
               {/* Signal Box */}
@@ -173,10 +174,10 @@ export function RailwayTrack({ progress = 0, isNight = false }: RailwayTrackProp
 
         {/* ==============================================================
             THE LOCOMOTIVE (LOCKED DIRECTLY INSIDE SVG COORDINATE SYSTEM)
-            Centered at (0,0), facing +X (Forward).
+            Starts at (220, 350), facing +X (Forward).
             ============================================================== */}
-        <g id="locomotive-group" transform="translate(450, 350)" className="pointer-events-auto">
-          {/* Night Mode Forward Conical Headlight Beam (Shooting Forward in +X Direction) */}
+        <g id="locomotive-group" transform="translate(220, 350)" className="pointer-events-auto">
+          {/* Night Mode Forward Conical Headlight Beam */}
           {isNight && (
             <g opacity="0.95">
               <polygon
@@ -255,7 +256,7 @@ export function RailwayTrack({ progress = 0, isNight = false }: RailwayTrackProp
             strokeWidth="1.6"
           />
 
-          {/* Cabin Warm Glowing Windows (Left & Right) */}
+          {/* Cabin Warm Glowing Windows */}
           <rect
             x="-39"
             y="-12.5"
