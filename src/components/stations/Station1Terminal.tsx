@@ -26,21 +26,21 @@ export function Station1Terminal({ isNight = false, onScrollToNext }: StationPro
   return (
     <section
       id="station-1"
-      className="relative w-full max-w-xl lg:max-w-2xl bg-rail-midnight/90 backdrop-blur-md border border-rail-teal/40 rounded-2xl p-5 sm:p-7 shadow-2xl space-y-5 text-rail-vanilla"
+      className="relative w-full max-w-lg lg:max-w-xl max-h-[calc(100vh-170px)] overflow-y-auto scrollbar-thin bg-rail-midnight/90 backdrop-blur-md border border-rail-teal/40 rounded-2xl p-4 sm:p-6 shadow-2xl space-y-4 text-rail-vanilla"
     >
       {/* Station Plaque Header */}
-      <div className="border-b border-rail-teal/30 pb-3">
-        <div className="flex items-center justify-between text-xs font-mono mb-1.5">
-          <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-rail-orange/15 border border-rail-orange/40 text-rail-orange font-bold">
+      <div className="border-b border-rail-teal/30 pb-2.5">
+        <div className="flex items-center justify-between text-xs font-mono mb-1">
+          <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-rail-orange/15 border border-rail-orange/40 text-rail-orange font-bold text-[11px]">
             <Ticket className="w-3.5 h-3.5" />
             STATION 01 • MP 00.0
           </span>
-          <span className="text-rail-gold/80 font-mono text-[11px]">{BIOGRAPHY.ticketNumber}</span>
+          <span className="text-rail-gold/80 font-mono text-[10px]">{BIOGRAPHY.ticketNumber}</span>
         </div>
-        <h1 className="font-editorial text-3xl sm:text-4xl font-bold tracking-tight text-rail-vanilla">
+        <h1 className="font-editorial text-2xl sm:text-3xl font-bold tracking-tight text-rail-vanilla leading-tight">
           Grand Central Terminal
         </h1>
-        <p className="font-mono text-xs text-rail-gold mt-0.5">
+        <p className="font-mono text-[11px] text-rail-gold mt-0.5">
           DEPARTURE PLATFORM • PASSENGER DOSSIER
         </p>
       </div>

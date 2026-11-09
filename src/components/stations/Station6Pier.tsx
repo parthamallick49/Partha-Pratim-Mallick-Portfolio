@@ -67,7 +67,7 @@ export function Station6Pier({ isNight = false, onReturnToStart }: StationProps)
   return (
     <section
       id="station-6"
-      className="relative w-full max-w-lg lg:max-w-xl bg-rail-midnight/90 backdrop-blur-md border border-rail-teal/40 rounded-2xl p-4 sm:p-5 shadow-2xl space-y-2.5 text-rail-vanilla"
+      className="relative w-full max-w-lg lg:max-w-xl max-h-[calc(100vh-170px)] overflow-y-auto scrollbar-thin bg-rail-midnight/90 backdrop-blur-md border border-rail-teal/40 rounded-2xl p-4 sm:p-5 shadow-2xl space-y-2 text-rail-vanilla"
     >
       {/* Station Plaque Header */}
       <div className="border-b border-rail-teal/30 pb-2">

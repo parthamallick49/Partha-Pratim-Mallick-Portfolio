@@ -262,23 +262,73 @@
     background: linear-gradient(90deg, rgba(254, 240, 138, 0.9) 0%, rgba(254, 240, 138, 0.45) 45%, rgba(254, 240, 138, 0.0) 100%);
   }
 
-  /* Steam Puffs */
-  @keyframes puff-steam {
+  /* Toy Train Smoke Puffs: Forward Lead Engine (Puffing backward -X) */
+  @keyframes toy-puff-fwd {
     0% {
-      opacity: 0.85;
-      transform: translate(0, 0) scale(0.6);
+      transform: translate(0, 0) scale(0.3);
+      opacity: 0;
     }
-    50% {
-      opacity: 0.5;
+    15% {
+      transform: translate(-10px, -6px) scale(0.7);
+      opacity: 0.9;
+    }
+    45% {
+      transform: translate(-30px, -15px) scale(1.2);
+      opacity: 0.7;
+    }
+    75% {
+      transform: translate(-55px, -24px) scale(1.7);
+      opacity: 0.35;
     }
     100% {
+      transform: translate(-82px, -32px) scale(2.2);
       opacity: 0;
-      transform: translate(-35px, -45px) scale(1.8);
     }
   }
-  .steam-puff-1 { animation: puff-steam 2.2s ease-out infinite; }
-  .steam-puff-2 { animation: puff-steam 2.2s ease-out infinite 0.7s; }
-  .steam-puff-3 { animation: puff-steam 2.2s ease-out infinite 1.4s; }
+
+  /* Toy Train Smoke Puffs: Backward Rear Engine (Puffing outward/forward +X) */
+  @keyframes toy-puff-bwd {
+    0% {
+      transform: translate(0, 0) scale(0.3);
+      opacity: 0;
+    }
+    15% {
+      transform: translate(10px, -6px) scale(0.7);
+      opacity: 0.9;
+    }
+    45% {
+      transform: translate(30px, -15px) scale(1.2);
+      opacity: 0.7;
+    }
+    75% {
+      transform: translate(55px, -24px) scale(1.7);
+      opacity: 0.35;
+    }
+    100% {
+      transform: translate(82px, -32px) scale(2.2);
+      opacity: 0;
+    }
+  }
+
+  .toy-smoke-puff-1 { animation: toy-puff-fwd 1.6s cubic-bezier(0.2, 0.7, 0.4, 1) infinite 0s; }
+  .toy-smoke-puff-2 { animation: toy-puff-fwd 1.6s cubic-bezier(0.2, 0.7, 0.4, 1) infinite 0.4s; }
+  .toy-smoke-puff-3 { animation: toy-puff-fwd 1.6s cubic-bezier(0.2, 0.7, 0.4, 1) infinite 0.8s; }
+  .toy-smoke-puff-4 { animation: toy-puff-fwd 1.6s cubic-bezier(0.2, 0.7, 0.4, 1) infinite 1.2s; }
+
+  .toy-smoke-rev-1 { animation: toy-puff-bwd 1.6s cubic-bezier(0.2, 0.7, 0.4, 1) infinite 0s; }
+  .toy-smoke-rev-2 { animation: toy-puff-bwd 1.6s cubic-bezier(0.2, 0.7, 0.4, 1) infinite 0.4s; }
+  .toy-smoke-rev-3 { animation: toy-puff-bwd 1.6s cubic-bezier(0.2, 0.7, 0.4, 1) infinite 0.8s; }
+  .toy-smoke-rev-4 { animation: toy-puff-bwd 1.6s cubic-bezier(0.2, 0.7, 0.4, 1) infinite 1.2s; }
+
+  .smoke-active {
+    opacity: 1;
+    transition: opacity 0.35s ease;
+  }
+  .smoke-hidden {
+    opacity: 0;
+    transition: opacity 0.35s ease;
+    pointer-events: none;
+  }
 
   /* Star Twinkle */
   @keyframes star-twinkle {
