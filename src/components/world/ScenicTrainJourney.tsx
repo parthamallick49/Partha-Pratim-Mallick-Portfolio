@@ -436,7 +436,7 @@ export function ScenicTrainJourney({
             </div>
 
             {/* Station 6: Coastal Pier & Telegraph (Train on RIGHT, Details on LEFT) */}
-            <div className="absolute top-[5060px] left-3 sm:left-6 lg:left-10 right-auto w-[90vw] sm:w-[84vw] md:w-[68vw] lg:w-[62vw] xl:w-[58vw] max-w-3xl xl:max-w-4xl max-md:left-14 max-md:right-2 z-20">
+            <div className="absolute top-[5050px] left-3 sm:left-6 lg:left-10 right-auto w-[90vw] sm:w-[84vw] md:w-[68vw] lg:w-[62vw] xl:w-[58vw] max-w-3xl xl:max-w-4xl max-md:left-14 max-md:right-2 z-20">
               <Station6Pier
                 isNight={isNight}
                 onReturnToStart={() => scrollToStation(0)}

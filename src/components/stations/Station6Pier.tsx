@@ -66,13 +66,13 @@ export function Station6Pier({ isNight = false, onReturnToStart }: StationProps)
   return (
     <section
       id="station-6"
-      className="relative w-full max-w-3xl xl:max-w-4xl bg-rail-midnight/90 backdrop-blur-md border border-rail-teal/40 rounded-2xl p-4 sm:p-5 lg:p-6 shadow-2xl space-y-3.5 text-rail-vanilla"
+      className="relative w-full max-w-3xl xl:max-w-4xl bg-rail-midnight/90 backdrop-blur-md border border-rail-teal/40 rounded-2xl p-4 sm:p-5 shadow-2xl space-y-3 text-rail-vanilla"
     >
       {/* Station Plaque Header */}
       <div className="border-b border-rail-teal/30 pb-2 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1">
         <div>
           <div className="flex items-center gap-2 text-xs font-mono mb-0.5">
-            <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-rail-orange/15 border border-rail-orange/40 text-rail-orange font-bold text-[11px]">
+            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-rail-orange/15 border border-rail-orange/40 text-rail-orange font-bold text-[11px]">
               <Anchor className="w-3.5 h-3.5" />
               STATION 06 • MP 99.9
             </span>
@@ -87,18 +87,18 @@ export function Station6Pier({ isNight = false, onReturnToStart }: StationProps)
         </p>
       </div>
 
-      {/* Wide 2-Column Terminal Console (No tabs, no scrollbars!) */}
-      <div className="grid grid-cols-1 md:grid-cols-12 gap-4 items-start">
+      {/* Wide 2-Column Console Layout (Ultra-compact, no vertical overflow) */}
+      <div className="grid grid-cols-1 md:grid-cols-12 gap-3.5 items-start">
         {/* Left Column: Dispatch Telegram Form (6 cols) */}
         <form onSubmit={handleSendTelegram} className="md:col-span-6 space-y-2 font-mono text-xs">
-          <div className="flex items-center gap-2 text-rail-orange mb-1">
-            <Send className="w-3.5 h-3.5" />
-            <span className="text-[10px] font-bold uppercase tracking-wider">Dispatch Telegram</span>
+          <div className="flex items-center gap-1.5 text-rail-orange text-[10px] font-bold uppercase tracking-wider">
+            <Send className="w-3 h-3" />
+            <span>Dispatch Telegram</span>
           </div>
 
           <div className="grid grid-cols-2 gap-2">
             <div>
-              <label className="block text-rail-vanilla/70 text-[9.5px] mb-0.5">YOUR NAME:</label>
+              <label className="block text-rail-vanilla/70 text-[9px] mb-0.5">YOUR NAME:</label>
               <input
                 type="text"
                 value={senderName}
@@ -108,7 +108,7 @@ export function Station6Pier({ isNight = false, onReturnToStart }: StationProps)
               />
             </div>
             <div>
-              <label className="block text-rail-vanilla/70 text-[9.5px] mb-0.5">RETURN EMAIL:</label>
+              <label className="block text-rail-vanilla/70 text-[9px] mb-0.5">RETURN EMAIL:</label>
               <input
                 type="email"
                 value={senderEmail}
@@ -120,7 +120,7 @@ export function Station6Pier({ isNight = false, onReturnToStart }: StationProps)
           </div>
 
           <div>
-            <label className="block text-rail-vanilla/70 text-[9.5px] mb-0.5">SUBJECT:</label>
+            <label className="block text-rail-vanilla/70 text-[9px] mb-0.5">SUBJECT:</label>
             <input
               type="text"
               value={subject}
@@ -131,7 +131,7 @@ export function Station6Pier({ isNight = false, onReturnToStart }: StationProps)
           </div>
 
           <div>
-            <label className="block text-rail-vanilla/70 text-[9.5px] mb-0.5">MESSAGE:</label>
+            <label className="block text-rail-vanilla/70 text-[9px] mb-0.5">TELEGRAPH MESSAGE:</label>
             <textarea
               required
               rows={2}
@@ -152,17 +152,18 @@ export function Station6Pier({ isNight = false, onReturnToStart }: StationProps)
           </button>
         </form>
 
-        {/* Right Column: Telemetry Radar & Direct Lines (6 cols) */}
-        <div className="md:col-span-6 space-y-2.5">
-          <div className="flex items-center gap-2 text-rail-gold mb-1">
-            <Compass className="w-3.5 h-3.5" />
-            <span className="text-[10px] font-mono font-bold uppercase tracking-wider">Live Telemetry & Direct Channels</span>
+        {/* Right Column: Live Telemetry & Direct Channels (6 cols) */}
+        <div className="md:col-span-6 space-y-2">
+          <div className="flex items-center gap-1.5 text-rail-gold text-[10px] font-mono font-bold uppercase tracking-wider">
+            <Compass className="w-3 h-3" />
+            <span>Live Telemetry & Direct Channels</span>
           </div>
 
-          <DhakaTelemetryWidget variant="expanded" />
+          {/* Compact Telemetry Radar */}
+          <DhakaTelemetryWidget variant="card" />
 
-          {/* Email Copy */}
-          <div className="flex items-center justify-between p-2 rounded-xl bg-rail-teal/15 border border-rail-teal/30">
+          {/* 1-Click Email Copy Row */}
+          <div className="flex items-center justify-between px-3 py-1.5 rounded-xl bg-rail-teal/15 border border-rail-teal/30">
             <div className="flex items-center gap-2 truncate">
               <Mail className="w-3.5 h-3.5 text-rail-orange shrink-0" />
               <span className="font-mono text-xs text-rail-vanilla truncate">{CONTACT_CHANNELS.email}</span>
@@ -170,54 +171,54 @@ export function Station6Pier({ isNight = false, onReturnToStart }: StationProps)
             <button
               type="button"
               onClick={handleCopyEmail}
-              className="p-1 rounded-lg bg-rail-teal/30 hover:bg-rail-teal/50 text-rail-vanilla ml-2"
+              className="p-1 rounded-lg bg-rail-teal/30 hover:bg-rail-teal/50 text-rail-vanilla ml-2 transition-colors"
               title="Copy Email"
             >
               {copiedEmail ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5 text-rail-gold" />}
             </button>
           </div>
 
-          {/* Social Links */}
-          <div className="grid grid-cols-2 gap-2">
+          {/* 3-Button Action Row (GitHub | LinkedIn | Return to Departure) */}
+          <div className="grid grid-cols-3 gap-1.5 pt-0.5">
             <a
               href={CONTACT_CHANNELS.github}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center justify-center gap-1.5 p-2 rounded-xl bg-rail-midnight border border-rail-teal/40 hover:border-rail-gold text-rail-vanilla font-mono text-xs transition-all"
+              className="flex items-center justify-center gap-1 p-1.5 rounded-xl bg-rail-midnight border border-rail-teal/40 hover:border-rail-gold text-rail-vanilla font-mono text-[11px] transition-all"
             >
-              <SiGithub className="w-3.5 h-3.5 text-rail-vanilla" />
+              <SiGithub className="w-3.5 h-3.5" />
               <span>GitHub</span>
-              <ExternalLink className="w-3 h-3 text-rail-vanilla/40" />
+              <ExternalLink className="w-2.5 h-2.5 text-rail-vanilla/40" />
             </a>
 
             <a
               href={CONTACT_CHANNELS.linkedin}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center justify-center gap-1.5 p-2 rounded-xl bg-rail-midnight border border-rail-teal/40 hover:border-rail-gold text-rail-vanilla font-mono text-xs transition-all"
+              className="flex items-center justify-center gap-1 p-1.5 rounded-xl bg-rail-midnight border border-rail-teal/40 hover:border-rail-gold text-rail-vanilla font-mono text-[11px] transition-all"
             >
               <FaLinkedin className="w-3.5 h-3.5 text-[#0077B5]" />
               <span>LinkedIn</span>
-              <ExternalLink className="w-3 h-3 text-rail-vanilla/40" />
+              <ExternalLink className="w-2.5 h-2.5 text-rail-vanilla/40" />
             </a>
-          </div>
 
-          {/* Return to Departure Express */}
-          <button
-            type="button"
-            onClick={() => {
-              soundEngine.playWhistle();
-              if (onReturnToStart) {
-                onReturnToStart();
-              } else {
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-              }
-            }}
-            className="w-full flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-xl border border-rail-gold/70 bg-rail-gold/15 hover:bg-rail-gold/25 text-rail-gold font-mono text-xs font-bold transition-all"
-          >
-            <ArrowUp className="w-3.5 h-3.5" />
-            <span>RETURN TO DEPARTURE (STATION 01)</span>
-          </button>
+            <button
+              type="button"
+              onClick={() => {
+                soundEngine.playWhistle();
+                if (onReturnToStart) {
+                  onReturnToStart();
+                } else {
+                  window.scrollTo({ top: 0, behavior: 'smooth' });
+                }
+              }}
+              className="flex items-center justify-center gap-1 p-1.5 rounded-xl border border-rail-gold/70 bg-rail-gold/15 hover:bg-rail-gold/25 text-rail-gold font-mono text-[10px] font-bold transition-all truncate"
+              title="Return to Station 01"
+            >
+              <ArrowUp className="w-3 h-3 shrink-0" />
+              <span className="truncate">Depart Sta 01</span>
+            </button>
+          </div>
         </div>
       </div>
     </section>

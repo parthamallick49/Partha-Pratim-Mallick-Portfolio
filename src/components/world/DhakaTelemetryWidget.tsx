@@ -107,6 +107,45 @@ export function DhakaTelemetryWidget({ variant = 'hud', className = '' }: Teleme
     );
   }
 
+  // Ultra-Compact Console Card (for Station 6 / Pier widescreen dashboard)
+  if (variant === 'card') {
+    return (
+      <div
+        className={`p-3 rounded-xl border border-rail-teal/30 bg-rail-midnight/80 backdrop-blur-md text-rail-vanilla shadow-md space-y-2 ${className}`}
+      >
+        <div className="flex items-center justify-between pb-1.5 border-b border-rail-teal/20 text-xs font-mono">
+          <div className="flex items-center gap-1.5">
+            <Radio className="w-3.5 h-3.5 text-rail-orange animate-pulse" />
+            <h4 className="font-editorial text-sm font-bold tracking-wide text-rail-vanilla">Live Railway Telemetry</h4>
+          </div>
+          <div
+            className={`flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-mono border ${
+              isAwake
+                ? 'bg-emerald-500/15 border-emerald-500/40 text-emerald-300'
+                : 'bg-amber-500/15 border-amber-500/40 text-amber-300'
+            }`}
+          >
+            <span className={`w-1.5 h-1.5 rounded-full ${isAwake ? 'bg-emerald-400 animate-pulse' : 'bg-amber-400'}`} />
+            <span>{isAwake ? 'Awake & Coding' : 'Off-Duty'}</span>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-2 gap-2 text-xs font-mono">
+          <div>
+            <span className="text-[9px] text-rail-vanilla/60 block uppercase font-bold">Dispatch Post: Dhaka, BD</span>
+            <div className="text-base font-bold text-rail-orange leading-tight mt-0.5">{dhakaTimeStr}</div>
+            <span className="text-[9px] text-rail-vanilla/70 block mt-0.5">23.81° N, 90.41° E (GMT+6)</span>
+          </div>
+          <div className="border-l border-rail-teal/25 pl-2.5">
+            <span className="text-[9px] text-rail-vanilla/60 block uppercase font-bold">Your Local Radar</span>
+            <div className="text-xs text-rail-vanilla font-medium truncate leading-tight mt-0.5">{visitorTz || 'Local Device'}</div>
+            <span className="text-[9.5px] text-rail-gold inline-block mt-0.5 font-bold">{getDifferenceText()}</span>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   // Expanded / Card Variant (for Station 6 / Pier)
   return (
     <div
