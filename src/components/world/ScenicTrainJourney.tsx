@@ -314,12 +314,12 @@ export function ScenicTrainJourney({
       let lastPuffDistance = initLeadDist;
       let currentDirection = 1;
 
-      // Master ScrollTrigger across 750vh with buttery smooth lerp
+      // Master ScrollTrigger across 750vh with instantaneous, responsive 60fps tracking
       ScrollTrigger.create({
         trigger: containerRef.current,
         start: 'top top',
         end: 'bottom bottom',
-        scrub: 1.0, // Smooth weighted inertia damping
+        scrub: 0.25, // Snappy 60fps tracking (no sluggish 1-second drag)
         onUpdate: (self) => {
           const p = self.progress;
           setScrollProgress(p);
@@ -562,11 +562,15 @@ export function ScenicTrainJourney({
     };
   }, [isLiveView]);
 
-  // Detect manual user interruption during Live Tour (auto-pause on scroll/touch/arrow keys)
+  // Detect intentional manual user interruption during Live Tour (auto-pause on intentional scroll/touch)
   useEffect(() => {
     if (!isLiveView) return;
 
-    const handleUserInterruption = () => {
+    // 600ms grace period so clicking/tapping the button doesn't immediately abort
+    const activationTime = Date.now();
+    let accumulatedDelta = 0;
+
+    const pauseTour = () => {
       if (!isLiveViewRef.current) return;
       stopLiveTour();
       onLiveViewChangeRef.current?.(false);
@@ -577,18 +581,43 @@ export function ScenicTrainJourney({
       });
     };
 
-    window.addEventListener('wheel', handleUserInterruption, { passive: true });
-    window.addEventListener('touchstart', handleUserInterruption, { passive: true });
-    const handleKey = (e: KeyboardEvent) => {
-      if (['ArrowUp', 'ArrowDown', 'PageUp', 'PageDown', 'Home', 'End', ' '].includes(e.key)) {
-        handleUserInterruption();
+    const handleWheel = (e: WheelEvent) => {
+      if (Date.now() - activationTime < 600) return;
+      accumulatedDelta += Math.abs(e.deltaY) + Math.abs(e.deltaX);
+      if (accumulatedDelta > 35) {
+        pauseTour();
       }
     };
+
+    let touchStartY = 0;
+    const handleTouchStart = (e: TouchEvent) => {
+      touchStartY = e.touches[0]?.clientY || 0;
+    };
+
+    const handleTouchMove = (e: TouchEvent) => {
+      if (Date.now() - activationTime < 600) return;
+      const currentY = e.touches[0]?.clientY || 0;
+      if (Math.abs(currentY - touchStartY) > 35) {
+        pauseTour();
+      }
+    };
+
+    const handleKey = (e: KeyboardEvent) => {
+      if (Date.now() - activationTime < 600) return;
+      if (['ArrowUp', 'ArrowDown', 'PageUp', 'PageDown', 'Home', 'End'].includes(e.key)) {
+        pauseTour();
+      }
+    };
+
+    window.addEventListener('wheel', handleWheel, { passive: true });
+    window.addEventListener('touchstart', handleTouchStart, { passive: true });
+    window.addEventListener('touchmove', handleTouchMove, { passive: true });
     window.addEventListener('keydown', handleKey, { passive: true });
 
     return () => {
-      window.removeEventListener('wheel', handleUserInterruption);
-      window.removeEventListener('touchstart', handleUserInterruption);
+      window.removeEventListener('wheel', handleWheel);
+      window.removeEventListener('touchstart', handleTouchStart);
+      window.removeEventListener('touchmove', handleTouchMove);
       window.removeEventListener('keydown', handleKey);
     };
   }, [isLiveView]);

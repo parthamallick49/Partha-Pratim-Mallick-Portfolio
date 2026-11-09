@@ -55,7 +55,7 @@
     @apply border-border;
   }
   html {
-    @apply scroll-smooth;
+    scroll-behavior: auto !important;
     font-feature-settings: "cv02", "cv03", "cv04", "cv11";
     color-scheme: dark;
   }
