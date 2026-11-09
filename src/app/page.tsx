@@ -3,13 +3,22 @@
 import React, { useState, useEffect } from 'react';
 import { HudHeader } from '@/components/navigation/HudHeader';
 import { ScenicTrainJourney } from '@/components/world/ScenicTrainJourney';
-import { ClassicPortfolioView } from '@/components/views/ClassicPortfolioView';
 import { STATIONS } from '@/data/portfolioData';
+import { soundEngine } from '@/lib/audioSynthesizer';
 
 export default function Home() {
   const [isNight, setIsNight] = useState(false);
   const [isMuted, setIsMuted] = useState(true);
-  const [isClassicView, setIsClassicView] = useState(false);
+  const [isLiveView, setIsLiveView] = useState(false);
+  const [liveTourState, setLiveTourState] = useState<{
+    status: 'idle' | 'cruising' | 'dwelling' | 'finished';
+    targetStationIndex: number;
+    countdown: number;
+  }>({
+    status: 'idle',
+    targetStationIndex: 0,
+    countdown: 10,
+  });
   const [activeStationIndex, setActiveStationIndex] = useState(0);
 
   // Auto-detect Day / Night based on Dhaka local time
@@ -31,6 +40,17 @@ export default function Home() {
     }
   }, []);
 
+  const handleToggleLiveView = () => {
+    const nextLive = !isLiveView;
+    setIsLiveView(nextLive);
+
+    // If starting Live Tour and audio was muted, auto-unmute so locomotive whistle & SFX are heard!
+    if (nextLive && isMuted) {
+      setIsMuted(false);
+      soundEngine.setMuted(false);
+    }
+  };
+
   const currentStation = STATIONS[activeStationIndex] || STATIONS[0];
 
   return (
@@ -45,22 +65,22 @@ export default function Home() {
         onToggleNight={() => setIsNight(prev => !prev)}
         isMuted={isMuted}
         onToggleMute={() => setIsMuted(prev => !prev)}
-        isClassicView={isClassicView}
-        onToggleClassicView={() => setIsClassicView(prev => !prev)}
+        isLiveView={isLiveView}
+        onToggleLiveView={handleToggleLiveView}
+        liveTourState={liveTourState}
         currentStationName={currentStation.name}
         mileMarker={currentStation.mileMarker}
       />
 
-      {/* Main Experience: Scenic Train Journey OR Accessible Classic Editorial Layout */}
+      {/* Main Experience: Scenic Train Journey */}
       <main className="w-full">
-        {isClassicView ? (
-          <ClassicPortfolioView isNight={isNight} />
-        ) : (
-          <ScenicTrainJourney
-            isNight={isNight}
-            onActiveStationChange={(idx) => setActiveStationIndex(idx)}
-          />
-        )}
+        <ScenicTrainJourney
+          isNight={isNight}
+          onActiveStationChange={(idx) => setActiveStationIndex(idx)}
+          isLiveView={isLiveView}
+          onLiveViewChange={(active) => setIsLiveView(active)}
+          onLiveTourStateChange={(state) => setLiveTourState(state)}
+        />
       </main>
     </div>
   );

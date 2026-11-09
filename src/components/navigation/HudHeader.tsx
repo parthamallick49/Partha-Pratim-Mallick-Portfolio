@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { DhakaTelemetryWidget } from '@/components/world/DhakaTelemetryWidget';
-import { Sun, Moon, Volume2, VolumeX, Eye, Sparkles, Train } from 'lucide-react';
+import { Sun, Moon, Volume2, VolumeX, Train, Radio, Play, Pause, Clock } from 'lucide-react';
 import { soundEngine } from '@/lib/audioSynthesizer';
 
 interface HudProps {
@@ -10,8 +10,13 @@ interface HudProps {
   onToggleNight: () => void;
   isMuted: boolean;
   onToggleMute: () => void;
-  isClassicView: boolean;
-  onToggleClassicView: () => void;
+  isLiveView: boolean;
+  onToggleLiveView: () => void;
+  liveTourState?: {
+    status: 'idle' | 'cruising' | 'dwelling' | 'finished';
+    targetStationIndex: number;
+    countdown: number;
+  };
   currentStationName?: string;
   mileMarker?: string;
 }
@@ -21,8 +26,9 @@ export function HudHeader({
   onToggleNight,
   isMuted,
   onToggleMute,
-  isClassicView,
-  onToggleClassicView,
+  isLiveView,
+  onToggleLiveView,
+  liveTourState = { status: 'idle', targetStationIndex: 0, countdown: 10 },
   currentStationName = 'Grand Central Terminal',
   mileMarker = 'MP 00.0',
 }: HudProps) {
@@ -58,22 +64,59 @@ export function HudHeader({
           <DhakaTelemetryWidget variant="hud" />
         </div>
 
-        {/* Right: Controls (Day/Night, Audio, Classic View) */}
+        {/* Right: Controls (Live View, Audio, Day/Night) */}
         <div className="flex items-center gap-2">
-          {/* Classic View Toggle */}
-          <button
-            type="button"
-            onClick={onToggleClassicView}
-            className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl text-xs font-mono border transition-all ${
-              isClassicView
-                ? 'bg-rail-orange text-rail-vanilla border-rail-orange font-bold'
-                : 'bg-rail-midnight/90 border-rail-teal/40 text-rail-vanilla/80 hover:text-rail-vanilla'
-            }`}
-            title="Toggle between Scenic Journey and Classic Editorial layout"
-          >
-            <Eye className="w-3.5 h-3.5 text-rail-gold" />
-            <span className="hidden sm:inline">{isClassicView ? 'Scenic View' : 'Classic View'}</span>
-          </button>
+          {/* Autopilot Live View Controller */}
+          {!isLiveView ? (
+            <button
+              type="button"
+              onClick={onToggleLiveView}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-mono border border-rail-teal/40 bg-rail-midnight/90 backdrop-blur-md text-rail-vanilla/90 hover:text-rail-gold hover:border-rail-gold/60 transition-all shadow-lg group"
+              title="Start Live View: Autopilot journey through all stations with 10s stopovers and whistle SFX"
+            >
+              <Radio className="w-3.5 h-3.5 text-rail-orange group-hover:scale-110 transition-transform animate-pulse" />
+              <span className="font-bold tracking-wider">Live View</span>
+            </button>
+          ) : (
+            <div className="flex items-center gap-2 px-2.5 py-1 rounded-xl border border-rail-orange/70 bg-rail-midnight/95 backdrop-blur-md shadow-xl shadow-rail-orange/20">
+              <div className="flex items-center gap-1 font-mono text-xs shrink-0">
+                <span className="relative flex h-2 w-2">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-rail-orange opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-rail-orange"></span>
+                </span>
+                <span className="text-rail-orange font-bold uppercase tracking-wider text-[11px]">
+                  LIVE
+                </span>
+              </div>
+
+              {/* Status Message */}
+              <div className="text-[11px] font-mono text-rail-vanilla/90 flex items-center gap-1">
+                {liveTourState.status === 'cruising' ? (
+                  <span className="flex items-center gap-1 text-rail-gold">
+                    <Train className="w-3 h-3 text-rail-orange animate-bounce" />
+                    <span className="hidden sm:inline">Cruising to </span>Sta 0{liveTourState.targetStationIndex + 1}...
+                  </span>
+                ) : liveTourState.status === 'dwelling' ? (
+                  <span className="flex items-center gap-1 text-rail-vanilla">
+                    <Clock className="w-3 h-3 text-rail-gold animate-spin" />
+                    <span>Sta 0{liveTourState.targetStationIndex + 1} • <strong className="text-rail-orange">{liveTourState.countdown}s</strong></span>
+                  </span>
+                ) : (
+                  <span className="text-emerald-400 font-bold text-[10px]">Terminal Pier</span>
+                )}
+              </div>
+
+              {/* Pause Button */}
+              <button
+                type="button"
+                onClick={onToggleLiveView}
+                className="p-1 rounded-lg bg-rail-teal/30 hover:bg-rail-teal/50 text-rail-vanilla transition-colors ml-0.5"
+                title="Pause Live Tour (or scroll manually)"
+              >
+                <Pause className="w-3.5 h-3.5 text-rail-gold" />
+              </button>
+            </div>
+          )}
 
           {/* Audio Mute/Unmute Toggle */}
           <button

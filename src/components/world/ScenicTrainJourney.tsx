@@ -19,9 +19,18 @@ if (typeof window !== 'undefined') {
   gsap.registerPlugin(ScrollTrigger);
 }
 
+interface LiveTourState {
+  status: 'idle' | 'cruising' | 'dwelling' | 'finished';
+  targetStationIndex: number;
+  countdown: number;
+}
+
 interface ScenicJourneyProps {
   isNight?: boolean;
   onActiveStationChange?: (index: number) => void;
+  isLiveView?: boolean;
+  onLiveViewChange?: (active: boolean) => void;
+  onLiveTourStateChange?: (state: LiveTourState) => void;
 }
 
 interface DynamicSmokeParticle {
@@ -43,11 +52,40 @@ interface DynamicSmokeParticle {
 export function ScenicTrainJourney({
   isNight = false,
   onActiveStationChange,
+  isLiveView = false,
+  onLiveViewChange,
+  onLiveTourStateChange,
 }: ScenicJourneyProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const cameraStageRef = useRef<HTMLDivElement>(null);
   const [activeStationIndex, setActiveStationIndex] = useState(0);
   const [scrollProgress, setScrollProgress] = useState(0);
+
+  // Live Tour Autopilot Engine references
+  const liveTweenRef = useRef<gsap.core.Tween | null>(null);
+  const countdownIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const isLiveViewRef = useRef(isLiveView);
+  isLiveViewRef.current = isLiveView;
+  const activeStationIndexRef = useRef(activeStationIndex);
+  activeStationIndexRef.current = activeStationIndex;
+
+  const stopLiveTour = () => {
+    if (liveTweenRef.current) {
+      liveTweenRef.current.kill();
+      liveTweenRef.current = null;
+    }
+    if (countdownIntervalRef.current) {
+      clearInterval(countdownIntervalRef.current);
+      countdownIntervalRef.current = null;
+    }
+  };
+
+  const getStationScrollY = (stationIdx: number): number => {
+    if (!containerRef.current) return 0;
+    const containerTop = containerRef.current.offsetTop;
+    const totalScrollable = Math.max(1, containerRef.current.offsetHeight - window.innerHeight);
+    return containerTop + (stationIdx / 5) * totalScrollable;
+  };
 
   // Setup GSAP Camera Follower, Articulated Train, and Dynamic Procedural Smoke Engine
   useEffect(() => {
@@ -401,8 +439,162 @@ export function ScenicTrainJourney({
     };
   }, [onActiveStationChange, isNight]);
 
-  // Fast Travel jump
+  // Live Tour Driver Effect
+  useEffect(() => {
+    if (!isLiveView) {
+      stopLiveTour();
+      return;
+    }
+
+    if (!containerRef.current) return;
+    const containerTop = containerRef.current.offsetTop;
+    const totalScrollable = Math.max(1, containerRef.current.offsetHeight - window.innerHeight);
+    const currentScroll = window.scrollY;
+    const currentFraction = Math.max(0, Math.min(1, (currentScroll - containerTop) / totalScrollable));
+    const currentStationEst = currentFraction * 5;
+
+    // Determine target station: if near end, loop from Station 0; else next station ahead
+    let startTarget = 0;
+    if (currentStationEst >= 4.9) {
+      startTarget = 0;
+    } else {
+      startTarget = Math.min(5, Math.floor(currentStationEst + 1));
+    }
+
+    const runTourStep = (targetIdx: number) => {
+      if (!isLiveViewRef.current) return;
+
+      // Locomotive whistle sounds as train starts moving!
+      soundEngine.playWhistle();
+
+      const targetY = getStationScrollY(targetIdx);
+      const dist = Math.abs(targetY - window.scrollY);
+      // Pacing: ~6.5 to 7.5 seconds per station segment
+      const duration = Math.max(3.8, Math.min(8.5, (dist / (totalScrollable / 5)) * 7.0));
+
+      onLiveTourStateChange?.({
+        status: 'cruising',
+        targetStationIndex: targetIdx,
+        countdown: 10,
+      });
+
+      const scrollObj = { y: window.scrollY };
+      liveTweenRef.current = gsap.to(scrollObj, {
+        y: targetY,
+        duration,
+        ease: 'power1.inOut',
+        onUpdate: () => {
+          window.scrollTo(0, scrollObj.y);
+        },
+        onComplete: () => {
+          soundEngine.playTrackClack();
+
+          if (targetIdx >= 5) {
+            // Reached Station 06 (Terminal Pier)
+            let dwellCount = 10;
+            onLiveTourStateChange?.({
+              status: 'dwelling',
+              targetStationIndex: 5,
+              countdown: dwellCount,
+            });
+
+            countdownIntervalRef.current = setInterval(() => {
+              dwellCount -= 1;
+              if (dwellCount > 0) {
+                onLiveTourStateChange?.({
+                  status: 'dwelling',
+                  targetStationIndex: 5,
+                  countdown: dwellCount,
+                });
+              } else {
+                if (countdownIntervalRef.current) {
+                  clearInterval(countdownIntervalRef.current);
+                  countdownIntervalRef.current = null;
+                }
+                onLiveTourStateChange?.({
+                  status: 'finished',
+                  targetStationIndex: 5,
+                  countdown: 0,
+                });
+                onLiveViewChange?.(false);
+              }
+            }, 1000);
+          } else {
+            // Dwell for 10 seconds at this intermediate station
+            let dwellCount = 10;
+            onLiveTourStateChange?.({
+              status: 'dwelling',
+              targetStationIndex: targetIdx,
+              countdown: dwellCount,
+            });
+
+            countdownIntervalRef.current = setInterval(() => {
+              dwellCount -= 1;
+              if (dwellCount > 0) {
+                onLiveTourStateChange?.({
+                  status: 'dwelling',
+                  targetStationIndex: targetIdx,
+                  countdown: dwellCount,
+                });
+              } else {
+                if (countdownIntervalRef.current) {
+                  clearInterval(countdownIntervalRef.current);
+                  countdownIntervalRef.current = null;
+                }
+                if (isLiveViewRef.current) {
+                  runTourStep(targetIdx + 1);
+                }
+              }
+            }, 1000);
+          }
+        },
+      });
+    };
+
+    runTourStep(startTarget);
+
+    return () => {
+      stopLiveTour();
+    };
+  }, [isLiveView, onLiveTourStateChange, onLiveViewChange]);
+
+  // Detect manual user interruption during Live Tour (auto-pause on scroll/touch/arrow keys)
+  useEffect(() => {
+    if (!isLiveView) return;
+
+    const handleUserInterruption = () => {
+      if (!isLiveViewRef.current) return;
+      stopLiveTour();
+      onLiveViewChange?.(false);
+      onLiveTourStateChange?.({
+        status: 'idle',
+        targetStationIndex: activeStationIndexRef.current,
+        countdown: 10,
+      });
+    };
+
+    window.addEventListener('wheel', handleUserInterruption, { passive: true });
+    window.addEventListener('touchstart', handleUserInterruption, { passive: true });
+    const handleKey = (e: KeyboardEvent) => {
+      if (['ArrowUp', 'ArrowDown', 'PageUp', 'PageDown', 'Home', 'End', ' '].includes(e.key)) {
+        handleUserInterruption();
+      }
+    };
+    window.addEventListener('keydown', handleKey, { passive: true });
+
+    return () => {
+      window.removeEventListener('wheel', handleUserInterruption);
+      window.removeEventListener('touchstart', handleUserInterruption);
+      window.removeEventListener('keydown', handleKey);
+    };
+  }, [isLiveView, onLiveTourStateChange, onLiveViewChange]);
+
+  // Fast Travel jump (also cleanly suspends Live Tour if active)
   const scrollToStation = (index: number) => {
+    if (isLiveViewRef.current) {
+      stopLiveTour();
+      onLiveViewChange?.(false);
+    }
     if (!containerRef.current) return;
     const containerTop = containerRef.current.offsetTop;
     const totalScrollable = containerRef.current.offsetHeight - window.innerHeight;
