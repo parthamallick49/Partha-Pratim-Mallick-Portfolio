@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import Image from 'next/image';
 import { BIOGRAPHY } from '@/data/portfolioData';
-import { Download, ArrowDown, MapPin, Ticket } from 'lucide-react';
+import { Download, ArrowDown, MapPin, Ticket, Building2, Sparkles } from 'lucide-react';
 import { soundEngine } from '@/lib/audioSynthesizer';
 
 interface StationProps {
@@ -26,30 +26,32 @@ export function Station1Terminal({ isNight = false, onScrollToNext }: StationPro
   return (
     <section
       id="station-1"
-      className="relative w-full max-w-lg lg:max-w-xl max-h-[calc(100vh-170px)] overflow-y-auto scrollbar-thin bg-rail-midnight/90 backdrop-blur-md border border-rail-teal/40 rounded-2xl p-4 sm:p-6 shadow-2xl space-y-4 text-rail-vanilla"
+      className="relative w-full max-w-3xl xl:max-w-4xl bg-rail-midnight/90 backdrop-blur-md border border-rail-teal/40 rounded-2xl p-4 sm:p-5 lg:p-6 shadow-2xl text-rail-vanilla space-y-4"
     >
       {/* Station Plaque Header */}
-      <div className="border-b border-rail-teal/30 pb-2.5">
-        <div className="flex items-center justify-between text-xs font-mono mb-1">
-          <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-rail-orange/15 border border-rail-orange/40 text-rail-orange font-bold text-[11px]">
-            <Ticket className="w-3.5 h-3.5" />
-            STATION 01 • MP 00.0
-          </span>
-          <span className="text-rail-gold/80 font-mono text-[10px]">{BIOGRAPHY.ticketNumber}</span>
+      <div className="border-b border-rail-teal/30 pb-2.5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1.5">
+        <div>
+          <div className="flex items-center gap-2 text-xs font-mono mb-1">
+            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-rail-orange/15 border border-rail-orange/40 text-rail-orange font-bold text-[11px]">
+              <Ticket className="w-3.5 h-3.5" />
+              STATION 01 • MP 00.0
+            </span>
+            <span className="text-rail-gold/80 font-mono text-[10px]">{BIOGRAPHY.ticketNumber}</span>
+          </div>
+          <h1 className="font-editorial text-2xl sm:text-3xl font-bold tracking-tight text-rail-vanilla leading-tight">
+            Grand Central Terminal
+          </h1>
         </div>
-        <h1 className="font-editorial text-2xl sm:text-3xl font-bold tracking-tight text-rail-vanilla leading-tight">
-          Grand Central Terminal
-        </h1>
-        <p className="font-mono text-[11px] text-rail-gold mt-0.5">
+        <p className="font-mono text-[11px] text-rail-gold sm:text-right">
           DEPARTURE PLATFORM • PASSENGER DOSSIER
         </p>
       </div>
 
-      {/* Profile & Identity Row */}
-      <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4">
-        {/* Portrait Photo */}
-        <div className="relative shrink-0">
-          <div className="relative w-24 h-28 sm:w-28 sm:h-32 rounded-xl overflow-hidden border-2 border-rail-gold/70 bg-rail-midnight shadow-md">
+      {/* Main Dossier Content (Wide Multi-Column Layout) */}
+      <div className="grid grid-cols-1 md:grid-cols-12 gap-4 items-center">
+        {/* Left Column: Station Master Portrait & Location (4 cols) */}
+        <div className="md:col-span-4 flex flex-row md:flex-col items-center gap-3">
+          <div className="relative w-24 h-28 sm:w-28 sm:h-32 rounded-xl overflow-hidden border-2 border-rail-gold/70 bg-rail-midnight shadow-md shrink-0">
             <Image
               src={imgError ? BIOGRAPHY.fallbackPhotoUrl : BIOGRAPHY.photoUrl}
               alt={BIOGRAPHY.name}
@@ -59,13 +61,23 @@ export function Station1Terminal({ isNight = false, onScrollToNext }: StationPro
               onError={() => setImgError(true)}
             />
           </div>
-          <span className="block text-center text-[9px] font-mono text-rail-gold font-bold mt-1">
-            STATION MASTER
-          </span>
+          <div className="flex flex-col items-start md:items-center text-left md:text-center">
+            <span className="text-[10px] font-mono text-rail-gold font-bold uppercase tracking-wider">
+              Station Master
+            </span>
+            <div className="flex items-center gap-1.5 text-[11px] font-mono text-rail-vanilla/80 mt-1">
+              <MapPin className="w-3 h-3 text-rail-orange" />
+              <span>{BIOGRAPHY.location}</span>
+            </div>
+            <div className="flex items-center gap-1.5 text-[11px] font-mono text-rail-teal mt-0.5">
+              <Building2 className="w-3 h-3" />
+              <span>{BIOGRAPHY.company}</span>
+            </div>
+          </div>
         </div>
 
-        {/* Bio Highlights */}
-        <div className="flex-1 space-y-2 text-center sm:text-left">
+        {/* Right Column: Bio Details, Architecture Badges & Actions (8 cols) */}
+        <div className="md:col-span-8 space-y-3">
           <div>
             <h2 className="text-xl sm:text-2xl font-editorial font-bold text-rail-vanilla">
               {BIOGRAPHY.name}
@@ -75,61 +87,54 @@ export function Station1Terminal({ isNight = false, onScrollToNext }: StationPro
             </p>
           </div>
 
-          <p className="text-xs text-rail-vanilla/80 leading-relaxed font-sans">
+          <p className="text-xs text-rail-vanilla/85 leading-relaxed font-sans">
             {BIOGRAPHY.summary}
           </p>
 
-          <div className="flex items-center justify-center sm:justify-start gap-2 text-[11px] font-mono text-rail-vanilla/70 pt-1">
-            <MapPin className="w-3 h-3 text-rail-orange" />
-            <span>{BIOGRAPHY.location}</span>
-            <span className="text-rail-teal">•</span>
-            <span>{BIOGRAPHY.company}</span>
+          {/* 3 Architecture Metric Pills */}
+          <div className="grid grid-cols-3 gap-2 text-center pt-0.5">
+            <div className="p-2 rounded-lg bg-rail-teal/20 border border-rail-teal/30">
+              <span className="block text-[9px] font-mono text-rail-vanilla/60 uppercase">Primary</span>
+              <span className="text-xs font-semibold text-rail-vanilla">Flutter & Android</span>
+            </div>
+            <div className="p-2 rounded-lg bg-rail-teal/20 border border-rail-teal/30">
+              <span className="block text-[9px] font-mono text-rail-vanilla/60 uppercase">Enterprise</span>
+              <span className="text-xs font-semibold text-rail-vanilla">.NET & SQL</span>
+            </div>
+            <div className="p-2 rounded-lg bg-rail-teal/20 border border-rail-teal/30">
+              <span className="block text-[9px] font-mono text-rail-vanilla/60 uppercase">Pattern</span>
+              <span className="text-xs font-semibold text-rail-vanilla">Clean Arch</span>
+            </div>
+          </div>
+
+          {/* Action Row */}
+          <div className="pt-1 flex flex-col sm:flex-row items-center gap-2.5">
+            <a
+              href={BIOGRAPHY.resumeUrl}
+              download
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-full sm:flex-1 inline-flex items-center justify-center gap-2 px-3.5 py-2 rounded-xl bg-rail-orange hover:bg-rail-orange-glow text-rail-vanilla font-mono text-xs font-bold shadow-md shadow-rail-orange/20 transition-all text-center"
+            >
+              <Download className="w-3.5 h-3.5" />
+              <span>Download Resume Ticket</span>
+            </a>
+
+            <button
+              type="button"
+              onClick={handleDepartClick}
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-3.5 py-2 rounded-xl border border-rail-teal/60 bg-rail-teal/25 hover:bg-rail-teal/40 text-rail-vanilla font-mono text-xs transition-all"
+            >
+              <span
+                className={`w-2.5 h-2.5 rounded-full border border-black/40 transition-colors ${
+                  signalGreen ? 'bg-emerald-400 shadow-sm shadow-emerald-400' : 'bg-rail-orange'
+                }`}
+              />
+              <span>{signalGreen ? 'Signal Green: Rolling' : 'Signal: Click to Depart'}</span>
+              <ArrowDown className="w-3.5 h-3.5 text-rail-vanilla/70 animate-bounce" />
+            </button>
           </div>
         </div>
-      </div>
-
-      {/* 3 Architecture Pills */}
-      <div className="grid grid-cols-3 gap-2 text-center">
-        <div className="p-2 rounded-lg bg-rail-teal/20 border border-rail-teal/30">
-          <span className="block text-[9px] font-mono text-rail-vanilla/60 uppercase">Primary</span>
-          <span className="text-xs font-semibold text-rail-vanilla">Flutter & Android</span>
-        </div>
-        <div className="p-2 rounded-lg bg-rail-teal/20 border border-rail-teal/30">
-          <span className="block text-[9px] font-mono text-rail-vanilla/60 uppercase">Enterprise</span>
-          <span className="text-xs font-semibold text-rail-vanilla">.NET & SQL</span>
-        </div>
-        <div className="p-2 rounded-lg bg-rail-teal/20 border border-rail-teal/30">
-          <span className="block text-[9px] font-mono text-rail-vanilla/60 uppercase">Pattern</span>
-          <span className="text-xs font-semibold text-rail-vanilla">Clean Arch</span>
-        </div>
-      </div>
-
-      {/* Action Row: Resume Download + Departure Signal */}
-      <div className="pt-2 flex flex-col sm:flex-row items-center gap-3">
-        <a
-          href={BIOGRAPHY.resumeUrl}
-          download
-          target="_blank"
-          rel="noopener noreferrer"
-          className="w-full sm:flex-1 inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-rail-orange hover:bg-rail-orange-glow text-rail-vanilla font-mono text-xs font-bold shadow-lg shadow-rail-orange/20 transition-all text-center"
-        >
-          <Download className="w-3.5 h-3.5" />
-          <span>Download Resume Ticket</span>
-        </a>
-
-        <button
-          type="button"
-          onClick={handleDepartClick}
-          className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl border border-rail-teal/60 bg-rail-teal/25 hover:bg-rail-teal/40 text-rail-vanilla font-mono text-xs transition-all"
-        >
-          <span
-            className={`w-3 h-3 rounded-full border border-black/40 transition-colors ${
-              signalGreen ? 'bg-emerald-400 shadow-sm shadow-emerald-400' : 'bg-rail-orange'
-            }`}
-          />
-          <span>{signalGreen ? 'Signal Green: Rolling' : 'Signal: Click to Depart'}</span>
-          <ArrowDown className="w-3.5 h-3.5 text-rail-vanilla/70 animate-bounce" />
-        </button>
       </div>
     </section>
   );

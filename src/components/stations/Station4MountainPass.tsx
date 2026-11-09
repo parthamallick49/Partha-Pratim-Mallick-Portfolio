@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { WORK_EXPERIENCES } from '@/data/portfolioData';
-import { Briefcase, Calendar, MapPin, CheckCircle2, Milestone } from 'lucide-react';
+import { Briefcase, Calendar, MapPin, CheckCircle2, Milestone, Building2 } from 'lucide-react';
 import { soundEngine } from '@/lib/audioSynthesizer';
 
 interface StationProps {
@@ -16,21 +16,23 @@ export function Station4MountainPass({ isNight = false }: StationProps) {
   return (
     <section
       id="station-4"
-      className="relative w-full max-w-xl lg:max-w-2xl bg-rail-midnight/90 backdrop-blur-md border border-rail-teal/40 rounded-2xl p-5 sm:p-7 shadow-2xl space-y-4 text-rail-vanilla"
+      className="relative w-full max-w-3xl xl:max-w-4xl bg-rail-midnight/90 backdrop-blur-md border border-rail-teal/40 rounded-2xl p-4 sm:p-5 lg:p-6 shadow-2xl space-y-3.5 text-rail-vanilla"
     >
       {/* Station Plaque Header */}
-      <div className="border-b border-rail-teal/30 pb-3">
-        <div className="flex items-center justify-between text-xs font-mono mb-1.5">
-          <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-rail-teal-light/20 border border-rail-teal-light/40 text-rail-teal-light font-bold">
-            <Milestone className="w-3.5 h-3.5 text-rail-orange" />
-            STATION 04 • MP 56.1
-          </span>
-          <span className="text-rail-gold/80 font-mono text-[11px]">ALPINE SWITCHBACK</span>
+      <div className="border-b border-rail-teal/30 pb-2 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1">
+        <div>
+          <div className="flex items-center gap-2 text-xs font-mono mb-0.5">
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-rail-teal-light/20 border border-rail-teal-light/40 text-rail-teal-light font-bold text-[11px]">
+              <Milestone className="w-3.5 h-3.5 text-rail-orange" />
+              STATION 04 • MP 56.1
+            </span>
+            <span className="text-rail-gold/80 font-mono text-[10px]">ALPINE SWITCHBACK</span>
+          </div>
+          <h2 className="font-editorial text-2xl sm:text-3xl font-bold tracking-tight text-rail-vanilla leading-tight">
+            The Mountain Pass
+          </h2>
         </div>
-        <h2 className="font-editorial text-3xl sm:text-4xl font-bold tracking-tight text-rail-vanilla">
-          The Mountain Pass
-        </h2>
-        <p className="font-mono text-xs text-rail-gold mt-0.5">
+        <p className="font-mono text-[11px] text-rail-gold sm:text-right">
           ENGINEERING MILESTONES • GRAMEEN COMMUNICATIONS
         </p>
       </div>
@@ -47,13 +49,13 @@ export function Station4MountainPass({ isNight = false }: StationProps) {
                 soundEngine.playTrackClack();
                 setSelectedRoleIndex(idx);
               }}
-              className={`p-3 rounded-xl font-mono text-left transition-all ${
+              className={`p-2.5 rounded-xl font-mono text-left transition-all ${
                 isSelected
                   ? 'bg-rail-orange text-rail-vanilla shadow-md shadow-rail-orange/30'
                   : 'bg-rail-teal/20 text-rail-vanilla/70 hover:text-rail-vanilla hover:bg-rail-teal/30'
               }`}
             >
-              <div className="flex items-center justify-between text-[10px] mb-1">
+              <div className="flex items-center justify-between text-[9.5px] mb-0.5">
                 <span className="opacity-80">Stop 0{idx + 1}</span>
                 <span className="font-bold">{exp.timeline.split('–')[0]}</span>
               </div>
@@ -63,43 +65,46 @@ export function Station4MountainPass({ isNight = false }: StationProps) {
         })}
       </div>
 
-      {/* Selected Role Card */}
-      <div className="rounded-xl border border-rail-teal/30 bg-rail-teal/10 p-4 space-y-3">
-        <div className="flex flex-wrap items-center justify-between gap-2 border-b border-rail-teal/20 pb-2.5">
-          <div className="flex items-center gap-2.5">
-            <div className="p-2 rounded-lg bg-rail-orange/20 border border-rail-orange/40 text-rail-orange">
+      {/* Selected Role Gantry Display (Wide 2-Column Split) */}
+      <div className="rounded-xl border border-rail-teal/30 bg-rail-teal/10 p-3.5 sm:p-4 grid grid-cols-1 md:grid-cols-12 gap-4 items-start">
+        {/* Left Column: Organization, Role, Timeline, Location (4 cols) */}
+        <div className="md:col-span-4 space-y-2.5">
+          <div className="p-3 rounded-xl bg-rail-midnight/80 border border-rail-teal/20 space-y-2">
+            <div className="flex items-center gap-2 text-rail-orange">
               <Briefcase className="w-4 h-4" />
+              <span className="text-xs font-mono font-bold uppercase tracking-wider">Company</span>
             </div>
             <div>
-              <h3 className="font-editorial text-xl font-bold text-rail-vanilla">{currentExp.role}</h3>
-              <div className="flex items-center gap-2 text-xs font-mono text-rail-gold">
-                <span className="font-semibold">{currentExp.company}</span>
-                <span>•</span>
-                <span className="flex items-center gap-1 text-rail-vanilla/70">
-                  <MapPin className="w-3 h-3 text-rail-orange" />
-                  {currentExp.location}
-                </span>
+              <h3 className="font-editorial text-lg font-bold text-rail-vanilla leading-snug">
+                {currentExp.company}
+              </h3>
+              <p className="text-xs font-semibold text-rail-orange mt-0.5">
+                {currentExp.role}
+              </p>
+            </div>
+
+            <div className="pt-2 border-t border-rail-teal/20 space-y-1 text-[11px] font-mono text-rail-vanilla/75">
+              <div className="flex items-center gap-1.5">
+                <Calendar className="w-3.5 h-3.5 text-rail-gold" />
+                <span>{currentExp.timeline}</span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <MapPin className="w-3.5 h-3.5 text-rail-orange" />
+                <span>{currentExp.location}</span>
               </div>
             </div>
           </div>
-
-          <div className="flex items-center gap-1.5">
-            <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-mono bg-rail-midnight/80 border border-rail-teal/30 text-rail-vanilla">
-              <Calendar className="w-3 h-3 text-rail-orange" />
-              {currentExp.timeline}
-            </span>
-          </div>
         </div>
 
-        {/* Impact List */}
-        <div className="space-y-2">
+        {/* Right Column: Key Production Highlights (8 cols) */}
+        <div className="md:col-span-8 space-y-2">
           <span className="block text-[10px] font-mono uppercase text-rail-gold font-bold">
-            Key Production Highlights:
+            Key Production Highlights & Engineering Deliverables:
           </span>
-          <ul className="space-y-2 text-xs text-rail-vanilla/85">
+          <ul className="space-y-2 text-xs text-rail-vanilla/90">
             {currentExp.keyImpact.map((item, kIdx) => (
-              <li key={kIdx} className="flex items-start gap-2 bg-rail-midnight/50 p-2.5 rounded-lg border border-rail-teal/20">
-                <CheckCircle2 className="w-3.5 h-3.5 text-rail-orange shrink-0 mt-0.5" />
+              <li key={kIdx} className="flex items-start gap-2.5 bg-rail-midnight/60 p-2.5 rounded-lg border border-rail-teal/20">
+                <CheckCircle2 className="w-4 h-4 text-rail-orange shrink-0 mt-0.5" />
                 <span className="leading-relaxed font-sans">{item}</span>
               </li>
             ))}

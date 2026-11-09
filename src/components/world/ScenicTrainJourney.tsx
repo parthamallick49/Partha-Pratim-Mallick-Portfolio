@@ -408,7 +408,7 @@ export function ScenicTrainJourney({
           {/* 6 Stations Alternating Along the Journey (Generous 1000px Spacing) */}
           <div className="absolute inset-0 w-full pointer-events-auto">
             {/* Station 1: Grand Central Terminal (Train on LEFT, Details on RIGHT) */}
-            <div className="absolute top-[140px] right-3 sm:right-6 lg:right-12 left-auto w-full max-w-md sm:max-w-lg lg:max-w-xl max-md:left-14 max-md:right-2 z-20">
+            <div className="absolute top-[120px] right-3 sm:right-6 lg:right-10 left-auto w-[90vw] sm:w-[84vw] md:w-[68vw] lg:w-[62vw] xl:w-[58vw] max-w-3xl xl:max-w-4xl max-md:left-14 max-md:right-2 z-20">
               <Station1Terminal
                 isNight={isNight}
                 onScrollToNext={() => scrollToStation(1)}
@@ -416,27 +416,27 @@ export function ScenicTrainJourney({
             </div>
 
             {/* Station 2: The Foundry & Switchyard (Train on RIGHT, Details on LEFT) */}
-            <div className="absolute top-[1140px] left-3 sm:left-6 lg:left-12 right-auto w-full max-w-md sm:max-w-lg lg:max-w-xl max-md:left-14 max-md:right-2 z-20">
+            <div className="absolute top-[1120px] left-3 sm:left-6 lg:left-10 right-auto w-[90vw] sm:w-[84vw] md:w-[68vw] lg:w-[62vw] xl:w-[58vw] max-w-3xl xl:max-w-4xl max-md:left-14 max-md:right-2 z-20">
               <Station2Switchyard isNight={isNight} />
             </div>
 
             {/* Station 3: Innovation Valley Suspension Bridge (Train on LEFT, Details on RIGHT) */}
-            <div className="absolute top-[2140px] right-3 sm:right-6 lg:right-12 left-auto w-full max-w-md sm:max-w-lg lg:max-w-xl max-md:left-14 max-md:right-2 z-20">
+            <div className="absolute top-[2120px] right-3 sm:right-6 lg:right-10 left-auto w-[90vw] sm:w-[84vw] md:w-[68vw] lg:w-[62vw] xl:w-[58vw] max-w-3xl xl:max-w-4xl max-md:left-14 max-md:right-2 z-20">
               <Station3Bridge isNight={isNight} />
             </div>
 
             {/* Station 4: The Mountain Pass (Train on RIGHT, Details on LEFT) */}
-            <div className="absolute top-[3140px] left-3 sm:left-6 lg:left-12 right-auto w-full max-w-md sm:max-w-lg lg:max-w-xl max-md:left-14 max-md:right-2 z-20">
+            <div className="absolute top-[3120px] left-3 sm:left-6 lg:left-10 right-auto w-[90vw] sm:w-[84vw] md:w-[68vw] lg:w-[62vw] xl:w-[58vw] max-w-3xl xl:max-w-4xl max-md:left-14 max-md:right-2 z-20">
               <Station4MountainPass isNight={isNight} />
             </div>
 
             {/* Station 5: The Summit Observatory (Train on LEFT, Details on RIGHT) */}
-            <div className="absolute top-[4140px] right-3 sm:right-6 lg:right-12 left-auto w-full max-w-md sm:max-w-lg lg:max-w-xl max-md:left-14 max-md:right-2 z-20">
+            <div className="absolute top-[4120px] right-3 sm:right-6 lg:right-10 left-auto w-[90vw] sm:w-[84vw] md:w-[68vw] lg:w-[62vw] xl:w-[58vw] max-w-3xl xl:max-w-4xl max-md:left-14 max-md:right-2 z-20">
               <Station5Observatory isNight={isNight} />
             </div>
 
             {/* Station 6: Coastal Pier & Telegraph (Train on RIGHT, Details on LEFT) */}
-            <div className="absolute top-[5040px] left-3 sm:left-6 lg:left-12 right-auto w-full max-w-md sm:max-w-lg lg:max-w-xl max-md:left-14 max-md:right-2 z-20">
+            <div className="absolute top-[5060px] left-3 sm:left-6 lg:left-10 right-auto w-[90vw] sm:w-[84vw] md:w-[68vw] lg:w-[62vw] xl:w-[58vw] max-w-3xl xl:max-w-4xl max-md:left-14 max-md:right-2 z-20">
               <Station6Pier
                 isNight={isNight}
                 onReturnToStart={() => scrollToStation(0)}

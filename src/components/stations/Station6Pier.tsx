@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { CONTACT_CHANNELS } from '@/data/portfolioData';
 import { DhakaTelemetryWidget } from '@/components/world/DhakaTelemetryWidget';
-import { Mail, Copy, Check, ExternalLink, Send, ArrowUp, Radio, Anchor, Compass } from 'lucide-react';
+import { Mail, Copy, Check, ExternalLink, Send, ArrowUp, Anchor, Compass } from 'lucide-react';
 import { SiGithub } from 'react-icons/si';
 import { FaLinkedin } from 'react-icons/fa6';
 import { soundEngine } from '@/lib/audioSynthesizer';
@@ -16,7 +16,6 @@ interface StationProps {
 
 export function Station6Pier({ isNight = false, onReturnToStart }: StationProps) {
   const { toast } = useToast();
-  const [activeTab, setActiveTab] = useState<'telegram' | 'telemetry'>('telegram');
   const [copiedEmail, setCopiedEmail] = useState(false);
   const [senderName, setSenderName] = useState('');
   const [senderEmail, setSenderEmail] = useState('');
@@ -67,99 +66,72 @@ export function Station6Pier({ isNight = false, onReturnToStart }: StationProps)
   return (
     <section
       id="station-6"
-      className="relative w-full max-w-lg lg:max-w-xl max-h-[calc(100vh-170px)] overflow-y-auto scrollbar-thin bg-rail-midnight/90 backdrop-blur-md border border-rail-teal/40 rounded-2xl p-4 sm:p-5 shadow-2xl space-y-2 text-rail-vanilla"
+      className="relative w-full max-w-3xl xl:max-w-4xl bg-rail-midnight/90 backdrop-blur-md border border-rail-teal/40 rounded-2xl p-4 sm:p-5 lg:p-6 shadow-2xl space-y-3.5 text-rail-vanilla"
     >
       {/* Station Plaque Header */}
-      <div className="border-b border-rail-teal/30 pb-2">
-        <div className="flex items-center justify-between text-xs font-mono mb-1">
-          <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-rail-orange/15 border border-rail-orange/40 text-rail-orange font-bold text-[11px]">
-            <Anchor className="w-3 h-3" />
-            STATION 06 • MP 99.9
-          </span>
-          <span className="text-rail-gold/80 font-mono text-[10px]">TERMINAL PIER</span>
+      <div className="border-b border-rail-teal/30 pb-2 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1">
+        <div>
+          <div className="flex items-center gap-2 text-xs font-mono mb-0.5">
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-rail-orange/15 border border-rail-orange/40 text-rail-orange font-bold text-[11px]">
+              <Anchor className="w-3.5 h-3.5" />
+              STATION 06 • MP 99.9
+            </span>
+            <span className="text-rail-gold/80 font-mono text-[10px]">TERMINAL PIER</span>
+          </div>
+          <h2 className="font-editorial text-2xl sm:text-3xl font-bold tracking-tight text-rail-vanilla leading-tight">
+            Dhaka Coastal Pier & Telegraph
+          </h2>
         </div>
-        <h2 className="font-editorial text-2xl sm:text-3xl font-bold tracking-tight text-rail-vanilla leading-tight">
-          Dhaka Coastal Pier & Telegraph
-        </h2>
-        <p className="font-mono text-[11px] text-rail-gold mt-0.5">
+        <p className="font-mono text-[11px] text-rail-gold sm:text-right">
           SEASIDE DISPATCH • LIVE TELEMETRY RADAR
         </p>
       </div>
 
-      {/* Mode Switcher Tabs */}
-      <div className="grid grid-cols-2 gap-1.5">
-        <button
-          type="button"
-          onClick={() => {
-            soundEngine.playTrackClack();
-            setActiveTab('telegram');
-          }}
-          className={`py-1.5 px-3 rounded-xl font-mono text-xs flex items-center justify-center gap-1.5 transition-all ${
-            activeTab === 'telegram'
-              ? 'bg-rail-orange text-rail-vanilla font-bold shadow-md shadow-rail-orange/30'
-              : 'bg-rail-teal/20 text-rail-vanilla/70 hover:text-rail-vanilla hover:bg-rail-teal/30'
-          }`}
-        >
-          <Radio className="w-3 h-3" />
-          <span>Dispatch Telegram</span>
-        </button>
+      {/* Wide 2-Column Terminal Console (No tabs, no scrollbars!) */}
+      <div className="grid grid-cols-1 md:grid-cols-12 gap-4 items-start">
+        {/* Left Column: Dispatch Telegram Form (6 cols) */}
+        <form onSubmit={handleSendTelegram} className="md:col-span-6 space-y-2 font-mono text-xs">
+          <div className="flex items-center gap-2 text-rail-orange mb-1">
+            <Send className="w-3.5 h-3.5" />
+            <span className="text-[10px] font-bold uppercase tracking-wider">Dispatch Telegram</span>
+          </div>
 
-        <button
-          type="button"
-          onClick={() => {
-            soundEngine.playTrackClack();
-            setActiveTab('telemetry');
-          }}
-          className={`py-1.5 px-3 rounded-xl font-mono text-xs flex items-center justify-center gap-1.5 transition-all ${
-            activeTab === 'telemetry'
-              ? 'bg-rail-orange text-rail-vanilla font-bold shadow-md shadow-rail-orange/30'
-              : 'bg-rail-teal/20 text-rail-vanilla/70 hover:text-rail-vanilla hover:bg-rail-teal/30'
-          }`}
-        >
-          <Compass className="w-3 h-3" />
-          <span>Telemetry & Channels</span>
-        </button>
-      </div>
-
-      {/* Tab 1: Dispatch Form */}
-      {activeTab === 'telegram' ? (
-        <form onSubmit={handleSendTelegram} className="space-y-2 font-mono text-xs pt-0.5">
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+          <div className="grid grid-cols-2 gap-2">
             <div>
-              <label className="block text-rail-vanilla/70 text-[10px] mb-0.5">YOUR NAME:</label>
+              <label className="block text-rail-vanilla/70 text-[9.5px] mb-0.5">YOUR NAME:</label>
               <input
                 type="text"
                 value={senderName}
                 onChange={e => setSenderName(e.target.value)}
-                placeholder="e.g. Engineering Lead"
+                placeholder="Engineering Lead"
                 className="w-full px-2.5 py-1.5 rounded-lg bg-rail-midnight/80 border border-rail-teal/40 focus:border-rail-gold text-rail-vanilla placeholder-rail-vanilla/30 outline-none text-xs"
               />
             </div>
             <div>
-              <label className="block text-rail-vanilla/70 text-[10px] mb-0.5">RETURN EMAIL:</label>
+              <label className="block text-rail-vanilla/70 text-[9.5px] mb-0.5">RETURN EMAIL:</label>
               <input
                 type="email"
                 value={senderEmail}
                 onChange={e => setSenderEmail(e.target.value)}
-                placeholder="e.g. lead@company.com"
+                placeholder="lead@company.com"
                 className="w-full px-2.5 py-1.5 rounded-lg bg-rail-midnight/80 border border-rail-teal/40 focus:border-rail-gold text-rail-vanilla placeholder-rail-vanilla/30 outline-none text-xs"
               />
             </div>
           </div>
 
           <div>
-            <label className="block text-rail-vanilla/70 text-[10px] mb-0.5">SUBJECT:</label>
+            <label className="block text-rail-vanilla/70 text-[9.5px] mb-0.5">SUBJECT:</label>
             <input
               type="text"
               value={subject}
               onChange={e => setSubject(e.target.value)}
-              placeholder="e.g. Mobile Engineering Collaboration"
+              placeholder="Mobile Engineering Collaboration"
               className="w-full px-2.5 py-1.5 rounded-lg bg-rail-midnight/80 border border-rail-teal/40 focus:border-rail-gold text-rail-vanilla placeholder-rail-vanilla/30 outline-none text-xs"
             />
           </div>
 
           <div>
-            <label className="block text-rail-vanilla/70 text-[10px] mb-0.5">TELEGRAPH MESSAGE:</label>
+            <label className="block text-rail-vanilla/70 text-[9.5px] mb-0.5">MESSAGE:</label>
             <textarea
               required
               rows={2}
@@ -179,9 +151,14 @@ export function Station6Pier({ isNight = false, onReturnToStart }: StationProps)
             <span>{isDispatching ? 'TRANSMITTING MORSE CODE...' : 'TRANSMIT TELEGRAM'}</span>
           </button>
         </form>
-      ) : (
-        /* Tab 2: Telemetry Radar & Direct Channels */
-        <div className="space-y-2 pt-0.5">
+
+        {/* Right Column: Telemetry Radar & Direct Lines (6 cols) */}
+        <div className="md:col-span-6 space-y-2.5">
+          <div className="flex items-center gap-2 text-rail-gold mb-1">
+            <Compass className="w-3.5 h-3.5" />
+            <span className="text-[10px] font-mono font-bold uppercase tracking-wider">Live Telemetry & Direct Channels</span>
+          </div>
+
           <DhakaTelemetryWidget variant="expanded" />
 
           {/* Email Copy */}
@@ -206,7 +183,7 @@ export function Station6Pier({ isNight = false, onReturnToStart }: StationProps)
               href={CONTACT_CHANNELS.github}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center justify-center gap-1.5 p-2 rounded-xl bg-rail-midnight border border-rail-teal/40 hover:border-rail-gold text-rail-vanilla font-mono text-xs"
+              className="flex items-center justify-center gap-1.5 p-2 rounded-xl bg-rail-midnight border border-rail-teal/40 hover:border-rail-gold text-rail-vanilla font-mono text-xs transition-all"
             >
               <SiGithub className="w-3.5 h-3.5 text-rail-vanilla" />
               <span>GitHub</span>
@@ -217,7 +194,7 @@ export function Station6Pier({ isNight = false, onReturnToStart }: StationProps)
               href={CONTACT_CHANNELS.linkedin}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center justify-center gap-1.5 p-2 rounded-xl bg-rail-midnight border border-rail-teal/40 hover:border-rail-gold text-rail-vanilla font-mono text-xs"
+              className="flex items-center justify-center gap-1.5 p-2 rounded-xl bg-rail-midnight border border-rail-teal/40 hover:border-rail-gold text-rail-vanilla font-mono text-xs transition-all"
             >
               <FaLinkedin className="w-3.5 h-3.5 text-[#0077B5]" />
               <span>LinkedIn</span>
@@ -242,7 +219,7 @@ export function Station6Pier({ isNight = false, onReturnToStart }: StationProps)
             <span>RETURN TO DEPARTURE (STATION 01)</span>
           </button>
         </div>
-      )}
+      </div>
     </section>
   );
 }
