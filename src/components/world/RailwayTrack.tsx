@@ -44,6 +44,7 @@ export function RailwayTrack({ progress = 0, isNight = false, stageWidth = 1200 
         viewBox={`0 0 ${svgWidth} 6000`}
         className="w-full h-full"
         xmlns="http://www.w3.org/2000/svg"
+        suppressHydrationWarning
       >
         <defs>
           <filter id="railGlow" x="-20%" y="-20%" width="140%" height="140%">

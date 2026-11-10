@@ -61,12 +61,8 @@ export function ScenicTrainJourney({
   const cameraStageRef = useRef<HTMLDivElement>(null);
   const [activeStationIndex, setActiveStationIndex] = useState(0);
   const [scrollProgress, setScrollProgress] = useState(0);
-  const [stageWidth, setStageWidth] = useState<number>(() => {
-    if (typeof window !== 'undefined') {
-      return window.innerWidth;
-    }
-    return 1200;
-  });
+  // Default to 1200 for SSR/hydration parity, dynamically updated in useEffect on mount
+  const [stageWidth, setStageWidth] = useState<number>(1200);
 
   // Track responsive screen width for dynamic SVG track & train geometry
   useEffect(() => {
