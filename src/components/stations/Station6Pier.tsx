@@ -66,23 +66,23 @@ export function Station6Pier({ isNight = false, onReturnToStart }: StationProps)
   return (
     <section
       id="station-6"
-      className="relative w-full max-w-3xl xl:max-w-4xl bg-rail-midnight/90 backdrop-blur-md border border-rail-teal/40 rounded-2xl p-4 sm:p-5 shadow-2xl space-y-3 text-rail-vanilla"
+      className="relative w-full max-w-3xl xl:max-w-4xl bg-rail-midnight/90 backdrop-blur-md border border-rail-teal/40 rounded-2xl p-3 sm:p-5 shadow-2xl space-y-2.5 sm:space-y-3 text-rail-vanilla max-h-[calc(100vh-140px)] sm:max-h-none overflow-y-auto sm:overflow-visible scrollbar-thin scrollbar-thumb-rail-teal/40 scrollbar-track-transparent"
     >
       {/* Professional Contact Header */}
       <div className="border-b border-rail-teal/30 pb-2 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1">
         <div>
           <div className="flex items-center gap-2 text-xs font-mono mb-0.5">
-            <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-rail-orange/15 border border-rail-orange/40 text-rail-orange font-bold text-[11px]">
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-rail-orange/15 border border-rail-orange/40 text-rail-orange font-bold text-[10px] sm:text-[11px]">
               <Mail className="w-3.5 h-3.5" />
               LET&apos;S CONNECT
             </span>
-            <span className="text-rail-gold/80 font-mono text-[10px]">OPEN FOR COLLABORATION</span>
+            <span className="text-rail-gold/80 font-mono text-[9px] sm:text-[10px]">OPEN FOR COLLABORATION</span>
           </div>
-          <h2 className="font-editorial text-2xl sm:text-3xl font-bold tracking-tight text-rail-vanilla leading-tight">
+          <h2 className="font-editorial text-xl sm:text-3xl font-bold tracking-tight text-rail-vanilla leading-tight">
             Get In Touch & Communication
           </h2>
         </div>
-        <p className="font-mono text-xs text-rail-gold sm:text-right font-medium">
+        <p className="font-mono text-[11px] sm:text-xs text-rail-gold sm:text-right font-medium">
           Direct Email • Telemetry Radar • LinkedIn & GitHub
         </p>
       </div>

@@ -25,22 +25,22 @@ export function EnvironmentLayers({ isNight = false, progress = 0 }: Environment
 
       {/* Sun / Moon Celestial Body (Placed on Left with subtle parallax float) */}
       <div
-        className="absolute left-[6%] sm:left-[10%] top-20 sm:top-24 transition-transform duration-700 ease-out"
+        className="absolute left-[4%] sm:left-[10%] top-14 sm:top-24 transition-transform duration-700 ease-out"
         style={{
           transform: `translate3d(0, ${celestialY * 0.4}px, 0)`,
         }}
       >
         {!isNight ? (
           /* Radiant Bloody Orange Sun */
-          <div className="relative w-24 h-24 sm:w-32 sm:h-32">
+          <div className="relative w-16 h-16 sm:w-28 sm:h-28 md:w-32 md:h-32">
             <div className="absolute inset-0 rounded-full bg-rail-orange/20 filter blur-xl animate-pulse" />
             <div className="w-full h-full rounded-full bg-gradient-to-tr from-rail-orange via-[#E55A44] to-[#FBBF24] shadow-[0_0_50px_rgba(200,70,48,0.5)] border-2 border-rail-orange/40" />
             {/* Atmospheric Sun Rings */}
-            <div className="absolute -inset-4 rounded-full border border-rail-orange/20 animate-spin" style={{ animationDuration: '60s' }} />
+            <div className="absolute -inset-3 sm:-inset-4 rounded-full border border-rail-orange/20 animate-spin" style={{ animationDuration: '60s' }} />
           </div>
         ) : (
           /* Glowing Crescent / Half Moon */
-          <div className="relative w-20 h-20 sm:w-28 sm:h-28">
+          <div className="relative w-14 h-14 sm:w-24 sm:h-24 md:w-28 md:h-28">
             <div className="absolute inset-0 rounded-full bg-[#FEF08A]/15 filter blur-xl" />
             <svg viewBox="0 0 100 100" className="w-full h-full drop-shadow-[0_0_20px_rgba(254,240,138,0.6)]">
               <path

@@ -5,35 +5,43 @@ import React from 'react';
 interface RailwayTrackProps {
   progress?: number; // 0 to 1
   isNight?: boolean;
+  stageWidth?: number;
 }
 
-export function RailwayTrack({ progress = 0, isNight = false }: RailwayTrackProps) {
-  // World Dimensions: 1200 width x 6000 height (generous 1000px vertical station spacing)
-  // Track has an entry lead-in from (240, 120) to (240, 400) and exit tail to (960, 5680)
-  // so that all 4 articulated carriages sit naturally on the rails at Station 1 and Station 6.
-  // Station 1: (240, 400)  - Train on LEFT  -> Details on RIGHT
-  // Station 2: (960, 1400) - Train on RIGHT -> Details on LEFT
-  // Station 3: (240, 2400) - Train on LEFT  -> Details on RIGHT
-  // Station 4: (960, 3400) - Train on RIGHT -> Details on LEFT
-  // Station 5: (240, 4400) - Train on LEFT  -> Details on RIGHT
-  // Station 6: (960, 5400) - Train on RIGHT -> Details on LEFT
+export function RailwayTrack({ progress = 0, isNight = false, stageWidth = 1200 }: RailwayTrackProps) {
+  // Responsive World Geometry:
+  // On mobile (<768px): Track hugs screen edges (x=26 on left, x=stageWidth-26 on right)
+  // On tablet (768-1024px): Track hugs x=100 on left, stageWidth-100 on right
+  // On desktop (>=1024px): Standard 240 / 960 layout
+  const isMobile = stageWidth < 768;
+  const isTablet = stageWidth >= 768 && stageWidth < 1024;
+
+  const leftX = isMobile ? 26 : isTablet ? 100 : 240;
+  const rightX = isMobile ? Math.max(280, stageWidth - 26) : isTablet ? stageWidth - 100 : Math.min(stageWidth - 240, 960);
+  const svgWidth = Math.max(320, stageWidth);
+
+  // Station 1: (leftX, 400)  - Train on LEFT  -> Details on RIGHT
+  // Station 2: (rightX, 1400) - Train on RIGHT -> Details on LEFT
+  // Station 3: (leftX, 2400) - Train on LEFT  -> Details on RIGHT
+  // Station 4: (rightX, 3400) - Train on RIGHT -> Details on LEFT
+  // Station 5: (leftX, 4400) - Train on LEFT  -> Details on RIGHT
+  // Station 6: (rightX, 5400) - Train on RIGHT -> Details on LEFT
 
   const trackPathD = `
-    M 240 120
-    L 240 400
-    C 240 850, 960 950, 960 1400
-    C 960 1850, 240 1950, 240 2400
-    C 240 2850, 960 2950, 960 3400
-    C 960 3850, 240 3950, 240 4400
-    C 240 4850, 960 4950, 960 5400
-    L 960 5680
+    M ${leftX} 120
+    L ${leftX} 400
+    C ${leftX} 850, ${rightX} 950, ${rightX} 1400
+    C ${rightX} 1850, ${leftX} 1950, ${leftX} 2400
+    C ${leftX} 2850, ${rightX} 2950, ${rightX} 3400
+    C ${rightX} 3850, ${leftX} 3950, ${leftX} 4400
+    C ${leftX} 4850, ${rightX} 4950, ${rightX} 5400
+    L ${rightX} 5680
   `;
 
   return (
     <div className="absolute inset-0 w-full h-[6000px] pointer-events-none z-10">
       <svg
-        viewBox="0 0 1200 6000"
-        preserveAspectRatio="xMidYMin meet"
+        viewBox={`0 0 ${svgWidth} 6000`}
         className="w-full h-full"
         xmlns="http://www.w3.org/2000/svg"
       >
@@ -150,15 +158,15 @@ export function RailwayTrack({ progress = 0, isNight = false }: RailwayTrackProp
 
         {/* Station Signal Lights & Trackside Station Nameboards */}
         {[
-          { cx: 240, cy: 400, code: 'STATION 01', title: 'Grand Central Terminal', mp: 'MP 00.0', greenAt: 0.05, side: 'left' },
-          { cx: 960, cy: 1400, code: 'STATION 02', title: 'The Switchyard & Foundry', mp: 'MP 22.4', greenAt: 0.22, side: 'right' },
-          { cx: 240, cy: 2400, code: 'STATION 03', title: 'Innovation Valley Bridge', mp: 'MP 45.2', greenAt: 0.42, side: 'left' },
-          { cx: 960, cy: 3400, code: 'STATION 04', title: 'The Mountain Pass Trestle', mp: 'MP 68.0', greenAt: 0.62, side: 'right' },
-          { cx: 240, cy: 4400, code: 'STATION 05', title: 'The Summit Observatory', mp: 'MP 85.5', greenAt: 0.82, side: 'left' },
-          { cx: 960, cy: 5400, code: 'STATION 06', title: 'Dhaka Coastal Pier', mp: 'MP 99.9', greenAt: 0.98, side: 'right' },
+          { cx: leftX, cy: 400, code: 'STATION 01', title: 'Grand Central Terminal', mp: 'MP 00.0', greenAt: 0.05, side: 'left' },
+          { cx: rightX, cy: 1400, code: 'STATION 02', title: 'The Switchyard & Foundry', mp: 'MP 22.4', greenAt: 0.22, side: 'right' },
+          { cx: leftX, cy: 2400, code: 'STATION 03', title: 'Innovation Valley Bridge', mp: 'MP 45.2', greenAt: 0.42, side: 'left' },
+          { cx: rightX, cy: 3400, code: 'STATION 04', title: 'The Mountain Pass Trestle', mp: 'MP 68.0', greenAt: 0.62, side: 'right' },
+          { cx: leftX, cy: 4400, code: 'STATION 05', title: 'The Summit Observatory', mp: 'MP 85.5', greenAt: 0.82, side: 'left' },
+          { cx: rightX, cy: 5400, code: 'STATION 06', title: 'Dhaka Coastal Pier', mp: 'MP 99.9', greenAt: 0.98, side: 'right' },
         ].map((sig, idx) => {
           const isPassed = progress >= sig.greenAt;
-          const xOffset = sig.side === 'left' ? -38 : 38;
+          const xOffset = sig.side === 'left' ? (isMobile ? -16 : -38) : (isMobile ? 16 : 38);
           const boardX = sig.side === 'left' ? -185 : 20;
           return (
             <g key={idx} transform={`translate(${sig.cx + xOffset}, ${sig.cy})`}>
@@ -183,63 +191,65 @@ export function RailwayTrack({ progress = 0, isNight = false }: RailwayTrackProp
                 filter={isPassed ? 'url(#railGlow)' : undefined}
               />
 
-              {/* Station Plaque beside Signal Light */}
-              <g transform={`translate(${boardX}, -20)`}>
-                {/* Board Connection Arm */}
-                <line
-                  x1={sig.side === 'left' ? 165 : 0}
-                  y1="20"
-                  x2={sig.side === 'left' ? 185 : -20}
-                  y2="20"
-                  stroke="#122524"
-                  strokeWidth="2.5"
-                />
-                {/* Station Sign Board Plate */}
-                <rect
-                  x="0"
-                  y="0"
-                  width="165"
-                  height="40"
-                  rx="6"
-                  fill="#0A1817"
-                  stroke="#E3B23C"
-                  strokeWidth="1.2"
-                  opacity="0.95"
-                />
-                <rect
-                  x="3"
-                  y="3"
-                  width="159"
-                  height="34"
-                  rx="4"
-                  fill="none"
-                  stroke="#2F6F6D"
-                  strokeWidth="0.8"
-                />
-                {/* Station Code & MP */}
-                <text
-                  x="10"
-                  y="15"
-                  fill="#E3B23C"
-                  fontSize="9.5"
-                  fontFamily="monospace"
-                  fontWeight="bold"
-                  letterSpacing="0.5"
-                >
-                  {sig.code} • {sig.mp}
-                </text>
-                {/* Station Name */}
-                <text
-                  x="10"
-                  y="29"
-                  fill="#FAF6EE"
-                  fontSize="11"
-                  fontFamily="sans-serif"
-                  fontWeight="bold"
-                >
-                  {sig.title}
-                </text>
-              </g>
+              {/* Station Plaque beside Signal Light (Desktop & Tablet only to eliminate mobile clutter) */}
+              {!isMobile && (
+                <g transform={`translate(${boardX}, -20)`}>
+                  {/* Board Connection Arm */}
+                  <line
+                    x1={sig.side === 'left' ? 165 : 0}
+                    y1="20"
+                    x2={sig.side === 'left' ? 185 : -20}
+                    y2="20"
+                    stroke="#122524"
+                    strokeWidth="2.5"
+                  />
+                  {/* Station Sign Board Plate */}
+                  <rect
+                    x="0"
+                    y="0"
+                    width="165"
+                    height="40"
+                    rx="6"
+                    fill="#0A1817"
+                    stroke="#E3B23C"
+                    strokeWidth="1.2"
+                    opacity="0.95"
+                  />
+                  <rect
+                    x="3"
+                    y="3"
+                    width="159"
+                    height="34"
+                    rx="4"
+                    fill="none"
+                    stroke="#2F6F6D"
+                    strokeWidth="0.8"
+                  />
+                  {/* Station Code & MP */}
+                  <text
+                    x="10"
+                    y="15"
+                    fill="#E3B23C"
+                    fontSize="9.5"
+                    fontFamily="monospace"
+                    fontWeight="bold"
+                    letterSpacing="0.5"
+                  >
+                    {sig.code} • {sig.mp}
+                  </text>
+                  {/* Station Name */}
+                  <text
+                    x="10"
+                    y="29"
+                    fill="#FAF6EE"
+                    fontSize="11"
+                    fontFamily="sans-serif"
+                    fontWeight="bold"
+                  >
+                    {sig.title}
+                  </text>
+                </g>
+              )}
             </g>
           );
         })}
@@ -247,7 +257,7 @@ export function RailwayTrack({ progress = 0, isNight = false }: RailwayTrackProp
         {/* ======================================================== */}
         {/* CARRIAGE 4: REAR PUSHER ENGINE (Mountain Helper Locomotive) */}
         {/* ======================================================== */}
-        <g id="train-car-rear" transform="translate(240, 220)" className="pointer-events-auto">
+        <g id="train-car-rear" transform={`translate(${leftX}, 220)`} className="pointer-events-auto">
           {/* Headlight Beam Reversing: Active only when scrolling backward */}
           {isNight && (
             <g id="rear-headlight-group" className="headlight-hidden">
@@ -336,7 +346,7 @@ export function RailwayTrack({ progress = 0, isNight = false }: RailwayTrackProp
         {/* ======================================================== */}
         {/* CARRIAGE 3: PASSENGER COACH 2 (Vintage Terracotta Express) */}
         {/* ======================================================== */}
-        <g id="train-car-coach-2" transform="translate(240, 280)" className="pointer-events-auto">
+        <g id="train-car-coach-2" transform={`translate(${leftX}, 280)`} className="pointer-events-auto">
           {/* Couplers */}
           <rect x="-27" y="-2" width="5" height="4" rx="1" fill="#182322" />
           <rect x="22" y="-2" width="5" height="4" rx="1" fill="#182322" />
@@ -383,7 +393,7 @@ export function RailwayTrack({ progress = 0, isNight = false }: RailwayTrackProp
         {/* ======================================================== */}
         {/* CARRIAGE 2: PASSENGER COACH 1 (Spruce Teal First Class)  */}
         {/* ======================================================== */}
-        <g id="train-car-coach-1" transform="translate(240, 340)" className="pointer-events-auto">
+        <g id="train-car-coach-1" transform={`translate(${leftX}, 340)`} className="pointer-events-auto">
           {/* Couplers */}
           <rect x="-27" y="-2" width="5" height="4" rx="1" fill="#182322" />
           <rect x="22" y="-2" width="5" height="4" rx="1" fill="#182322" />
@@ -430,7 +440,7 @@ export function RailwayTrack({ progress = 0, isNight = false }: RailwayTrackProp
         {/* ======================================================== */}
         {/* CARRIAGE 1: LEAD LOCOMOTIVE ENGINE (The Express Engine)  */}
         {/* ======================================================== */}
-        <g id="train-car-lead" transform="translate(240, 400)" className="pointer-events-auto">
+        <g id="train-car-lead" transform={`translate(${leftX}, 400)`} className="pointer-events-auto">
           {/* Headlight Beam Forward: Active when scrolling forward */}
           {isNight && (
             <g id="front-headlight-group" className="headlight-active">

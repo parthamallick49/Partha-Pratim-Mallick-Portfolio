@@ -61,6 +61,25 @@ export function ScenicTrainJourney({
   const cameraStageRef = useRef<HTMLDivElement>(null);
   const [activeStationIndex, setActiveStationIndex] = useState(0);
   const [scrollProgress, setScrollProgress] = useState(0);
+  const [stageWidth, setStageWidth] = useState<number>(() => {
+    if (typeof window !== 'undefined') {
+      return window.innerWidth;
+    }
+    return 1200;
+  });
+
+  // Track responsive screen width for dynamic SVG track & train geometry
+  useEffect(() => {
+    const handleResize = () => {
+      if (typeof window !== 'undefined') {
+        setStageWidth(window.innerWidth);
+        ScrollTrigger.refresh();
+      }
+    };
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   // Live Tour Autopilot Engine references
   const liveTweenRef = useRef<gsap.core.Tween | null>(null);
@@ -477,7 +496,7 @@ export function ScenicTrainJourney({
       clearInterval(idlePuffIntervalId);
       ctx.revert();
     };
-  }, [onActiveStationChange, isNight]);
+  }, [onActiveStationChange, isNight, stageWidth]);
 
   // Live Tour Driver Effect
   useEffect(() => {
@@ -688,13 +707,13 @@ export function ScenicTrainJourney({
           className="relative w-full h-[6000px] will-change-transform"
         >
           {/* SVG Railway Track, Articulated Train & Dynamic Smoke Particles */}
-          <RailwayTrack progress={scrollProgress} isNight={isNight} />
+          <RailwayTrack stageWidth={stageWidth} progress={scrollProgress} isNight={isNight} />
 
           {/* 6 Stations Alternating Along the Journey with Arrival Focusing Glow */}
           <div className="absolute inset-0 w-full pointer-events-auto">
             {/* Station 1: Grand Central Terminal (Train on LEFT, Details on RIGHT) */}
             <div
-              className={`absolute top-[120px] right-3 sm:right-6 lg:right-10 left-auto w-[90vw] sm:w-[84vw] md:w-[68vw] lg:w-[62vw] xl:w-[58vw] max-w-3xl xl:max-w-4xl max-md:left-14 max-md:right-2 z-20 transition-all duration-700 ease-out ${
+              className={`absolute top-[75px] sm:top-[120px] left-[52px] right-2 sm:left-auto sm:right-6 lg:right-10 w-auto sm:w-[84vw] md:w-[68vw] lg:w-[62vw] xl:w-[58vw] max-w-3xl xl:max-w-4xl z-20 transition-all duration-700 ease-out ${
                 activeStationIndex === 0
                   ? 'opacity-100 scale-100 pointer-events-auto shadow-2xl shadow-rail-orange/15'
                   : 'opacity-40 scale-[0.98] pointer-events-none hover:opacity-75'
@@ -708,7 +727,7 @@ export function ScenicTrainJourney({
 
             {/* Station 2: The Foundry & Switchyard (Train on RIGHT, Details on LEFT) */}
             <div
-              className={`absolute top-[1120px] left-3 sm:left-6 lg:left-10 right-auto w-[90vw] sm:w-[84vw] md:w-[68vw] lg:w-[62vw] xl:w-[58vw] max-w-3xl xl:max-w-4xl max-md:left-14 max-md:right-2 z-20 transition-all duration-700 ease-out ${
+              className={`absolute top-[1075px] sm:top-[1120px] left-2 right-[52px] sm:right-auto sm:left-6 lg:left-10 w-auto sm:w-[84vw] md:w-[68vw] lg:w-[62vw] xl:w-[58vw] max-w-3xl xl:max-w-4xl z-20 transition-all duration-700 ease-out ${
                 activeStationIndex === 1
                   ? 'opacity-100 scale-100 pointer-events-auto shadow-2xl shadow-rail-gold/15'
                   : 'opacity-40 scale-[0.98] pointer-events-none hover:opacity-75'
@@ -719,7 +738,7 @@ export function ScenicTrainJourney({
 
             {/* Station 3: Innovation Valley Suspension Bridge (Train on LEFT, Details on RIGHT) */}
             <div
-              className={`absolute top-[2120px] right-3 sm:right-6 lg:right-10 left-auto w-[90vw] sm:w-[84vw] md:w-[68vw] lg:w-[62vw] xl:w-[58vw] max-w-3xl xl:max-w-4xl max-md:left-14 max-md:right-2 z-20 transition-all duration-700 ease-out ${
+              className={`absolute top-[2075px] sm:top-[2120px] left-[52px] right-2 sm:left-auto sm:right-6 lg:right-10 w-auto sm:w-[84vw] md:w-[68vw] lg:w-[62vw] xl:w-[58vw] max-w-3xl xl:max-w-4xl z-20 transition-all duration-700 ease-out ${
                 activeStationIndex === 2
                   ? 'opacity-100 scale-100 pointer-events-auto shadow-2xl shadow-rail-orange/15'
                   : 'opacity-40 scale-[0.98] pointer-events-none hover:opacity-75'
@@ -730,7 +749,7 @@ export function ScenicTrainJourney({
 
             {/* Station 4: The Mountain Pass (Train on RIGHT, Details on LEFT) */}
             <div
-              className={`absolute top-[3120px] left-3 sm:left-6 lg:left-10 right-auto w-[90vw] sm:w-[84vw] md:w-[68vw] lg:w-[62vw] xl:w-[58vw] max-w-3xl xl:max-w-4xl max-md:left-14 max-md:right-2 z-20 transition-all duration-700 ease-out ${
+              className={`absolute top-[3075px] sm:top-[3120px] left-2 right-[52px] sm:right-auto sm:left-6 lg:left-10 w-auto sm:w-[84vw] md:w-[68vw] lg:w-[62vw] xl:w-[58vw] max-w-3xl xl:max-w-4xl z-20 transition-all duration-700 ease-out ${
                 activeStationIndex === 3
                   ? 'opacity-100 scale-100 pointer-events-auto shadow-2xl shadow-rail-teal/20'
                   : 'opacity-40 scale-[0.98] pointer-events-none hover:opacity-75'
@@ -741,7 +760,7 @@ export function ScenicTrainJourney({
 
             {/* Station 5: The Summit Observatory (Train on LEFT, Details on RIGHT) */}
             <div
-              className={`absolute top-[4120px] right-3 sm:right-6 lg:right-10 left-auto w-[90vw] sm:w-[84vw] md:w-[68vw] lg:w-[62vw] xl:w-[58vw] max-w-3xl xl:max-w-4xl max-md:left-14 max-md:right-2 z-20 transition-all duration-700 ease-out ${
+              className={`absolute top-[4075px] sm:top-[4120px] left-[52px] right-2 sm:left-auto sm:right-6 lg:right-10 w-auto sm:w-[84vw] md:w-[68vw] lg:w-[62vw] xl:w-[58vw] max-w-3xl xl:max-w-4xl z-20 transition-all duration-700 ease-out ${
                 activeStationIndex === 4
                   ? 'opacity-100 scale-100 pointer-events-auto shadow-2xl shadow-rail-gold/15'
                   : 'opacity-40 scale-[0.98] pointer-events-none hover:opacity-75'
@@ -752,7 +771,7 @@ export function ScenicTrainJourney({
 
             {/* Station 6: Coastal Pier & Telegraph (Train on RIGHT, Details on LEFT) */}
             <div
-              className={`absolute top-[5050px] left-3 sm:left-6 lg:left-10 right-auto w-[90vw] sm:w-[84vw] md:w-[68vw] lg:w-[62vw] xl:w-[58vw] max-w-3xl xl:max-w-4xl max-md:left-14 max-md:right-2 z-20 transition-all duration-700 ease-out ${
+              className={`absolute top-[5050px] left-2 right-[52px] sm:right-auto sm:left-6 lg:left-10 w-auto sm:w-[84vw] md:w-[68vw] lg:w-[62vw] xl:w-[58vw] max-w-3xl xl:max-w-4xl z-20 transition-all duration-700 ease-out ${
                 activeStationIndex === 5
                   ? 'opacity-100 scale-100 pointer-events-auto shadow-2xl shadow-rail-orange/15'
                   : 'opacity-40 scale-[0.98] pointer-events-none hover:opacity-75'

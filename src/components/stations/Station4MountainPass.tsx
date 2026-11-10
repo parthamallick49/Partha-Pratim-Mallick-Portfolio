@@ -16,29 +16,29 @@ export function Station4MountainPass({ isNight = false }: StationProps) {
   return (
     <section
       id="station-4"
-      className="relative w-full max-w-3xl xl:max-w-4xl bg-rail-midnight/90 backdrop-blur-md border border-rail-teal/40 rounded-2xl p-4 sm:p-5 lg:p-6 shadow-2xl space-y-3.5 text-rail-vanilla"
+      className="relative w-full max-w-3xl xl:max-w-4xl bg-rail-midnight/90 backdrop-blur-md border border-rail-teal/40 rounded-2xl p-3 sm:p-5 lg:p-6 shadow-2xl space-y-3 sm:space-y-3.5 text-rail-vanilla max-h-[calc(100vh-140px)] sm:max-h-none overflow-y-auto sm:overflow-visible scrollbar-thin scrollbar-thumb-rail-teal/40 scrollbar-track-transparent"
     >
       {/* Professional Experience Header */}
       <div className="border-b border-rail-teal/30 pb-2 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1">
         <div>
           <div className="flex items-center gap-2 text-xs font-mono mb-0.5">
-            <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-rail-teal-light/20 border border-rail-teal-light/40 text-rail-teal-light font-bold text-[11px]">
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-rail-teal-light/20 border border-rail-teal-light/40 text-rail-teal-light font-bold text-[10px] sm:text-[11px]">
               <Briefcase className="w-3.5 h-3.5 text-rail-orange" />
               CAREER TRACK RECORD
             </span>
-            <span className="text-rail-gold/80 font-mono text-[10px]">PRODUCTION HISTORY</span>
+            <span className="text-rail-gold/80 font-mono text-[9px] sm:text-[10px]">PRODUCTION HISTORY</span>
           </div>
-          <h2 className="font-editorial text-2xl sm:text-3xl font-bold tracking-tight text-rail-vanilla leading-tight">
+          <h2 className="font-editorial text-xl sm:text-3xl font-bold tracking-tight text-rail-vanilla leading-tight">
             Professional Work Experience
           </h2>
         </div>
-        <p className="font-mono text-xs text-rail-gold sm:text-right font-medium">
+        <p className="font-mono text-[11px] sm:text-xs text-rail-gold sm:text-right font-medium">
           Grameen Communications • Systems Optimization • Engineering Impact
         </p>
       </div>
 
       {/* Role Selector Tabs */}
-      <div className="grid grid-cols-2 gap-2">
+      <div className="grid grid-cols-2 gap-1.5 sm:gap-2">
         {WORK_EXPERIENCES.map((exp, idx) => {
           const isSelected = selectedRoleIndex === idx;
           return (
@@ -49,24 +49,24 @@ export function Station4MountainPass({ isNight = false }: StationProps) {
                 soundEngine.playTrackClack();
                 setSelectedRoleIndex(idx);
               }}
-              className={`p-2.5 rounded-xl font-mono text-left transition-all ${
+              className={`p-2 sm:p-2.5 rounded-xl font-mono text-left transition-all ${
                 isSelected
                   ? 'bg-rail-orange text-rail-vanilla shadow-md shadow-rail-orange/30'
                   : 'bg-rail-teal/20 text-rail-vanilla/70 hover:text-rail-vanilla hover:bg-rail-teal/30'
               }`}
             >
-              <div className="flex items-center justify-between text-[9.5px] mb-0.5">
+              <div className="flex items-center justify-between text-[9px] sm:text-[9.5px] mb-0.5">
                 <span className="opacity-80">Role 0{idx + 1}</span>
                 <span className="font-bold">{exp.timeline.split('–')[0]}</span>
               </div>
-              <span className="font-editorial text-sm font-bold block truncate">{exp.role}</span>
+              <span className="font-editorial text-xs sm:text-sm font-bold block truncate">{exp.role}</span>
             </button>
           );
         })}
       </div>
 
       {/* Selected Role Gantry Display (Wide 2-Column Split) */}
-      <div className="rounded-xl border border-rail-teal/30 bg-rail-teal/10 p-3.5 sm:p-4 grid grid-cols-1 md:grid-cols-12 gap-4 items-start">
+      <div className="rounded-xl border border-rail-teal/30 bg-rail-teal/10 p-3 sm:p-4 grid grid-cols-1 md:grid-cols-12 gap-3 sm:gap-4 items-start">
         {/* Left Column: Organization, Role, Timeline, Location (4 cols) */}
         <div className="md:col-span-4 space-y-2.5">
           <div className="p-3 rounded-xl bg-rail-midnight/80 border border-rail-teal/20 space-y-2">

@@ -93,22 +93,22 @@ export function Station2Switchyard({ isNight = false }: StationProps) {
   return (
     <section
       id="station-2"
-      className="relative w-full max-w-3xl xl:max-w-4xl bg-rail-midnight/90 backdrop-blur-md border border-rail-teal/40 rounded-2xl p-4 sm:p-5 lg:p-6 shadow-2xl space-y-3.5 text-rail-vanilla"
+      className="relative w-full max-w-3xl xl:max-w-4xl bg-rail-midnight/90 backdrop-blur-md border border-rail-teal/40 rounded-2xl p-3 sm:p-5 lg:p-6 shadow-2xl space-y-3 sm:space-y-3.5 text-rail-vanilla max-h-[calc(100vh-140px)] sm:max-h-none overflow-y-auto sm:overflow-visible scrollbar-thin scrollbar-thumb-rail-teal/40 scrollbar-track-transparent"
     >
       {/* Professional Skills Header */}
       <div className="border-b border-rail-teal/30 pb-2 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1">
         <div>
           <div className="flex items-center gap-2 text-xs font-mono mb-0.5">
-            <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-rail-gold/15 border border-rail-gold/40 text-rail-gold font-bold text-[11px]">
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-rail-gold/15 border border-rail-gold/40 text-rail-gold font-bold text-[10px] sm:text-[11px]">
               CORE ARSENAL
             </span>
-            <span className="text-rail-vanilla/60 font-mono text-[10px]">PRODUCTION-PROVEN</span>
+            <span className="text-rail-vanilla/60 font-mono text-[9px] sm:text-[10px]">PRODUCTION-PROVEN</span>
           </div>
-          <h2 className="font-editorial text-2xl sm:text-3xl font-bold tracking-tight text-rail-vanilla leading-tight">
+          <h2 className="font-editorial text-xl sm:text-3xl font-bold tracking-tight text-rail-vanilla leading-tight">
             Technical Skills & Production Stacks
           </h2>
         </div>
-        <p className="font-mono text-xs text-rail-gold sm:text-right font-medium">
+        <p className="font-mono text-[11px] sm:text-xs text-rail-gold sm:text-right font-medium">
           Mobile Architectures • Backend APIs • Cloud & Databases
         </p>
       </div>
@@ -142,7 +142,7 @@ export function Station2Switchyard({ isNight = false }: StationProps) {
       {/* 2-Column Wide Console Layout */}
       <div className="grid grid-cols-1 md:grid-cols-12 gap-3.5 items-start">
         {/* Left Column: Cargo Badges Grid (7 cols) */}
-        <div className="md:col-span-7 grid grid-cols-3 gap-2">
+        <div className="md:col-span-7 grid grid-cols-3 gap-1.5 sm:gap-2">
           {activeTrack.skills.map((skill) => {
             const isInspected = activeSkill?.name === skill.name;
             return (
@@ -154,24 +154,24 @@ export function Station2Switchyard({ isNight = false }: StationProps) {
                   soundEngine.playTrackClack();
                 }}
                 onClick={() => setActiveSkill(skill)}
-                className={`group p-2.5 rounded-xl border transition-all text-left flex flex-col items-center justify-center gap-1 ${
+                className={`group p-1.5 sm:p-2.5 rounded-xl border transition-all text-left flex flex-col items-center justify-center gap-1 ${
                   isInspected
                     ? 'bg-rail-teal/30 border-rail-gold shadow-md shadow-rail-gold/20 scale-102'
                     : 'bg-rail-teal/10 border-rail-teal/30 hover:bg-rail-teal/20 hover:border-rail-teal/50'
                 }`}
               >
                 <div
-                  className="p-1.5 rounded-lg bg-rail-midnight/80 border border-rail-teal/20 transition-transform group-hover:scale-110"
+                  className="p-1 sm:p-1.5 rounded-lg bg-rail-midnight/80 border border-rail-teal/20 transition-transform group-hover:scale-110"
                   style={{
                     color: isInspected ? skill.officialColor : undefined,
                   }}
                 >
-                  {renderBrandIcon(skill.iconId, 'w-5 h-5')}
+                  {renderBrandIcon(skill.iconId, 'w-4 h-4 sm:w-5 sm:h-5')}
                 </div>
-                <span className="text-xs font-semibold text-rail-vanilla text-center truncate max-w-full">
+                <span className="text-[11px] sm:text-xs font-semibold text-rail-vanilla text-center truncate max-w-full">
                   {skill.name}
                 </span>
-                <span className="text-[8.5px] font-mono text-rail-vanilla/60 bg-rail-midnight/60 px-1 py-0.5 rounded">
+                <span className="text-[8px] sm:text-[8.5px] font-mono text-rail-vanilla/60 bg-rail-midnight/60 px-1 py-0.5 rounded">
                   {skill.badge}
                 </span>
               </button>
